@@ -248,7 +248,7 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
 
     /* Test against scrollDownBtn rectangle */
     {
-        SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
+        SlimeDim pos = *(SlimeDim*)cursorPtr;
         rect = (int*)scrollDownBtn;
         if (((T_MenuButton*)rect)->bounds.left <= pos.x &&
             ((T_MenuButton*)rect)->bounds.right >= pos.x &&
@@ -266,7 +266,7 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
 
     /* Test against scrollUpBtn rectangle */
     {
-        SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
+        SlimeDim pos = *(SlimeDim*)cursorPtr;
         rect = (int*)scrollUpBtn;
         if (((T_MenuButton*)rect)->bounds.left <= pos.x &&
             ((T_MenuButton*)rect)->bounds.right >= pos.x &&
@@ -284,7 +284,7 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
 
     /* Test against useButton rectangle */
     {
-        SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
+        SlimeDim pos = *(SlimeDim*)cursorPtr;
         rect = (int*)useButton;
         if (((T_MenuButton*)rect)->bounds.left <= pos.x &&
             ((T_MenuButton*)rect)->bounds.right >= pos.x &&
@@ -372,7 +372,7 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
 
     /* Test against putBackButton rectangle */
     {
-        SlimeDim pos; pos.x = cursorPtr[0]; pos.y = cursorPtr[1];
+        SlimeDim pos = *(SlimeDim*)cursorPtr;
         rect = (int*)putBackButton;
         if (((T_MenuButton*)rect)->bounds.left <= pos.x &&
             ((T_MenuButton*)rect)->bounds.right >= pos.x &&
@@ -789,21 +789,23 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
 
 /* Function start: 0x43F9B0 */
 void SCI_Inventory::Serialize(void* param) {
+    volatile int fp;
     volatile int self = (int)this;
     int strLen = strlen("INVENTORY_INFO") + 1;
     FileArchive* ar = (FileArchive*)param;
-    volatile int fp = (int)ar->fp;
     int* esi_ptr;
     int handle;
 
+    fp = (int)ar->fp;
+
     if (ar->mode != 0) {
         /* SAVE PATH */
-        int id = handlerId;
+        int id = ((SCI_Inventory*)self)->handlerId;
         fwrite(&id, 4, 1, (FILE*)fp);
         fwrite("INVENTORY_INFO", strLen, 1, (FILE*)fp);
 
         {
-        InventoryPoolNode* curNode = itemPool->head;
+        InventoryPoolNode* curNode = ((SCI_Inventory*)self)->itemPool->head;
         self = (int)curNode;
         if (curNode != 0) {
             do {
@@ -844,8 +846,7 @@ void SCI_Inventory::Serialize(void* param) {
         {
             InventoryPoolNode* node = pool->head;
             while (node != 0) {
-                volatile int zero = 0;
-                int d = zero;
+                int d = 0;
                 int c;
                 do { c = d; d--; } while (c != 0);
                 node = node->next;
@@ -880,7 +881,7 @@ void SCI_Inventory::Serialize(void* param) {
         if (esi_ptr[0] != 0) {
             esi_ptr[2] = esi_ptr[0];
             while (esi_ptr[0] != 0) {
-                void* data = ((LinkedList*)esi_ptr)->RemoveCurrent();
+                void* data = ((MessageList*)esi_ptr)->PopCurrent();
                 if (data != 0) {
                     delete (T_Object*)data;
                 }
@@ -933,8 +934,7 @@ void SCI_Inventory::Serialize(void* param) {
                 newNode->item = 0;
 
                 {
-                    volatile int zero = 0;
-                    int d = zero;
+                    int d = 0;
                     int c;
                     do { c = d; d--; } while (c != 0);
                 }
@@ -1144,7 +1144,7 @@ void SCI_Inventory::ProcessInventory() {
     while (1) {
         QueueNode* node = (QueueNode*)((LinkedList*)g_MsgList_0046a6dc)->current;
         if (node != 0 && node->data != 0) {
-            ((T_Object*)node->data)->StopSound();
+            ((T_Object*)(((node < (QueueNode*)1) - 1) & (int)node->data))->StopSound();
         }
         if (((LinkedList*)g_MsgList_0046a6dc)->tail == ((LinkedList*)g_MsgList_0046a6dc)->current) break;
         if (((LinkedList*)g_MsgList_0046a6dc)->current != 0) {
@@ -1154,32 +1154,41 @@ void SCI_Inventory::ProcessInventory() {
 }
 /* Function start: 0x43F490 */
 void* SCI_Inventory::FindItem(int itemID) {
-    LinkedList* list = (LinkedList*)g_MsgList_0046a6dc;
+    LinkedList* list;
     T_Object* item;
 
-    if (list == 0) {
+    if (g_MsgList_0046a6dc == 0) {
         return 0;
     }
 
-    list->current = list->head;
-    while (list->current != 0) {
-        ListNode* node = list->current;
-        T_Object* currentItem = 0;
+    ((LinkedList*)g_MsgList_0046a6dc)->current = ((LinkedList*)g_MsgList_0046a6dc)->head;
+    while (((LinkedList*)g_MsgList_0046a6dc)->head != 0) {
+        ListNode* node = ((LinkedList*)g_MsgList_0046a6dc)->current;
         if (node != 0) {
-            currentItem = (T_Object*)node->data;
+            if (((T_Object*)node->data)->itemId == itemID) {
+                if (((LinkedList*)g_MsgList_0046a6dc)->current == 0) {
+                    return 0;
+                }
+                return ((LinkedList*)g_MsgList_0046a6dc)->current->data;
+            }
+        } else {
+            if (itemID == *(int*)0x94) {
+                if (((LinkedList*)g_MsgList_0046a6dc)->current == 0) {
+                    return 0;
+                }
+                return ((LinkedList*)g_MsgList_0046a6dc)->current->data;
+            }
         }
-        if (currentItem != 0 && currentItem->itemId == itemID) {
-            return currentItem;
-        }
-        if (list->tail == node) {
+        if (((LinkedList*)g_MsgList_0046a6dc)->tail == node) {
             break;
         }
         if (node != 0) {
-            list->current = node->next;
+            ((LinkedList*)g_MsgList_0046a6dc)->current = node->next;
         }
     }
 
     item = new T_Object(itemID);
+    list = (LinkedList*)g_MsgList_0046a6dc;
     if (item == 0) {
         ShowError("queue fault 0101");
     }
