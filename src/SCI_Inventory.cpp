@@ -325,23 +325,23 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
             goto done;
         }
 
-        g_SelectedItem_0046a6e4 = (T_Object*)((QueueNode*)node)->data;
+        g_SelectedItem_0046a6e4 = (T_Object*)node[2];
 
-        nextNode = (int*)((QueueNode*)node)->next;
+        nextNode = (int*)node[0];
         listPtr = (int*)itemPool;
         if ((int*)listPtr[0] == node) {
             listPtr[0] = (int)nextNode;
         } else {
-            prevNode = (int*)((QueueNode*)node)->prev;
+            prevNode = (int*)node[1];
             prevNode[0] = (int)nextNode;
         }
 
-        nextNode = (int*)((QueueNode*)node)->prev;
+        nextNode = (int*)node[1];
         if ((int*)listPtr[1] == node) {
             listPtr[1] = (int)nextNode;
         } else {
-            nextNode = (int*)((QueueNode*)node)->next;
-            ((QueueNode*)nextNode)->prev = ((QueueNode*)node)->prev;
+            nextNode = (int*)node[0];
+            nextNode[1] = node[1];
         }
 
         {
@@ -737,17 +737,17 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
         if (node != 0) {
             listPtr = (int*)itemPool;
             {
-                QueueNode* nextN = ((QueueNode*)node)->next;
+                int* nextN = (int*)node[0];
                 if ((int*)listPtr[0] == node) {
                     listPtr[0] = (int)nextN;
                 } else {
-                    ((QueueNode*)node)->prev->next = nextN;
+                    ((int*)node[1])[0] = (int)nextN;
                 }
             }
             if ((int*)listPtr[1] == node) {
-                listPtr[1] = (int)((QueueNode*)node)->prev;
+                listPtr[1] = node[1];
             } else {
-                ((QueueNode*)node)->next->prev = ((QueueNode*)node)->prev;
+                ((int*)node[0])[1] = node[1];
             }
 
             {
@@ -803,8 +803,8 @@ void SCI_Inventory::Serialize(void* param) {
         self = (int)curNode;
         if (curNode != 0) {
             do {
-                QueueNode* nextNode = curNode->prev;
-                T_Object* item = (T_Object*)curNode->data;
+                QueueNode* nextNode = (QueueNode*)((int*)curNode)[0];
+                T_Object* item = (T_Object*)((int*)curNode)[2];
                 self = (int)nextNode;
                 fwrite(&item->itemId, 4, 1, (FILE*)fp);
                 fwrite(&item->objectFlags, 4, 1, (FILE*)fp);
@@ -944,11 +944,9 @@ void SCI_Inventory::Serialize(void* param) {
         }
     }
 
-    /* Read held item(s) — original loops until the 999 terminator */
-    for (;;) {
-        fread(&handle, 4, 1, (FILE*)fp);
-        if (handle == 999) break;
-
+    /* Read optional held item. The save format stores a single ID or 999. */
+    fread(&handle, 4, 1, (FILE*)fp);
+    if (handle != 999) {
         g_SelectedItem_0046a6e4 = (T_Object*)((SCI_Inventory*)self)->FindItem(handle);
         fread((char*)&g_SelectedItem_0046a6e4->objectFlags, 4, 1, (FILE*)fp);
     }
@@ -1266,13 +1264,13 @@ void* SCI_Inventory::FindItem(int itemID) {
 }
 /* Function start: 0x43F7F0 */
 int* SCI_Inventory::FindItemInList(int itemID) {
-    QueueNode* volatile node = ((LinkedList*)itemPool)->head;
+    int* volatile node = (int*)((int*)itemPool)[0];
     if (node != 0) {
         do {
-            if (((T_Object*)node->data)->itemId == itemID) {
+            if (((T_Object*)node[2])->itemId == itemID) {
                 return (int*)node;
             }
-            node = node->prev;
+            node = (int*)node[0];
         } while (node != 0);
     }
     return 0;
