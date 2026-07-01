@@ -9,6 +9,26 @@ class Sample;
 class Palette;
 class T_MenuHotspot;
 class T_MenuButton;
+class T_Object;
+
+struct InventoryPoolNode {
+    InventoryPoolNode* next;  // +0x00
+    InventoryPoolNode* prev;  // +0x04
+    T_Object* item;           // +0x08
+};
+
+struct InventoryPoolBlock {
+    InventoryPoolBlock* next; // +0x00
+};
+
+struct InventoryPool {
+    InventoryPoolNode* head;       // +0x00
+    InventoryPoolNode* tail;       // +0x04
+    int count;                     // +0x08
+    InventoryPoolNode* freeList;   // +0x0C
+    InventoryPoolBlock* blocks;    // +0x10
+    int blockSize;                 // +0x14
+};
 
 // 24-byte embedded object, ctor 0x43E560, dtor 0x43E580
 struct InvPanel {
@@ -46,7 +66,7 @@ public:
     void DisplayPanels(int param);              // 0x43F840
     void ProcessInventory();                    // 0x43F420
     void* FindItem(int itemID);                 // 0x43F490
-    int* FindItemInList(int itemID);            // 0x43F7F0
+    InventoryPoolNode* FindItemInList(int itemID); // 0x43F7F0
 
     Rect slots[8];         // 0xA8-0x127 — inventory slot hit-test rectangles
     int selectedSlot;              // 0x128 — currently selected slot index (-1 = none)
@@ -55,7 +75,7 @@ public:
     Sprite* bgSprite;              // 0x178 — background sprite
     Sample* clickSound;            // 0x17C — item click sound effect
     Palette* palette;              // 0x180 — inventory screen palette
-    void* itemPool;                // 0x184 — TimedEventPool* (inlined ctor; accessed via raw int* throughout)
+    InventoryPool* itemPool;       // 0x184 — 0x18-byte pool header for InventoryPoolNode
     T_MenuButton* putBackButton;    // 0x188 — "put back" button (T_MenuButton, 0xA8)
     T_MenuButton* useButton;        // 0x18C — "use item" button
     T_MenuButton* scrollDownBtn;    // 0x190 — scroll down button (msg 0x12)

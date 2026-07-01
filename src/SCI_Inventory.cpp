@@ -31,14 +31,14 @@ extern "C" char* GetSoundFilename(int handle);
 // SelectionDraw = ZBufferManager::DrawRect (same 7-param signature, confirmed)
 
 #include "SpriteAction.h"  // for SlimeDim
-#include "TimedEvent.h"    // TimedEventPool = InvListObj
+#include "TimedEvent.h"    // TimedEventPool constructor provides the same 0x18-byte pool header
 
 /* Function start: 0x43E360 */
 SCI_Inventory::SCI_Inventory() {
     memset(&slots, 0, 0xF0);
     handlerId = 0x1E;
 
-    itemPool = new TimedEventPool(10);
+    itemPool = (InventoryPool*)new TimedEventPool(10);
 
     LinkedList* invList = g_InventoryList;
     if (invList->head != 0) {
@@ -56,9 +56,9 @@ SCI_Inventory::SCI_Inventory() {
 
 /* Function start: 0x43E900 */
 void __fastcall FreePoolBlocks(void* blocks) {
-    int* block = (int*)blocks;
+    InventoryPoolBlock* block = (InventoryPoolBlock*)blocks;
     while (block != 0) {
-        int* next = (int*)*block;
+        InventoryPoolBlock* next = block->next;
         FreeMemory(block);
         block = next;
     }
@@ -68,7 +68,7 @@ void __fastcall FreePoolBlocks(void* blocks) {
 SCI_Inventory::~SCI_Inventory() {
     Sprite* spr;
     Palette* pal;
-    int* pool;
+    InventoryPool* pool;
 
     spr = bgSprite;
     if (spr != 0) {
@@ -84,10 +84,10 @@ SCI_Inventory::~SCI_Inventory() {
         palette = 0;
     }
 
-    pool = (int*)itemPool;
+    pool = itemPool;
     if (pool != 0) {
         {
-            int* node = (int*)*pool;
+            InventoryPoolNode* node = pool->head;
             while (node != 0) {
                 int counter = 0;
                 do {
@@ -95,15 +95,15 @@ SCI_Inventory::~SCI_Inventory() {
                     counter--;
                     if (tmp == 0) break;
                 } while (1);
-                node = (int*)*node;
+                node = node->next;
             }
         }
-        pool[2] = 0;
-        pool[3] = 0;
-        pool[1] = 0;
-        pool[0] = 0;
-        FreePoolBlocks((void*)pool[4]);
-        pool[4] = 0;
+        pool->count = 0;
+        pool->freeList = 0;
+        pool->tail = 0;
+        pool->head = 0;
+        FreePoolBlocks(pool->blocks);
+        pool->blocks = 0;
         FreeMemory(pool);
         itemPool = 0;
     }
@@ -223,10 +223,10 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
     int* cursorPtr;
     int* rect;
     int selectedIdx;
-    int* listPtr;
-    int* node;
-    int* prevNode;
-    int* nextNode;
+    InventoryPool* pool;
+    InventoryPoolNode* node;
+    InventoryPoolNode* prevNode;
+    InventoryPoolNode* nextNode;
 
     action = (SpriteAction*)msg;
 
@@ -300,21 +300,22 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
         action->instruction = 4;
         action->addressValue = savedMsgData;
 
-        if (selectedSlot == -1) {
+        selectedIdx = selectedSlot;
+        if (selectedIdx == -1) {
             goto done;
         }
 
-        selectedIdx = scrollOffset + selectedSlot;
-        listPtr = (int*)itemPool;
-        if (listPtr[2] <= selectedIdx) {
+        selectedIdx += scrollOffset;
+        pool = itemPool;
+        if (pool->count <= selectedIdx) {
             node = 0;
         } else {
-            node = (int*)listPtr[0];
+            node = pool->head;
             {
                 int i = selectedIdx;
                 selectedIdx = i - 1;
                 while (i != 0) {
-                    node = (int*)node[0];
+                    node = node->next;
                     i = selectedIdx;
                     selectedIdx = i - 1;
                 }
@@ -325,23 +326,23 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
             goto done;
         }
 
-        g_SelectedItem_0046a6e4 = (T_Object*)node[2];
+        g_SelectedItem_0046a6e4 = node->item;
 
-        nextNode = (int*)node[0];
-        listPtr = (int*)itemPool;
-        if ((int*)listPtr[0] == node) {
-            listPtr[0] = (int)nextNode;
+        nextNode = node->next;
+        pool = itemPool;
+        if (pool->head == node) {
+            pool->head = nextNode;
         } else {
-            prevNode = (int*)node[1];
-            prevNode[0] = (int)nextNode;
+            prevNode = node->prev;
+            prevNode->next = nextNode;
         }
 
-        nextNode = (int*)node[1];
-        if ((int*)listPtr[1] == node) {
-            listPtr[1] = (int)nextNode;
+        prevNode = node->prev;
+        if (pool->tail == node) {
+            pool->tail = prevNode;
         } else {
-            nextNode = (int*)node[0];
-            nextNode[1] = node[1];
+            nextNode = node->next;
+            nextNode->prev = node->prev;
         }
 
         {
@@ -354,9 +355,9 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
             }
         }
 
-        node[0] = listPtr[3];
-        listPtr[3] = (int)node;
-        listPtr[2]--;
+        node->next = pool->freeList;
+        pool->freeList = node;
+        pool->count--;
 
         {
             void* invItem = g_SelectedItem_0046a6e4;
@@ -414,7 +415,8 @@ done:
 
 /* Function start: 0x43EE20 */
 void SCI_Inventory::Update(int param1, int param2) {
-    int* curNode;
+    InventoryPoolNode* curNode;
+    InventoryPool* pool;
     int startIdx;
     int counter;
     Sprite* spr;
@@ -437,16 +439,16 @@ void SCI_Inventory::Update(int param1, int param2) {
 
     startIdx = scrollOffset;
     {
-        int* listPtr = (int*)itemPool;
-        if (listPtr[2] <= startIdx) {
+        pool = itemPool;
+        if (pool->count <= startIdx) {
             curNode = 0;
         } else {
-            curNode = (int*)listPtr[0];
+            curNode = pool->head;
             {
                 int i = startIdx;
                 startIdx = i - 1;
                 while (i != 0) {
-                    curNode = (int*)curNode[0];
+                    curNode = curNode->next;
                     i = startIdx;
                     startIdx = i - 1;
                 }
@@ -460,8 +462,8 @@ void SCI_Inventory::Update(int param1, int param2) {
         do {
             if (curNode == 0) break;
 
-            int* nextNode = (int*)curNode[0];
-            void* data = (void*)curNode[2];
+            InventoryPoolNode* nextNode = curNode->next;
+            T_Object* data = curNode->item;
             curNode = nextNode;
 
             if (data != 0) {
@@ -482,9 +484,9 @@ void SCI_Inventory::Update(int param1, int param2) {
                     slot->right >= mouseX &&
                     slot->top <= mouseY &&
                     slot->bottom >= mouseY) {
-                    ((T_Object*)data)->Display(slot->left, slot->top, 1);
+                    data->Display(slot->left, slot->top, 1);
                 } else {
-                    ((T_Object*)data)->Display(slot->left, slot->top, 0);
+                    data->Display(slot->left, slot->top, 0);
                 }
             }
 
@@ -581,20 +583,20 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
 
         {
             int idx;
-            int* listPtr;
-            int* node;
+            InventoryPool* pool;
+            InventoryPoolNode* node;
 
             idx = scrollOffset + selectedSlot;
-            listPtr = (int*)itemPool;
-            if (listPtr[2] <= idx) {
+            pool = itemPool;
+            if (pool->count <= idx) {
                 node = 0;
             } else {
-                node = (int*)listPtr[0];
+                node = pool->head;
                 {
                     int j = idx;
                     idx = j - 1;
                     while (j != 0) {
-                        node = (int*)node[0];
+                        node = node->next;
                         j = idx;
                         idx = j - 1;
                     }
@@ -617,7 +619,7 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
             {
                 Sample* newSample = new Sample();
                 clickSound = newSample;
-                char* soundFile = GetSoundFilename(((T_Object*)((QueueNode*)node)->data)->descriptionSound);
+                char* soundFile = GetSoundFilename(node->item->descriptionSound);
                 newSample->Load(soundFile);
                 (clickSound)->Play(0x64, 1);
             }
@@ -637,7 +639,7 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
     case 0x11:
         scrollOffset += 2;
         {
-            int maxScroll = ((int*)itemPool)[2] - 8;
+            int maxScroll = itemPool->count - 8;
             if (maxScroll < scrollOffset) {
                 scrollOffset = maxScroll;
             }
@@ -653,18 +655,18 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
         }
         break;
     case 0x17: {
-        int* ebx;
-        void* item;
-        int* head;
-        int* msgData;
+        InventoryPool* pool;
+        T_Object* item;
+        InventoryPoolNode* head;
+        int itemId;
 
-        msgData = (int*)action->addressValue;
-        if (msgData == 0) break;
+        itemId = action->addressValue;
+        if (itemId == 0) break;
 
-        if (FindItemInList((int)msgData) != 0) break;
+        if (FindItemInList(itemId) != 0) break;
 
         if (g_SelectedItem_0046a6e4 != 0) {
-            if (g_SelectedItem_0046a6e4->itemId == (int)msgData) {
+            if (g_SelectedItem_0046a6e4->itemId == itemId) {
                 Sprite* spr = g_Mouse_0046aa18->m_sprite;
                 if (spr != 0) {
                     spr->ResetAnimation(0, 0);
@@ -673,36 +675,39 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
             }
         }
 
-        item = FindItem((int)msgData);
-        ((T_Object*)item)->Reset();
+        item = (T_Object*)FindItem(itemId);
+        item->Reset();
 
-        ebx = (int*)itemPool;
-        head = (int*)ebx[0];
+        pool = itemPool;
+        head = pool->head;
 
-        if (ebx[3] == 0) {
-            int* block = (int*)operator new(ebx[5] * 12 + 4);
-            block[0] = ebx[4];
-            ebx[4] = (int)block;
+        if (pool->freeList == 0) {
+            InventoryPoolBlock* block = (InventoryPoolBlock*)operator new(
+                pool->blockSize * sizeof(InventoryPoolNode) + sizeof(InventoryPoolBlock*));
+            block->next = pool->blocks;
+            pool->blocks = block;
 
             {
-                int j = ebx[5] - 1;
-                int* nodePtr = (int*)((char*)block + ebx[5] * 12 - 8);
+                int j = pool->blockSize - 1;
+                InventoryPoolNode* nodePtr =
+                    (InventoryPoolNode*)((char*)block + sizeof(InventoryPoolBlock*) +
+                                         j * sizeof(InventoryPoolNode));
                 while (j >= 0) {
-                    nodePtr[0] = ebx[3];
-                    ebx[3] = (int)nodePtr;
-                    nodePtr = (int*)((char*)nodePtr - 12);
+                    nodePtr->next = pool->freeList;
+                    pool->freeList = nodePtr;
+                    nodePtr--;
                     j--;
                 }
             }
         }
 
         {
-            int* newNode = (int*)ebx[3];
-            ebx[3] = newNode[0];
-            newNode[1] = 0;
-            newNode[0] = (int)head;
-            ebx[2]++;
-            newNode[2] = 0;
+            InventoryPoolNode* newNode = pool->freeList;
+            pool->freeList = newNode->next;
+            newNode->prev = 0;
+            newNode->next = head;
+            pool->count++;
+            newNode->item = 0;
 
             {
                 volatile int zero = 0;
@@ -714,40 +719,40 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
                 }
             }
 
-            newNode[2] = (int)item;
+            newNode->item = item;
 
-            if ((int*)ebx[0] != 0) {
-                ((int*)ebx[0])[1] = (int)newNode;
+            if (pool->head != 0) {
+                pool->head->prev = newNode;
             } else {
-                ebx[1] = (int)newNode;
+                pool->tail = newNode;
             }
-            ebx[0] = (int)newNode;
+            pool->head = newNode;
         }
 
-        DisplayPanels((int)msgData);
+        DisplayPanels(itemId);
         break;
     }
     case 0x18: {
-        int* node;
-        int* listPtr;
+        InventoryPoolNode* node;
+        InventoryPool* pool;
 
         if (action->addressValue == 0) break;
 
-        node = (int*)FindItemInList(action->addressValue);
+        node = FindItemInList(action->addressValue);
         if (node != 0) {
-            listPtr = (int*)itemPool;
+            pool = itemPool;
             {
-                int* nextN = (int*)node[0];
-                if ((int*)listPtr[0] == node) {
-                    listPtr[0] = (int)nextN;
+                InventoryPoolNode* nextN = node->next;
+                if (pool->head == node) {
+                    pool->head = nextN;
                 } else {
-                    ((int*)node[1])[0] = (int)nextN;
+                    node->prev->next = nextN;
                 }
             }
-            if ((int*)listPtr[1] == node) {
-                listPtr[1] = node[1];
+            if (pool->tail == node) {
+                pool->tail = node->prev;
             } else {
-                ((int*)node[0])[1] = node[1];
+                node->next->prev = node->prev;
             }
 
             {
@@ -760,9 +765,9 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
                 }
             }
 
-            node[0] = listPtr[3];
-            listPtr[3] = (int)node;
-            listPtr[2]--;
+            node->next = pool->freeList;
+            pool->freeList = node;
+            pool->count--;
             break;
         }
 
@@ -797,14 +802,13 @@ void SCI_Inventory::Serialize(void* param) {
         fwrite(&id, 4, 1, (FILE*)fp);
         fwrite("INVENTORY_INFO", strLen, 1, (FILE*)fp);
 
-        esi_ptr = (int*)itemPool;
         {
-        QueueNode* curNode = ((LinkedList*)esi_ptr)->head;
+        InventoryPoolNode* curNode = itemPool->head;
         self = (int)curNode;
         if (curNode != 0) {
             do {
-                QueueNode* nextNode = (QueueNode*)((int*)curNode)[0];
-                T_Object* item = (T_Object*)((int*)curNode)[2];
+                InventoryPoolNode* nextNode = curNode->next;
+                T_Object* item = curNode->item;
                 self = (int)nextNode;
                 fwrite(&item->itemId, 4, 1, (FILE*)fp);
                 fwrite(&item->objectFlags, 4, 1, (FILE*)fp);
@@ -835,40 +839,40 @@ void SCI_Inventory::Serialize(void* param) {
     g_SelectedItem_0046a6e4 = 0;
 
     /* Free old inventory list */
-    TimedEventPool* pool = (TimedEventPool*)((SCI_Inventory*)self)->itemPool;
+    InventoryPool* pool = ((SCI_Inventory*)self)->itemPool;
     if (pool != 0) {
         {
-            int* node = (int*)((int*)pool)[0];
+            InventoryPoolNode* node = pool->head;
             while (node != 0) {
                 volatile int zero = 0;
                 int d = zero;
                 int c;
                 do { c = d; d--; } while (c != 0);
-                node = (int*)node[0];
+                node = node->next;
             }
         }
 
-        ((int*)pool)[2] = 0;
-        ((int*)pool)[3] = 0;
-        ((int*)pool)[1] = 0;
-        ((int*)pool)[0] = 0;
+        pool->count = 0;
+        pool->freeList = 0;
+        pool->tail = 0;
+        pool->head = 0;
 
         {
-            int* block = (int*)((int*)pool)[4];
+            InventoryPoolBlock* block = pool->blocks;
             while (block != 0) {
-                int* nextBlock = (int*)block[0];
+                InventoryPoolBlock* nextBlock = block->next;
                 FreeMemory(block);
                 block = nextBlock;
             }
         }
 
-        ((int*)pool)[4] = 0;
+        pool->blocks = 0;
         FreeMemory(pool);
         ((SCI_Inventory*)self)->itemPool = 0;
     }
 
     /* Allocate new inventory list */
-    ((SCI_Inventory*)self)->itemPool = new TimedEventPool(10);
+    ((SCI_Inventory*)self)->itemPool = (InventoryPool*)new TimedEventPool(10);
 
     /* Clean up global queue */
     if (g_MsgList_0046a6dc != 0) {
@@ -899,31 +903,34 @@ void SCI_Inventory::Serialize(void* param) {
         fread(&item->objectFlags, 4, 1, (FILE*)fp);
 
         {
-            int* listPtr = (int*)((SCI_Inventory*)self)->itemPool;
-            int* tail = (int*)listPtr[1];
+            InventoryPool* listPtr = ((SCI_Inventory*)self)->itemPool;
+            InventoryPoolNode* tail = listPtr->tail;
 
-            if (listPtr[3] == 0) {
-                int* block = (int*)operator new(listPtr[5] * 12 + 4);
-                block[0] = listPtr[4];
-                listPtr[4] = (int)block;
+            if (listPtr->freeList == 0) {
+                InventoryPoolBlock* block = (InventoryPoolBlock*)operator new(
+                    listPtr->blockSize * sizeof(InventoryPoolNode) + sizeof(InventoryPoolBlock*));
+                block->next = listPtr->blocks;
+                listPtr->blocks = block;
 
-                int j = listPtr[5] - 1;
-                int* nodePtr = (int*)((char*)block + listPtr[5] * 12 - 8);
+                int j = listPtr->blockSize - 1;
+                InventoryPoolNode* nodePtr =
+                    (InventoryPoolNode*)((char*)block + sizeof(InventoryPoolBlock*) +
+                                         j * sizeof(InventoryPoolNode));
                 while (j >= 0) {
-                    nodePtr[0] = listPtr[3];
-                    listPtr[3] = (int)nodePtr;
-                    nodePtr = (int*)((char*)nodePtr - 12);
+                    nodePtr->next = listPtr->freeList;
+                    listPtr->freeList = nodePtr;
+                    nodePtr--;
                     j--;
                 }
             }
 
             {
-                int* newNode = (int*)listPtr[3];
-                listPtr[3] = newNode[0];
-                newNode[1] = (int)tail;
-                newNode[0] = 0;
-                listPtr[2]++;
-                newNode[2] = 0;
+                InventoryPoolNode* newNode = listPtr->freeList;
+                listPtr->freeList = newNode->next;
+                newNode->prev = tail;
+                newNode->next = 0;
+                listPtr->count++;
+                newNode->item = 0;
 
                 {
                     volatile int zero = 0;
@@ -932,14 +939,14 @@ void SCI_Inventory::Serialize(void* param) {
                     do { c = d; d--; } while (c != 0);
                 }
 
-                newNode[2] = (int)item;
+                newNode->item = item;
 
-                if ((int*)listPtr[1] != 0) {
-                    ((int*)listPtr[1])[0] = (int)newNode;
+                if (listPtr->tail != 0) {
+                    listPtr->tail->next = newNode;
                 } else {
-                    listPtr[0] = (int)newNode;
+                    listPtr->head = newNode;
                 }
-                listPtr[1] = (int)newNode;
+                listPtr->tail = newNode;
             }
         }
     }
@@ -1093,16 +1100,16 @@ void SCI_Inventory::DisplayPanels(int param) {
         if (panelPtr[0] == 0) {
             goto check_items;
         } else {
-            int* found = FindItemInList(panelPtr[0]);
+            InventoryPoolNode* found = FindItemInList(panelPtr[0]);
             if (found == 0) goto next_panel;
         }
 check_items:
         if (panelPtr[1] != 0) {
-            int* found = FindItemInList(panelPtr[1]);
+            InventoryPoolNode* found = FindItemInList(panelPtr[1]);
             if (found == 0) goto next_panel;
         }
         if (panelPtr[2] != 0) {
-            int* found = FindItemInList(panelPtr[2]);
+            InventoryPoolNode* found = FindItemInList(panelPtr[2]);
             if (found == 0) goto next_panel;
         }
         {
@@ -1263,14 +1270,14 @@ void* SCI_Inventory::FindItem(int itemID) {
     return item;
 }
 /* Function start: 0x43F7F0 */
-int* SCI_Inventory::FindItemInList(int itemID) {
-    int* volatile node = (int*)((int*)itemPool)[0];
+InventoryPoolNode* SCI_Inventory::FindItemInList(int itemID) {
+    InventoryPoolNode* volatile node = itemPool->head;
     if (node != 0) {
         do {
-            if (((T_Object*)node[2])->itemId == itemID) {
-                return (int*)node;
+            if (node->item->itemId == itemID) {
+                return node;
             }
-            node = (int*)node[0];
+            node = node->next;
         } while (node != 0);
     }
     return 0;
