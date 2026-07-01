@@ -609,7 +609,7 @@ int SC_WordSearch::AddMessage(SC_MessageParser* msg) {
             } else if (mouseX >= enterPlaceRect.left && mouseX <= enterPlaceRect.right &&
                        action->mousePos.y >= enterPlaceRect.top && action->mousePos.y <= enterPlaceRect.bottom) {
                 placementMode = 1;
-            } else if (selectedCount < 3) {
+            } else if (selectedCount <= 3) {
                 Rect* bounds = &wordBounds[0];
                 char* word = &words[0][0];
                 int count = 0x20;
