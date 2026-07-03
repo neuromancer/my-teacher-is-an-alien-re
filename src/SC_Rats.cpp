@@ -32,6 +32,7 @@ extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int
 #include "EngineB.h"
 // FUN_0044bac0 = mCNavigator::SetNavParams
 #include "mCNavigator.h"
+#include "AILSample.h"
 // FUN_00412a50 is Parser::ReportUnknownLabel (thiscall, declared in Parser.h)
 
 // IAT entries
@@ -277,7 +278,7 @@ void SC_Rats::State0Handler() {
         }
     } else {
         if (g_State0Phase_00473e14 != 1) goto done;
-        if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
+        if (snd != 0 && snd->m_sample != 0 && snd->m_size == ((AILSampleData*)snd->m_sample)->len) {
             if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
@@ -312,7 +313,7 @@ void SC_Rats::State2Handler() {
         }
     } else {
         if (g_State2Phase_00473e20 != 1) goto done;
-        if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
+        if (snd != 0 && snd->m_sample != 0 && snd->m_size == ((AILSampleData*)snd->m_sample)->len) {
             if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
@@ -342,7 +343,7 @@ void SC_Rats::State3Handler() {
         }
     } else {
         if (g_State3Phase_00473e1c != 1) goto done;
-        if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
+        if (snd != 0 && snd->m_sample != 0 && snd->m_size == ((AILSampleData*)snd->m_sample)->len) {
             if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }
@@ -372,7 +373,7 @@ void SC_Rats::State4Handler() {
         }
     } else {
         if (g_State4Phase_00473df8 != 1) goto done;
-        if (snd != 0 && snd->m_sample != 0 && snd->m_size == *(int*)((char*)snd->m_sample + 0xC)) {
+        if (snd != 0 && snd->m_sample != 0 && snd->m_size == ((AILSampleData*)snd->m_sample)->len) {
             if (AIL_sample_status(snd->m_sample) == 4) goto done;
         }
     }

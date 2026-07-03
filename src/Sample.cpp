@@ -5,6 +5,7 @@
 #include <mss.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "AILSample.h"
 
 /* Function start: 0x424ED0 */
 Sample::Sample() {
@@ -65,14 +66,14 @@ void Sample::Init(int volume) {
   }
   AIL_init_sample(m_sample);
   AIL_set_sample_file(m_sample, m_data, 0);
-  m_size = *(int *)((char *)m_sample + 0xc);
+  m_size = ((AILSampleData*)m_sample)->len;
   AIL_set_sample_volume(m_sample, volume);
 }
 
 /* Function start: 0x424FF0 */
 void Sample::Fade(int volume, unsigned int duration) {
   HSAMPLE sample = m_sample;
-  if (sample == 0 || m_size != *(int *)((char *)sample + 0xc)) {
+  if (sample == 0 || m_size != ((AILSampleData*)sample)->len) {
     return;
   }
   if (duration == 0) {
@@ -112,7 +113,7 @@ set_final:
 
 /* Function start: 0x4250E0 */
 void Sample::Stop() {
-  if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
+  if (m_sample != 0 && m_size == ((AILSampleData*)m_sample)->len) {
     AIL_end_sample(m_sample);
   }
 }
@@ -128,7 +129,7 @@ int Sample::Play(int volume, int loop_count) {
     if (m_sample != 0) {
       AIL_set_sample_loop_count(m_sample, loop_count);
     }
-    if (m_sample != 0 && m_size == *(int *)((char *)m_sample + 0xc)) {
+    if (m_sample != 0 && m_size == ((AILSampleData*)m_sample)->len) {
       AIL_start_sample(m_sample);
     }
     return 0;

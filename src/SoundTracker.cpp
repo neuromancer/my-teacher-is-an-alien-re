@@ -5,13 +5,22 @@
 #include <io.h>
 #include "globals.h"
 
+struct FilePosEntry;
+
+// Pooled cache list node — layout: next(+0x00), prev(+0x04), entry(+0x08); 12 bytes
+struct SoundPoolNode {
+    SoundPoolNode* next;    // 0x00
+    SoundPoolNode* prev;    // 0x04
+    FilePosEntry* entry;    // 0x08
+};
+
 struct SoundPool {
-    int* head;      // 0x00
-    int* tail;      // 0x04
-    int count;      // 0x08
-    int* freeList;  // 0x0C
-    int* blockList; // 0x10
-    int blockSize;  // 0x14
+    SoundPoolNode* head;     // 0x00
+    SoundPoolNode* tail;     // 0x04
+    int count;               // 0x08
+    SoundPoolNode* freeList; // 0x0C
+    int* blockList;          // 0x10 — raw node blocks; block[0] = next block
+    int blockSize;           // 0x14
 
     SoundPool(int param) {
         count = 0;
@@ -47,9 +56,9 @@ SoundTracker::SoundTracker(int param) {
 /* Function start: 0x4120A0 */
 SoundTracker::~SoundTracker() {
     SoundPool* p;
-    int* node;
+    SoundPoolNode* node;
     int* next;
-    int* data;
+    FilePosEntry** entrySlot;
     int i;
 
     Cleanup();
@@ -57,19 +66,19 @@ SoundTracker::~SoundTracker() {
         p = g_SoundPool_00469134;
         node = p->head;
         while (node != 0) {
-            data = (int*)(node + 2);
+            entrySlot = &node->entry;
             i = 0;
             do {
-                if (*data != 0) {
-                    operator delete((void*)*data);
-                    *data = 0;
+                if (*entrySlot != 0) {
+                    operator delete(*entrySlot);
+                    *entrySlot = 0;
                 }
-                data = data + 1;
+                entrySlot = entrySlot + 1;
                 int tmp = i;
                 i = i - 1;
                 if (tmp == 0) break;
             } while (1);
-            node = (int*)node[0];
+            node = node->next;
         }
         p->count = 0;
         p->freeList = 0;
@@ -105,17 +114,17 @@ struct FilePosEntry {
 
 /* Function start: 0x412130 */
 __int64 SoundTracker::Lookup(char* fname, char* keyName) {
-    int* pool = (int*)g_SoundPool_00469134;
-    int* volatile node = (int*)pool[0];  // head
-    g_CacheLRUNode_00469138 = (void*)node;
+    SoundPool* pool = g_SoundPool_00469134;
+    SoundPoolNode* volatile node = pool->head;
+    g_CacheLRUNode_00469138 = node;
 
     if (node == 0) {
         goto not_found;
     }
 
     while (node != 0) {
-        int* next = (int*)node[0];
-        FilePosEntry* entry = (FilePosEntry*)node[2];
+        SoundPoolNode* next = node->next;
+        FilePosEntry* entry = node->entry;
 
         // Compare filename
         if (strcmp(entry->filename, fname) == 0) {
@@ -129,7 +138,7 @@ __int64 SoundTracker::Lookup(char* fname, char* keyName) {
         }
 
         if (entry->accessCount < 0x2710) {
-            g_CacheLRUNode_00469138 = (void*)node;
+            g_CacheLRUNode_00469138 = node;
         }
         node = next;
     }
@@ -141,36 +150,37 @@ not_found:
 
 /* Function start: 0x412210 */
 void SoundTracker::Store(char* fname, char* keyName, int posLo, int posHi) {
-    int* pool = (int*)g_SoundPool_00469134;
+    SoundPool* pool = g_SoundPool_00469134;
 
     // If pool is full, evict LRU entry
-    if (pool[2] == g_SoundTrackerField1_00469128) {
+    if (pool->count == g_SoundTrackerField1_00469128) {
         ShowError("FilePosCache::Set - Error \nMore than %d labels found in .mis files \nIncrease Cache size", g_SoundTrackerField1_00469128);
 
         // Evict node at g_CacheLRUNode_00469138
-        int* poolPtr = (int*)g_SoundPool_00469134;
-        int* evictNode = (int*)g_CacheLRUNode_00469138;
+        SoundPool* poolPtr = g_SoundPool_00469134;
+        SoundPoolNode* evictNode = (SoundPoolNode*)g_CacheLRUNode_00469138;
 
         // Unlink from list
-        if ((int*)poolPtr[0] == evictNode) {
-            ((int*)g_SoundPool_00469134)[0] = evictNode[0];
+        if (poolPtr->head == evictNode) {
+            g_SoundPool_00469134->head = evictNode->next;
         } else {
-            int* prev = (int*)evictNode[1];
-            prev[0] = evictNode[0];
+            SoundPoolNode* prev = evictNode->prev;
+            prev->next = evictNode->next;
         }
 
-        int* evictPrev = (int*)evictNode[1];
-        int* backLinkOwner = poolPtr;
-        if ((int*)poolPtr[1] != evictNode) {
-            backLinkOwner = (int*)evictNode[0];
+        SoundPoolNode* evictPrev = evictNode->prev;
+        // Pool header doubles as a node: head/tail alias next/prev
+        SoundPoolNode* backLinkOwner = (SoundPoolNode*)poolPtr;
+        if (poolPtr->tail != evictNode) {
+            backLinkOwner = evictNode->next;
         }
-        backLinkOwner[1] = (int)evictPrev;
+        backLinkOwner->prev = evictPrev;
 
         // Free entry data
-        int* entrySlot = &evictNode[2];
+        FilePosEntry** entrySlot = &evictNode->entry;
         int i = 0;
         do {
-            int* entryData = (int*)*entrySlot;
+            FilePosEntry* entryData = *entrySlot;
             if (entryData != 0) {
                 operator delete(entryData);
                 *entrySlot = 0;
@@ -182,51 +192,51 @@ void SoundTracker::Store(char* fname, char* keyName, int posLo, int posHi) {
         } while (1);
 
         // Return node to free list
-        evictNode[0] = poolPtr[3];
-        poolPtr[3] = (int)evictNode;
-        poolPtr[2]--;
+        evictNode->next = poolPtr->freeList;
+        poolPtr->freeList = evictNode;
+        poolPtr->count--;
     }
 
     // Allocate new entry
     FilePosEntry* newEntry = new FilePosEntry(fname, keyName, posLo, posHi);
 
     // Push to pool
-    int* pool2 = (int*)g_SoundPool_00469134;
-    int* tailPtr = &pool2[1];
-    int* freeList = &pool2[3];
-    int tail = *tailPtr;
+    SoundPool* pool2 = g_SoundPool_00469134;
+    SoundPoolNode** tailPtr = &pool2->tail;
+    SoundPoolNode** freeList = &pool2->freeList;
+    SoundPoolNode* tail = *tailPtr;
 
     if (*freeList == 0) {
-        int* growPtr = &pool2[5];
+        int* growPtr = &pool2->blockSize;
         int allocSize = *growPtr;
         allocSize = allocSize + allocSize * 2;
         allocSize = allocSize << 2;
         allocSize += 4;
         int* block = (int*)operator new(allocSize);
-        block[0] = pool2[4];
-        pool2[4] = (int)block;
+        block[0] = (int)pool2->blockList;
+        pool2->blockList = block;
         int i = *growPtr;
         int span = i + i * 2;
         i--;
-        int* p = (int*)((char*)block + span * 4 - 8);
+        SoundPoolNode* p = (SoundPoolNode*)((char*)block + span * 4 - 8);
         if (i >= 0) {
             do {
-                int next = *freeList;
+                SoundPoolNode* next = *freeList;
                 i--;
-                *p = next;
-                *freeList = (int)p;
-                p -= 3;
+                p->next = next;
+                *freeList = p;
+                p -= 1;
             } while (i >= 0);
         }
     }
 
-    int* node = (int*)*freeList;
-    *freeList = node[0];
+    SoundPoolNode* node = *freeList;
+    *freeList = node->next;
     int n = 0;
-    node[1] = tail;
-    node[0] = 0;
-    pool2[2]++;
-    node[2] = 0;
+    node->prev = tail;
+    node->next = 0;
+    pool2->count++;
+    node->entry = 0;
     {
         do {
             int tmp = n;
@@ -234,40 +244,40 @@ void SoundTracker::Store(char* fname, char* keyName, int posLo, int posHi) {
             if (tmp == 0) break;
         } while (1);
     }
-    node[2] = (int)newEntry;
+    node->entry = newEntry;
 
-    if ((int*)*tailPtr != 0) {
-        *(int*)*tailPtr = (int)node;
+    if (*tailPtr != 0) {
+        (*tailPtr)->next = node;
     } else {
-        pool2[0] = (int)node;
+        pool2->head = node;
     }
-    *tailPtr = (int)node;
+    *tailPtr = node;
 }
 
 /* Function start: 0x412400 */
 void SoundTracker::ClearPool() {
     SoundPool* p;
-    int* node;
-    int* data;
+    SoundPoolNode* node;
+    FilePosEntry** entrySlot;
     int i;
     int* next;
 
     p = g_SoundPool_00469134;
     node = p->head;
     while (node != 0) {
-        data = node + 2;
+        entrySlot = &node->entry;
         i = 0;
         do {
-            if (*data != 0) {
-                operator delete((void*)*data);
-                *data = 0;
+            if (*entrySlot != 0) {
+                operator delete(*entrySlot);
+                *entrySlot = 0;
             }
-            data = data + 1;
+            entrySlot = entrySlot + 1;
             int tmp = i;
             i = i - 1;
             if (tmp == 0) break;
         } while (1);
-        node = (int*)node[0];
+        node = node->next;
     }
     p->count = 0;
     p->freeList = 0;
@@ -360,14 +370,14 @@ void SoundTracker::Init() {
 /* Function start: 0x412730 */
 void SoundTracker::Cleanup() {
     char lineBuf[256];
-    int* volatile node;
+    SoundPoolNode* volatile node;
     char* data;
 
     FILE* fp = fsopen("cfg\\miscache.dat", "w");
     node = g_SoundPool_00469134->head;
     while (node != 0) {
-        data = (char*)node[2] + 4;
-        node = (int*)node[0];
+        data = (char*)node->entry + 4;
+        node = node->next;
         sprintf(lineBuf, "%-32s %-32s %4lu %4d \n",
                 data, data + 0x20, *(int*)(data + 0x44), *(int*)(data - 4));
         EncryptAndWrite(lineBuf, fp);

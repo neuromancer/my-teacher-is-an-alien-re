@@ -12,6 +12,7 @@
 #include "SC_Question.h"
 #include "Sample.h"
 #include "mss.h"
+#include "AILSample.h"
 
 extern "C" {
     void ShowError(const char*, ...);
@@ -404,7 +405,7 @@ void __fastcall ProcessSoundFade(SoundEntry* entry) {
     snd = entry->sample;
     if (snd == 0) return;
     if (snd->m_sample == 0) return;
-    if (snd->m_size != *(int*)((char*)snd->m_sample + 0xC)) return;
+    if (snd->m_size != ((AILSampleData*)snd->m_sample)->len) return;
     if (AIL_sample_status(snd->m_sample) != 4) return;
     if (!(entry->activeFlags & 1)) return;
 
@@ -441,7 +442,7 @@ int SoundEntry::SoundUpdate() {
             Sample* snd = sample;
             HSAMPLE hs = snd->m_sample;
             if (hs != 0) {
-                if (snd->m_size == *(int*)((char*)hs + 0xC)) {
+                if (snd->m_size == ((AILSampleData*)hs)->len) {
                     if (AIL_sample_status(hs) == 4) {
                         if (activeFlags & 1) {
                             ProcessSoundFade(this);
@@ -462,7 +463,7 @@ extern "C" __declspec(dllimport) int __stdcall AIL_sample_volume(void*);
 void SoundEntry::FadeVolume(int volume, unsigned int duration) {
     if (sample == 0) return;
     if (sample->m_sample == 0) return;
-    if (sample->m_size != *(int*)((char*)sample->m_sample + 0xc)) return;
+    if (sample->m_size != ((AILSampleData*)sample->m_sample)->len) return;
     if (AIL_sample_status(sample->m_sample) != 4) return;
     if (activeFlags & 1) return;
 

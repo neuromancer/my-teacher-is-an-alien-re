@@ -81,7 +81,7 @@ void Projectile::Update() {
         if (Projectile::animation_data == 0) {
             frameNum = 1;
         } else {
-            frameNum = *(int*)(*(int*)((int)Projectile::animation_data + 0xc) + 0x374) + 1;
+            frameNum = Projectile::animation_data->smk->FrameNum + 1;
         }
 
         Projectile::nextPos.x = Projectile::startPos.x + (int)(*(float*)&Projectile::velocity.x * (float)frameNum);

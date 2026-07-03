@@ -278,7 +278,7 @@ void SC_Question::Finalize()
         if (msgData != 0) {
             delete (SpriteAction*)msgData;
         }
-    } while (*(int*)messageQueue != 0);
+    } while (messageQueue->head != 0);
 }
 
 /* Function start: 0x414DA0 */
@@ -291,10 +291,10 @@ int SC_Question::LBLParse(char* param_1)
     unsigned int id;
     void* mem;
     int result;
-    void* action;
+    SpriteAction* action;
     Sprite* sprite;
-    int* queue;
-    int cur;
+    Queue* queue;
+    ListNode* cur;
     int* framePtr;
     int frameCount;
 
@@ -354,35 +354,35 @@ int SC_Question::LBLParse(char* param_1)
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x17, 0, 0, 0, 0, 0);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "ENABLEACTIVATEQ") == 0) {
@@ -393,35 +393,35 @@ int SC_Question::LBLParse(char* param_1)
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x13, 0, 0, 0, 0, 0);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "DEACTIVATEQ") == 0) {
@@ -432,35 +432,35 @@ int SC_Question::LBLParse(char* param_1)
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x18, 0, 0, 0, 0, 0);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "ENABLEQ") == 0) {
@@ -471,35 +471,35 @@ int SC_Question::LBLParse(char* param_1)
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x0f, 0, 0, 0, 0, 0);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "DISABLEQ") == 0) {
@@ -510,35 +510,35 @@ int SC_Question::LBLParse(char* param_1)
         }
         action = new SpriteAction( 0x1f, id, 0, 0, 0x10, 0, 0, 0, 0, 0);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "DISABLESPRITE") == 0) {
@@ -563,8 +563,8 @@ int SC_Question::LBLParse(char* param_1)
     else if (strcmp(keyword, "GAMESTATE") == 0) {
         result = sscanf(param_1, "%s %s %s %d", keyword, buf1, buf2, &id);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
         {
             int gsIdx1;
@@ -573,143 +573,143 @@ int SC_Question::LBLParse(char* param_1)
             gsIdx2 = (g_GameState_0046aa30)->FindState(buf1);
             action = new SpriteAction( 2, gsIdx2, 0, 0, gsIdx1, id, 0, 0, 0, 0);
         }
-        if ((((SpriteAction*)action)->instruction == 0x11 || ((SpriteAction*)action)->instruction == 0x12) && result < 4) {
-            ((SpriteAction*)action)->extra1 = 1;
+        if ((action->instruction == 0x11 || action->instruction == 0x12) && result < 4) {
+            action->extra1 = 1;
         }
-        if (((SpriteAction*)action)->instruction == 0x11 && result < 4) {
+        if (action->instruction == 0x11 && result < 4) {
             Parser::ReportUnknownLabel("SC_Question");
         }
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "GIVELATE") == 0) {
         sscanf(param_1, "%s %s %s %d", keyword, buf1, buf2, &id);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
         action = new SpriteAction( 0x2c, 0, 0, 0, 0x3c, 0, 0, 0, 0, 0);
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "GIVECUT") == 0) {
         sscanf(param_1, "%s %s %s %d", keyword, buf1, buf2, &id);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
         action = new SpriteAction( 0x2c, 0, 0, 0, 0x3d, 0, 0, 0, 0, 0);
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "GIVELATE") == 0) {
         sscanf(param_1, "%s %s %s %d", keyword, buf1, buf2, &id);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
         action = new SpriteAction( 0x2c, 0, 0, 0, 0x3e, 0, 0, 0, 0, 0);
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "SWITCHROOM") == 0) {
@@ -719,130 +719,130 @@ int SC_Question::LBLParse(char* param_1)
             ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete");
         }
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
         action = new SpriteAction( 1, id, 0x1f, 0, 4, 0, 0, 0, 0, 0);
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if ((queue[3] == 1 || queue[3] == 2) && queue[0] != 0) {
+        queue->current = queue->head;
+        if ((queue->type == 1 || queue->type == 2) && queue->head != 0) {
             do {
-                cur = queue[2];
-                if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
+                cur = queue->current;
+                if (((SpriteAction*)cur->data)->addressType < action->addressType) {
                     goto insertFirstSwitchRoomAction;
                 }
-                if (queue[1] == cur) {
-                    ((LinkedList*)queue)->PushNode(action);
+                if (queue->tail == cur) {
+                    queue->PushNode(action);
                     break;
                 }
                 if (cur != 0) {
-                    queue[2] = *(int*)(cur + 4);
+                    queue->current = cur->next;
                 }
-            } while (queue[2] != 0);
+            } while (queue->current != 0);
         } else {
 insertFirstSwitchRoomAction:
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
         action = new SpriteAction( 0x20, val, 0x1f, 0, 4, 0, 0, 0, 0, 0);
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "MESSAGE") == 0) {
         action = new SpriteAction( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         ParseSpriteAction(action, this);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "PLAYSOUND") == 0) {
         sscanf(param_1, " %s %d", keyword, &id);
         if (messageQueue == 0) {
-            queue = (int*)new Queue();
-            messageQueue = (Queue*)queue;
+            queue = new Queue();
+            messageQueue = queue;
         }
         action = new SpriteAction( 4, id, 0, 0, 2, id, 0, 0, 0, 0);
-        queue = (int*)messageQueue;
+        queue = messageQueue;
         if (action == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((Queue*)queue)->InsertAtCurrent(action);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertAtCurrent(action);
             } else {
                 do {
-                    cur = queue[2];
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
-                        ((Queue*)queue)->InsertAtCurrent(action);
+                    cur = queue->current;
+                    if (((SpriteAction*)cur->data)->addressType < action->addressType) {
+                        queue->InsertAtCurrent(action);
                         break;
                     }
-                    if (queue[1] == cur) {
-                        ((LinkedList*)queue)->PushNode(action);
+                    if (queue->tail == cur) {
+                        queue->PushNode(action);
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((Queue*)queue)->InsertAtCurrent(action);
+            queue->InsertAtCurrent(action);
         }
     }
     else if (strcmp(keyword, "CONSTANT") == 0) {

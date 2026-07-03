@@ -705,12 +705,13 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
 
     ((SpriteAction*)(node + 2))->CopyFrom(action);
 
-    if (pool[1] == 0) {
-        pool[0] = (int)node;
-    } else {
+    if (pool[1] != 0) {
         *(int*)pool[1] = (int)node;
+        pool[1] = (int)node;
+    } else {
+        pool[0] = (int)node;
+        pool[1] = (int)node;
     }
-    pool[1] = (int)node;
 }
 
 extern void ShowError(const char* format, ...);

@@ -117,7 +117,9 @@ void ZBuffer::ResetItems()
         do {
             offset = offset + 4;
             i = i + 1;
-            *(int*)(*(int*)((int)items + offset - 4) + 0x11c) = 0;
+            // Original walks a byte offset and re-reads the items field every
+            // iteration; only the element access is expressible at field level.
+            (*(Projectile**)((char*)items + offset - 4))->active = 0;
         } while (i < itemCount);
     }
 }

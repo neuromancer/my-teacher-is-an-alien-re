@@ -99,7 +99,7 @@ void SC_Combat::OnProcessEnd() {
     }
     if (field_0x104 != 0) {
         ZBufferManager* mgr = (ZBufferManager*)g_ZBufferManager_0046aa24;
-        if (*(int*)((char*)mgr + 0xA8) != 0) {
+        if (mgr->m_palette != 0) {
             WriteToLog("ddouble palette");
         }
         mgr->m_palette = field_0x104;

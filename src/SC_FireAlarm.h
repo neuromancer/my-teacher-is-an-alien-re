@@ -45,7 +45,7 @@ public:
     int gamePhase;                    // 0xB0 - 0=idle, 1=playing, 2=alarm_win, 3=caught_lose, 4=escape
     SlimeDim screenSize;              // 0xB4-0xBB - screen dimensions (320x240)
     Sprite* consoleSprite;            // 0xBC - CONSOLE_SPRITE
-    int paletteDummy;                 // 0xC0 - Palette* (allocated as Palette, cleaned in ShutDown)
+    Palette* paletteDummy;            // 0xC0 - allocated as Palette in LBLParse, cleaned in ShutDown
     Sprite* bgSprite;                 // 0xC4 - BACKGROUND_SPRITE
     Sprite* alarmSprite;              // 0xC8 - ALARM_SPRITE
     Rect alarmSlotRect;               // 0xCC-0xDB - alarm pull area rectangle

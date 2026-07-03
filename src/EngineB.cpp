@@ -279,8 +279,8 @@ void EngineB::OnProcessEnd() {
 
     EngineB::m_weaponParser = g_CombatWeapon_0046ae60;
     for (i = 0; i < g_TargetList_0046ae58->count; i++) {
-        int* target = (int*)*(int*)((char*)g_TargetList_0046ae58 + 0x94 + i * 4);
-        target[0x4A] = EngineB::m_targetConfig[0];
+        Target* target = g_TargetList_0046ae58->targets[i];
+        target->progressRange.end = EngineB::m_targetConfig[0];
     }
 
     EngineB::m_localSoundList = new SoundList(10);

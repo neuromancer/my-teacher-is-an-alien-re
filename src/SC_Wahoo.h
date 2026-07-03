@@ -11,6 +11,7 @@ class VBuffer;
 class TimeOut;
 class SoundList;
 class Sample;
+class Projectile;
 
 // SC_Wahoo - Wahoo mini-game handler (case 61/0x3D)
 // Constructor: 0x437830
@@ -31,7 +32,7 @@ public:
 
     virtual int LBLParse(char* param_1);      // 0x438630 (+0x00)
 
-    int ProcessClick(int param_1);              // 0x438F10 (+0x2C)
+    int ProcessClick(Projectile* proj);         // 0x438F10 (+0x2C)
     virtual void OnCombatResult();              // 0x438EF0 (+0x30)
 
     void ProcessState();                      // 0x4382F0
@@ -47,15 +48,15 @@ public:
     VBuffer* detectionMask;       // 0xC4 - DETECTION_MASK
     TimeOut* timer;               // 0xC8 - TimeOut*
     Rect cursorHitbox;            // 0xCC-0xDB (Rect: left, top, right, bottom)
-    void* sampleSlots[14];        // 0xDC-0x110 - Sample* array (slots 7-13)
+    Sample* sampleSlots[14];      // 0xDC-0x110 - Sample* array (slots 7-13)
     SoundList* soundList;         // 0x114 - SoundList*
     int field_118;                // 0x118
-    int sound1;                   // 0x11C - SOUND id=1 sample
+    Sample* sound1;               // 0x11C - SOUND id=1 sample
     Sample* missSound;            // 0x120 - SOUND id=2 (miss/incorrect)
     Sample* resetSound;           // 0x124 - SOUND id=3 (reset click)
     Sample* startSound;           // 0x128 - SOUND id=4 (start/intro)
-    int matchSound;               // 0x12C - SOUND id=5 (match)
-    int winSound;                 // 0x130 - SOUND id=6 (win)
+    Sample* matchSound;           // 0x12C - SOUND id=5 (match)
+    Sample* winSound;             // 0x130 - SOUND id=6 (win)
     SlimeDim screenSize;          // 0x134-0x13B (width/height)
     Sprite* consoleSprite;        // 0x13C - CONSOLE_SPRITE
     int playRightBridge;          // 0x140 - PLAY_RIGHT_BRIDGE gamestate value

@@ -296,8 +296,7 @@ do_sprite:
     if (g_NavSprite_0046c514->animation_data == 0) {
         g_CombatEngine_0046ae78->currentFrame = 0;
     } else {
-        int* smk = (int*)g_NavSprite_0046c514->animation_data->smk;
-        g_CombatEngine_0046ae78->currentFrame = *(int*)((char*)smk + 0x374);
+        g_CombatEngine_0046ae78->currentFrame = g_NavSprite_0046c514->animation_data->smk->FrameNum;
     }
     return 0;
 }
@@ -351,13 +350,12 @@ found2:
         node = (NavNode*)pool->Allocate_2();
         {
             int h = (int)local_10;
-            int offset = h * 4;
             node->bucketIndex = h;
             node->key = key;
-            int* buckets = (int*)pool->memory;
-            node->next = (NavNode*)*(int*)((char*)buckets + offset);
-            buckets = (int*)pool->memory;
-            *(int*)((char*)buckets + offset) = (int)node;
+            NavNode** buckets = (NavNode**)pool->memory;
+            node->next = buckets[h];
+            buckets = (NavNode**)pool->memory;
+            buckets[h] = node;
         }
     }
     node->value = (void*)param_1;

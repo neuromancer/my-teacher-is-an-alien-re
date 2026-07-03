@@ -63,7 +63,7 @@ SC_FireAlarm::~SC_FireAlarm() {
 
 /* Function start: 0x407590 */
 void SC_FireAlarm::Init(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
 
     Handler::Init(msg);
 
@@ -76,16 +76,16 @@ void SC_FireAlarm::Init(SC_MessageParser* msg) {
 
     SetVideoRes(0x140, 0xF0);
 
-    moduleParam = pmsg[1];
+    moduleParam = action->addressValue;
 
     soundList = new SlimeTable();
 
     ParseFile(this, "mis\\CB_FireAlarm.mis", (char*)0);
 
     if (spriteAction == 0) {
-        SpriteAction* sprite = new SpriteAction(
+        SpriteAction* newAction = new SpriteAction(
             savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        spriteAction = sprite;
+        spriteAction = newAction;
     }
 }
 
@@ -93,7 +93,7 @@ void SC_FireAlarm::Init(SC_MessageParser* msg) {
 void SC_FireAlarm::ShutDown(SC_MessageParser* msg) {
     void* p;
 
-    p = (void*)paletteDummy;
+    p = paletteDummy;
     if (p != 0) {
         delete (Palette*)p;
         paletteDummy = 0;
@@ -169,11 +169,11 @@ void SC_FireAlarm::ShutDown(SC_MessageParser* msg) {
 
 /* Function start: 0x407930 */
 int SC_FireAlarm::AddMessage(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
 
     WriteMessageAddress(msg);
 
-    if (pmsg[11] == 0x1b && savedCommand == 0x2b) {
+    if (action->lastKey == 0x1b && savedCommand == 0x2b) {
         gamePhase = 4;
     }
 
@@ -182,13 +182,13 @@ int SC_FireAlarm::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x407970 */
 int SC_FireAlarm::Exit(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* action = (SpriteAction*)msg;
 
-    if (pmsg[0] != handlerId) {
+    if (action->addressType != handlerId) {
         return 0;
     }
 
-    switch (pmsg[4]) {
+    switch (action->instruction) {
     case 0:
         break;
     case 7:
@@ -312,7 +312,7 @@ int SC_FireAlarm::HandleClick(int* param) {
             return 0;
         }
     } else {
-        if (*(int*)((char*)anim->smk + 0x374) != frameCount) {
+        if (anim->smk->FrameNum != (unsigned int)frameCount) {
             return 0;
         }
     }
@@ -408,7 +408,7 @@ void SC_FireAlarm::ProcessFrame() {
     if ((stateFlags & 0xF) == 0 && timerCounter.y != 0 && timerCounter.x >= timerCounter.y) {
         timerCounter.x = 0;
         spr110 = teacherSprite;
-        int totalFrames = *(int*)((char*)spr110->animation_data->smk + 0x374);
+        int totalFrames = spr110->animation_data->smk->FrameNum;
         int distance = totalFrames - spr110->ranges[spr110->handle].dim.x + 1;
         animDistance = distance;
 
@@ -456,7 +456,7 @@ void SC_FireAlarm::ProcessFrame() {
         if (animData == 0) {
             frameCount = 0;
         } else {
-            frameCount = *(int*)((char*)animData->smk + 0x374);
+            frameCount = animData->smk->FrameNum;
         }
 
         if (frameCount == 0x28) {
@@ -610,7 +610,7 @@ void SC_FireAlarm::OnProcessEnd() {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
             WriteToMessageLog("ddouble palette");
         }
-        g_ZBufferManager_0046aa24->m_palette = (Palette*)paletteDummy;
+        g_ZBufferManager_0046aa24->m_palette = paletteDummy;
     }
 
     teacherHitRange.x = 0xC2;
@@ -665,7 +665,7 @@ int SC_FireAlarm::LBLParse(char* line) {
     if (strcmp(label, "PALETTE") == 0) {
         sscanf(line, "%s %s", label, buffer);
         Palette* pal = new Palette();
-        paletteDummy = (int)pal;
+        paletteDummy = pal;
         pal->Load(buffer);
     } else if (strcmp(label, "BACKGROUND_SPRITE") == 0) {
         bgSprite = new Sprite((char*)0);

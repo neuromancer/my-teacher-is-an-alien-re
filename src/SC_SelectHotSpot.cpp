@@ -42,6 +42,7 @@ extern "C" void WriteToLog(const char* format, ...);
 
 // FUN_004061e0 = RenderEntry::~RenderEntry — callers updated
 #include "RenderEntry.h"
+#include "AILSample.h"
 
 // Queue operations (thiscall via fastcall + dummy EDX)
 // FUN_00406cc0 = Queue::Add in LinkedList.h
@@ -173,7 +174,7 @@ void SelectHotspot::Update() {
         Sample* snd = (Sample*)SelectHotspot::selectedSound;
         int sndDone;
         if (snd == 0 || snd->m_sample == 0 ||
-            snd->m_size != *(int*)((char*)snd->m_sample + 0xC) ||
+            snd->m_size != ((AILSampleData*)snd->m_sample)->len ||
             (sndDone = AIL_sample_status(snd->m_sample), sndDone != 4)) {
             if (SelectHotspot::messageList != 0) {
                 ((LinkedList*)SelectHotspot::messageList)->current = ((LinkedList*)SelectHotspot::messageList)->head;

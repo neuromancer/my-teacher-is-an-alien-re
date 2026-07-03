@@ -15,6 +15,7 @@ extern "C" char* GetSoundFilename(int handle);
 extern void __fastcall PracticeRoomNotify(void*);
 extern void ParseSpriteAction(void* param_1, void* param_2);
 #include "globals.h"
+#include "AILSample.h"
 
 
 /* Function start: 0x429B60 */
@@ -292,7 +293,7 @@ void SC_PRHotSpot::Update()
     case 3: {
         HSAMPLE hsamp;
         if (clickSound != 0 && (hsamp = clickSound->m_sample) != 0 &&
-            clickSound->m_size == *(int*)((char*)hsamp + 0xc) &&
+            clickSound->m_size == ((AILSampleData*)hsamp)->len &&
             AIL_sample_status(hsamp) == 4) {
             goto do_sprite;
         }

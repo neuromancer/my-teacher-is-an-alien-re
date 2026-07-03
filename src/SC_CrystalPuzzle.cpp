@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <new.h>
+#include "AILSample.h"
 
 extern "C" void SetVideoRes(int, int);
 extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
@@ -530,7 +531,7 @@ void SC_CrystalPuzzle::Update(int p1, int p2) {
         Sample* snd = sound1;
         int m_sample = (int)snd->m_sample;
         if (m_sample != 0) {
-            int fileSize = *(int*)(m_sample + 0xc);
+            int fileSize = ((AILSampleData*)m_sample)->len;
             if (snd->m_size == fileSize) {
                 if (AIL_sample_status((void*)m_sample) == 4) {
                     goto sound_done;

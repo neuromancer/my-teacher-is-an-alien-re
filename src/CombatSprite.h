@@ -3,6 +3,9 @@
 
 #include "Parser.h"
 
+struct HashNode;         // defined in HashTable.h (next 0x0, bucketIndex 0x4, key 0x8, reserved 0xC)
+struct SpriteDataEntry;  // defined in CombatSprite.cpp (index 0x0, spriteIdx 0x4)
+
 // SpriteHashTable - Hash table for combat sprite management
 // Size: 0x18 bytes
 class SpriteHashTable {
@@ -36,9 +39,9 @@ public:
     void Clear();                              // 0x43E250
     void AllocateBuckets(int size, int flag);
     void* AllocateNode();                      // 0x4422E0
-    void* Lookup(volatile int index, int* outSlot);  // 0x4097B0
+    HashNode* Lookup(volatile int index, int* outSlot);  // 0x4097B0
     void Resize(int size, int flag);           // 0x4097F0
-    void* AllocEntry();                        // 0x44BF30
+    HashNode* AllocEntry();                    // 0x44BF30
 };
 
 // CombatSprite - Manages combat sprite definitions
@@ -57,10 +60,10 @@ public:
     void ParseSpriteData(char* line);          // 0x409500
 
     // Member variables (after Parser 0x90 base)
-    SpriteHashTable* spriteTable;  // 0x90
-    int currentEntry;              // 0x94 — current SpriteDataEntry*
-    int currentNode;               // 0x98 — current linked list node
-    int entryList;                 // 0x9C — entry list pointer from hash lookup
+    SpriteHashTable* spriteTable;      // 0x90
+    SpriteDataEntry* currentEntry;     // 0x94 — current sprite data entry
+    int currentNode;                   // 0x98 — current linked list node
+    int entryList;                     // 0x9C — entry list pointer from hash lookup
 };
 
 // Global variables used by CombatSprite parsing

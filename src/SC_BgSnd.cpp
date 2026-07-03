@@ -220,7 +220,7 @@ void SC_BgSnd::SetVolume(int volume, int duration) {
     if (s != 0) {
         HSAMPLE hsamp = s->m_sample;
         if (hsamp != 0) {
-            if (s->m_size == *(int *)((char *)hsamp + 0xc)) {
+            if (s->m_size == *(int*)((char*)hsamp + 0x0C)) {
                 if (AIL_sample_status(hsamp) == 4) {
                     if ((flags & 1) == 0) {
                         int currentVol = AIL_sample_volume(snd->m_sample);
