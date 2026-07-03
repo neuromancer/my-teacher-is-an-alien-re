@@ -7,6 +7,7 @@
 #include "Palette.h"
 #include "Sample.h"
 #include "GameState.h"
+#include "CombatWeapon.h"
 #include "RockThrower.h"
 #include "mss.h"
 #include <string.h>
@@ -436,13 +437,14 @@ int SC_Fan::HandleInput(Sprite* spr) {
         }
     }
     } else {
-        if (bgSprite->handle != 1) goto end_processing;
-        DisplaySprites(2);
-        if (samples[4] != 0) {
-            samples[4]->Play(100, 1);
+        if (bgSprite->handle == 1) {
+            DisplaySprites(2);
+            if (samples[4] != 0) {
+                samples[4]->Play(100, 1);
+            }
+            SendGameMessage(4, bgSoundId, handlerId, moduleParam, 0x13, 1, 0x3e8, 0, 0, 0);
+            return 1;
         }
-        SendGameMessage(4, bgSoundId, handlerId, moduleParam, 0x13, 1, 0x3e8, 0, 0, 0);
-        return 1;
     }
 
 end_processing:
@@ -814,7 +816,7 @@ int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
         int ret = sscanf(param_1, " %s %s ", local_38, local_b8);
         if (ret == 2) {
             if (strcmp(local_b8, "ROCKTHROWER2") == 0) {
-                g_ActiveWeapon_00468ef0 = new RockThrower(this);
+                g_ActiveWeapon_00468ef0 = new CombatWeapon(this);
             } else {
                 ReportUnknownLabel("SC_Fan");
             }
