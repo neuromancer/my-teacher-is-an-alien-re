@@ -27,20 +27,11 @@ SC_SaveLoad::SC_SaveLoad()
 
     palette = new Palette("mainmenu\\menu.col");
 
-    {
-        GlyphRect rect(0x9B, 0xFB, 0xEA, 0x11A);
-        btnYes = new T_MenuButton("mainmenu\\ansr_y.smk", (int*)&rect);
-    }
+    btnYes = new T_MenuButton("mainmenu\\ansr_y.smk", (int*)&GlyphRect(0x9B, 0xFB, 0xEA, 0x11A));
 
-    {
-        GlyphRect rect(0x11D, 0xFD, 0x16C, 0x11B);
-        btnNo = new T_MenuButton("mainmenu\\ansr_n.smk", (int*)&rect);
-    }
+    btnNo = new T_MenuButton("mainmenu\\ansr_n.smk", (int*)&GlyphRect(0x11D, 0xFD, 0x16C, 0x11B));
 
-    {
-        GlyphRect rect(0x19C, 0xFC, 0x1EB, 0x11B);
-        btnCancel = new T_MenuButton("mainmenu\\ansr_c.smk", (int*)&rect);
-    }
+    btnCancel = new T_MenuButton("mainmenu\\ansr_c.smk", (int*)&GlyphRect(0x19C, 0xFC, 0x1EB, 0x11B));
 }
 
 /* Function start: 0x421F80 */

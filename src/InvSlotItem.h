@@ -1,13 +1,15 @@
 #ifndef RECT_H
 #define RECT_H
 
+#include <string.h>
+
 // 16-byte rectangle struct, ctor 0x40D0C0, dtor 0x401130
 struct Rect {
     int left;
     int top;
     int right;
     int bottom;
-    Rect() { left = 0; top = 0; right = 0; bottom = 0; }
+    Rect() { memset(this, 0, 0x10); }
     ~Rect();
 };
 

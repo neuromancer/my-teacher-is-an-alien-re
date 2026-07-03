@@ -11,10 +11,7 @@
 
 /* Function start: 0x425170 */ /* ~98% match */
 SoundList::SoundList(int count) {
-  m_sounds = 0;
-  m_count = 0;
-  m_field8 = 0;
-  *(int*)&m_fieldc = 0;
+  memset(this, 0, 0x10);
   m_count = count;
   m_sounds = (char**)operator new(count * 4);
   m_field8 = (Sample**)operator new(m_count * 4);

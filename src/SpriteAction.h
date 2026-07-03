@@ -21,7 +21,7 @@
 struct SlimeDim {
     int x;
     int y;
-    SlimeDim() { int* p = &x; p[0] = 0; p[1] = 0; }
+    SlimeDim() { memset(this, 0, 8); }
     ~SlimeDim();
 };
 

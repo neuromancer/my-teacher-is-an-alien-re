@@ -425,12 +425,10 @@ int Handler31::AddMessage(SC_MessageParser* msg) {
         if (action->button1 >= 2) {
             action->addressType = 0x1F;
             pMouse = g_InputManager_0046aa08->pMouse;
-            if (pMouse == 0 || pMouse->y < 10) {
-                action->addressValue = -1;
-            } else if (pMouse == 0) {
-                action->addressValue = 0;
+            if (pMouse != 0 && pMouse->y >= 10) {
+                action->addressValue = pMouse != 0 ? (pMouse->y - 10) / 0x22 : 0;
             } else {
-                action->addressValue = (pMouse->y - 10) / 0x22;
+                action->addressValue = -1;
             }
             action->instruction = 2;
             return 1;

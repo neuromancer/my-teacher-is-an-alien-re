@@ -115,14 +115,20 @@ extern "C" void SetVideoRes(int width, int height)
         if (g_BackBuffer_0046aa14->width == width && g_BackBuffer_0046aa14->height == height) {
             return;
         }
+    }
+
+    if (g_BackBuffer_0046aa14 != 0) {
         delete g_BackBuffer_0046aa14;
         g_BackBuffer_0046aa14 = 0;
     }
 
-    g_BackBuffer_0046aa14 = new VBuffer(width, height);
-
-    if (g_BackBuffer_0046aa14->handle != 0) {
-        ShowError("workbuff must be first vb created '%d'", g_BackBuffer_0046aa14->handle);
+    {
+        VBuffer* vb = new VBuffer(width, height);
+        g_BackBuffer_0046aa14 = vb;
+        int h = vb->handle;
+        if (h != 0) {
+            ShowError("workbuff must be first vb created '%d'", h);
+        }
     }
 
     g_BackBuffer_0046aa14->SetVideoMode();
@@ -130,10 +136,11 @@ extern "C" void SetVideoRes(int width, int height)
 
     inputManager = (int*)g_InputManager_0046aa08;
     if (inputManager != 0) {
-        inputManager[0x69] = 0;
-        inputManager[0x6A] = 0;
-        inputManager[0x6B] = width - 1;
-        inputManager[0x6C] = height - 1;
+        int* clip = inputManager + 0x69;
+        clip[0] = 0;
+        clip[1] = 0;
+        clip[2] = width - 1;
+        clip[3] = height - 1;
     }
 }
 

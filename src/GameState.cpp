@@ -222,13 +222,18 @@ int GameState::LBLParse(char* line)
         unsigned int h = hash % (unsigned int)pool[1];
 
         // Search for existing entry with same label
-        GSHashEntry* entry = 0;
+        GSHashEntry* entry;
         if ((int*)pool[0] != 0) {
             entry = ((GSHashEntry**)pool[0])[h];
-            while (entry != 0) {
-                if (strcmp(entry->label, newLabel) == 0) break;
-                entry = entry->next;
+search_loop:
+            if (entry != 0) {
+                if (strcmp(entry->label, newLabel) != 0) {
+                    entry = entry->next;
+                    goto search_loop;
+                }
             }
+        } else {
+            entry = 0;
         }
 
         if (entry == 0) {

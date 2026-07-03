@@ -59,29 +59,32 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     palette = new Palette();
     palette->Load("puz_ForceField\\Puzztest.col");
 
-    buttons1 = new Sprite("puz_ForceField\\buttons1.smk");
-    buttons1->loc.x = 0x1dc;
-    buttons1->loc.y = 0x147;
+    {
+    Sprite* s;
+    s = buttons1 = new Sprite("puz_ForceField\\buttons1.smk");
+    s->loc.x = 0x1dc;
+    s->loc.y = 0x147;
 
-    buttons2 = new Sprite("puz_ForceField\\buttons2.smk");
-    buttons2->loc.x = 0x1dc;
-    buttons2->loc.y = 0x11c;
+    s = buttons2 = new Sprite("puz_ForceField\\buttons2.smk");
+    s->loc.x = 0x1dc;
+    s->loc.y = 0x11c;
 
-    buttons3 = new Sprite("puz_ForceField\\buttons3.smk");
-    buttons3->loc.x = 0x1dc;
-    buttons3->loc.y = 0xf1;
+    s = buttons3 = new Sprite("puz_ForceField\\buttons3.smk");
+    s->loc.x = 0x1dc;
+    s->loc.y = 0xf1;
 
-    paths1 = new Sprite("puz_ForceField\\paths1.smk");
-    paths1->loc.x = 0x1ee;
-    paths1->loc.y = 0x8d;
+    s = paths1 = new Sprite("puz_ForceField\\paths1.smk");
+    s->loc.x = 0x1ee;
+    s->loc.y = 0x8d;
 
-    paths2 = new Sprite("puz_ForceField\\paths2.smk");
-    paths2->loc.x = 0x1ee;
-    paths2->loc.y = 0x70;
+    s = paths2 = new Sprite("puz_ForceField\\paths2.smk");
+    s->loc.x = 0x1ee;
+    s->loc.y = 0x70;
 
-    paths3 = new Sprite("puz_ForceField\\paths3.smk");
-    paths3->loc.x = 0x1ee;
-    paths3->loc.y = 0x53;
+    s = paths3 = new Sprite("puz_ForceField\\paths3.smk");
+    s->loc.x = 0x1ee;
+    s->loc.y = 0x53;
+    }
 
     {
         for (int count = 3; count != 0; count--) {

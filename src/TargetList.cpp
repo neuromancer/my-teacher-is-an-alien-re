@@ -106,7 +106,7 @@ void TargetList::OnProcessEnd() {
 Target* TargetList::ProcessTargets() {
   Target* fallbackTarget;
   Target* target;
-  HashNode* entry;
+  HashNode* volatile entry;
   HashNode* nextEntry;
   unsigned int bucketIdx;
   HashNode** bucketPtr;

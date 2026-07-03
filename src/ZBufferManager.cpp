@@ -736,12 +736,17 @@ void ZBufferManager::ProcessRenderQueues()
         (m_queue9c != 0 && m_queue9c->head != 0)) {
     }
 
-    if (m_state == 1) {
+    switch (m_state) {
+    case 1:
+    {
         if (m_palette != 0) {
             m_palette->SetPalette(0, 0x100);
             m_palette = 0;
         }
-    } else if (m_state == 2) {
+        break;
+    }
+    case 2:
+    {
         if (m_palette != 0) {
             m_palette->SetPalette(0, 0x100);
             m_palette = 0;
@@ -796,7 +801,10 @@ void ZBufferManager::ProcessRenderQueues()
                 m_flags = m_flags & ~2;
             }
         }
-    } else if (m_state == 3) {
+        break;
+    }
+    case 3:
+    {
         if (m_palette != 0) {
             m_palette->SetPalette(0, 0x100);
             m_palette = 0;
@@ -896,6 +904,8 @@ void ZBufferManager::ProcessRenderQueues()
                 m_flags = m_flags & ~2;
             }
         }
+        break;
+    }
     }
 }
 

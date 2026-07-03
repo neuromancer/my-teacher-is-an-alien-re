@@ -12,7 +12,7 @@ class HashTable;
 struct PodsCounter {
     int x;
     int y;
-    PodsCounter() { x = 0; y = 0; }
+    PodsCounter() { memset(this, 0, 8); }
 };
 
 // PodsEngine - Combat engine for SC_Pods (pod race mini-game)

@@ -1166,6 +1166,7 @@ void* SCI_Inventory::FindItem(int itemID) {
         ListNode* node = ((LinkedList*)g_MsgList_0046a6dc)->current;
         if (node != 0) {
             if (((T_Object*)node->data)->itemId == itemID) {
+found:
                 if (((LinkedList*)g_MsgList_0046a6dc)->current == 0) {
                     return 0;
                 }
@@ -1173,10 +1174,7 @@ void* SCI_Inventory::FindItem(int itemID) {
             }
         } else {
             if (itemID == *(int*)0x94) {
-                if (((LinkedList*)g_MsgList_0046a6dc)->current == 0) {
-                    return 0;
-                }
-                return ((LinkedList*)g_MsgList_0046a6dc)->current->data;
+                goto found;
             }
         }
         if (((LinkedList*)g_MsgList_0046a6dc)->tail == node) {

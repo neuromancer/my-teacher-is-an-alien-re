@@ -23,6 +23,7 @@
 // External functions
 #include "GameLoopHelper.h"
 extern "C" void WriteToLog(const char* format, ...);
+extern "C" void WriteToMessageLog(const char* format, ...);
 
 
 
@@ -466,7 +467,7 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
         if (gs->stateValues[4] != 0) {
             handler = (Handler*)m_activeHandler;
             if (handler != 0) {
-                WriteToLog("Switching to modual %s", g_StringTable_0046aa34->GetState(handler->handlerId));
+                WriteToMessageLog("Switching to modual %s", g_StringTable_0046aa34->GetState(handler->handlerId));
                 g_GameLoopHelper_0046a6f0->PostProcess();
             }
         }
@@ -623,10 +624,7 @@ Handler* GameEngine::FindHandlerInList(int command) {
 
     list->current = list->head;
     list = m_handlerList;
-    if (list->head == 0) {
-        return 0;
-    }
-
+    if (list->head != 0) {
     do {
         list = m_handlerList;
         node = list->current;
@@ -655,6 +653,7 @@ found:
         }
         list = m_handlerList;
     } while (list->head != 0);
+    }
 
     return 0;
 }
@@ -682,9 +681,9 @@ void GameEngine::EnqueueAction(SpriteAction* action) {
         count = count - 1;
         while (count >= 0) {
             *entry = pool[3];
+            count = count - 1;
             pool[3] = (int)entry;
             entry = entry - 0x10;
-            count = count - 1;
         }
     }
 

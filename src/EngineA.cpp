@@ -27,7 +27,9 @@ int EngineA::HandleAction(int* param) {
         ShowError("EngineNavigateDucts::OnLogicMessage - unsupported instruction %d", param[4]);
     }
 
-    if (param[5] == 1) {
+    switch (param[5]) {
+    case 1:
+    {
         idx = (g_GameState_0046aa30)->FindState("DUCT_SWITCH");
         gs = g_GameState_0046aa30;
 
@@ -49,10 +51,13 @@ int EngineA::HandleAction(int* param) {
             }
             gs->stateValues[idx] = 1;
         }
-    } else if (param[5] == 2) {
+        break;
+    }
+    case 2:
         SendGameMessage(1, param[7], 0x41, 1, 4, 0, 0, 0, 0, 0);
         SendGameMessage(0x20, param[8], 0x41, 1, 4, 0, 0, 0, 0, 0);
         result = 1;
+        break;
     }
 
     return result;

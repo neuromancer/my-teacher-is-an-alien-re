@@ -55,9 +55,9 @@ int* SaveFilePool::AllocNode(int prev, int next) {
         cnt--;
         while (cnt >= 0) {
             *entry = (int)freeList;
+            cnt--;
             freeList = entry;
             entry = (int*)((char*)entry - 0x120);
-            cnt--;
         }
     }
     int* node = freeList;
@@ -316,9 +316,10 @@ void SC_DuctNav::ShutDown(SC_MessageParser* msg)
         }
     }
     {
-        if (field_0x24C != 0) {
-            field_0x24C->~TextInput();
-            FreeMemory(field_0x24C);
+        TextInput* t = field_0x24C;
+        if (t != 0) {
+            t->~TextInput();
+            FreeMemory(t);
             field_0x24C = 0;
         }
     }
@@ -422,14 +423,18 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
                 int result = field_0x24C->ProcessKey(action->lastKey);
                 if (result != 0) {
                     SendGameMessage(4, 0x498, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
-                    if (field_0x24C != 0) {
-                        field_0x24C->~TextInput();
-                        FreeMemory(field_0x24C);
-                        field_0x24C = 0;
+                    {
+                        TextInput* t = field_0x24C;
+                        if (t != 0) {
+                            t->~TextInput();
+                            FreeMemory(t);
+                            field_0x24C = 0;
+                        }
                     }
                     action->instruction = 2;
                     action->lastKey = 0xd;
-                    goto set_clear_return;
+                    action->button1 = 0;
+            return 1;
                 }
             }
             action->instruction = 0;
@@ -442,8 +447,12 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     if (action->button1 <= 1) return 1;
 
     if (moduleParam == 0) {
-        SlimeDim coords = action->mousePos;
-        if (HOTSPOT_HIT(overwriteBtn, coords.x, coords.y)) {
+        int hit;
+        {
+            SlimeDim coords = action->mousePos;
+            hit = HOTSPOT_HIT(overwriteBtn, coords.x, coords.y);
+        }
+        if (hit) {
             selectedRow = -1;
             action->instruction = 0;
             if (field_0x24C == 0) {
@@ -454,57 +463,88 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
     }
 
     {
-        SlimeDim coords = action->mousePos;
-        if (HOTSPOT_HIT(cancelBtn, coords.x, coords.y)) {
+        SlimeDim* mp = &action->mousePos;
+        int hit;
+        {
+            SlimeDim coords = *mp;
+            hit = HOTSPOT_HIT(cancelBtn, coords.x, coords.y);
+        }
+        if (hit) {
             action->instruction = 2;
             action->lastKey = 0x1b;
-            goto set_clear_return;
+            action->button1 = 0;
+            return 1;
         }
-    }
 
     if (moduleParam == 0) {
-        SlimeDim coords = action->mousePos;
-        if (HOTSPOT_HIT(saveBtn, coords.x, coords.y)) {
+        int hit;
+        {
+            SlimeDim coords = *mp;
+            hit = HOTSPOT_HIT(saveBtn, coords.x, coords.y);
+        }
+        if (hit) {
             action->instruction = 2;
             action->lastKey = 0xd;
-            goto set_clear_return;
+            action->button1 = 0;
+            return 1;
         }
     }
 
     if (moduleParam == 1) {
-        SlimeDim coords = action->mousePos;
-        if (HOTSPOT_HIT(loadBtn, coords.x, coords.y)) {
+        int hit;
+        {
+            SlimeDim coords = *mp;
+            hit = HOTSPOT_HIT(loadBtn, coords.x, coords.y);
+        }
+        if (hit) {
             action->instruction = 2;
             action->lastKey = 0xd;
-            goto set_clear_return;
+            action->button1 = 0;
+            return 1;
         }
     }
 
     {
-        SlimeDim coords = action->mousePos;
-        if (HOTSPOT_HIT(deleteBtn, coords.x, coords.y)) {
+        int hit;
+        {
+            SlimeDim coords = *mp;
+            hit = HOTSPOT_HIT(deleteBtn, coords.x, coords.y);
+        }
+        if (hit) {
             action->instruction = 2;
             action->lastKey = 0x2e;
-            goto set_clear_return;
+            action->button1 = 0;
+            return 1;
         }
     }
 
     {
-        SlimeDim coords = action->mousePos;
-        if (HOTSPOT_HIT(scrollUpBtn, coords.x, coords.y)) {
+        int hit;
+        {
+            SlimeDim coords = *mp;
+            hit = HOTSPOT_HIT(scrollUpBtn, coords.x, coords.y);
+        }
+        if (hit) {
             action->instruction = 2;
             action->lastKey = 0x26;
-            goto set_clear_return;
+            action->button1 = 0;
+            return 1;
         }
     }
 
     {
-        SlimeDim coords = action->mousePos;
-        if (HOTSPOT_HIT(scrollDownBtn, coords.x, coords.y)) {
+        int hit;
+        {
+            SlimeDim coords = *mp;
+            hit = HOTSPOT_HIT(scrollDownBtn, coords.x, coords.y);
+        }
+        if (hit) {
             action->instruction = 2;
             action->lastKey = 0x28;
-            goto set_clear_return;
+            action->button1 = 0;
+            return 1;
         }
+    }
     }
 
     {
@@ -522,10 +562,13 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
 
         if (row < 10) {
             selectedRow = row;
-            if (field_0x24C != 0) {
-                field_0x24C->~TextInput();
-                FreeMemory(field_0x24C);
-                field_0x24C = 0;
+            {
+                TextInput* t = field_0x24C;
+                if (t != 0) {
+                    t->~TextInput();
+                    FreeMemory(t);
+                    field_0x24C = 0;
+                }
             }
             SendGameMessage(4, 0x498, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
         }
@@ -533,15 +576,13 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
         return 1;
     }
 
-set_clear_return:
-    action->button1 = 0;
-    return 1;
 }
 
 #include "AnimatedAsset.h"
 
 /* Function start: 0x43B7E0 */
 void SC_DuctNav::Update(int p1, int p2) {
+    int* node;
     unsigned int elapsed = timer.Update();
     if (elapsed > 60000) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
@@ -556,44 +597,49 @@ void SC_DuctNav::Update(int p1, int p2) {
     }
 
     int* list = (int*)saveFileList;
-    int listCount = list[2];
     int idx = scrollOffset;
-    if (idx < listCount && idx >= 0) {
-        int* node;
-        if (idx < listCount) {
-            node = (int*)*list;
-            for (; idx != 0; idx--) {
-                node = (int*)*node;
+    int listCount = list[2];
+    if (listCount > idx) {
+        if (idx >= 0) {
+            if (idx >= listCount) {
+                node = 0;
+            } else {
+                node = (int*)*list;
+                while (idx-- != 0) {
+                    node = (int*)*node;
+                }
             }
-        } else {
-            node = 0;
-        }
 
-        int slotIdx = 0;
-        int* slotBottom = &slotRects[0].bottom;
-        do {
-            if (node == 0) break;
-            char* name = (char*)(node + 7);
-            int y = *slotBottom;
-            node = (int*)*node;
-            slotIdx++;
-            slotBottom += 4;
-            g_ZBufferManager_0046aa24->ShowText(name, slotBottom[-7], y, 10000, -1);
-        } while (slotIdx <= 9);
+            {
+                int slotIdx = 0;
+                int* slotBottom = &slotRects[0].bottom;
+                do {
+                    if (node == 0) break;
+                    char* name = (char*)(node + 7);
+                    int y = *slotBottom;
+                    node = (int*)*node;
+                    slotIdx++;
+                    slotBottom += 4;
+                    g_ZBufferManager_0046aa24->ShowText(name, slotBottom[-7], y, 10000, -1);
+                } while (slotIdx <= 9);
+            }
+        }
     }
 
     if (selectedRow != -1) {
         int absIdx = scrollOffset + selectedRow;
         int count = ((int*)saveFileList)[2];
         if (absIdx < count && absIdx >= 0) {
-            int* node;
-            if (absIdx < count) {
-                node = (int*)*(int*)saveFileList;
-                for (; absIdx != 0; absIdx--) {
-                    node = (int*)*node;
-                }
-            } else {
+            if (absIdx >= count) {
                 node = 0;
+            } else {
+                node = (int*)*(int*)saveFileList;
+                if (absIdx != 0) {
+                    int rem = absIdx - 1;
+                    do {
+                        node = (int*)*node;
+                    } while (rem-- != 0);
+                }
             }
             strcpy(saveFilename, (char*)(node + 7));
         } else {
@@ -669,7 +715,7 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
     switch (action->instruction) {
     case 1:
         SendGameMessage(savedCommand, savedMsgData, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        return 1;
+        goto done;
     case 2:
     {
         int numFiles;
@@ -730,12 +776,12 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
 
             selectedRow = -1;
             ReadSaveFiles(searchPattern);
-            return 1;
+            goto done;
 
         case 0x1b:
             SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
             selectedRow = -1;
-            return 1;
+            goto done;
 
         case 0x21:
             if (scrollOffset == 0) {
@@ -745,7 +791,7 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
             if (scrollOffset < 0) {
                 scrollOffset = 0;
             }
-            return 1;
+            goto done;
 
         case 0x22:
             if (maxScroll == scrollOffset) {
@@ -755,43 +801,43 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
             if (maxScroll < scrollOffset) {
                 scrollOffset = maxScroll;
             }
-            return 1;
+            goto done;
 
         case 0x23:
             selectedRow = 9;
             scrollOffset = maxScroll;
-            return 1;
+            goto done;
 
         case 0x24:
             scrollOffset = 0;
             selectedRow = 0;
-            return 1;
+            goto done;
 
         case 0x26:
             selectedRow--;
             if (selectedRow > 0) {
-                return 1;
+                goto done;
             }
             selectedRow = 0;
             scrollOffset--;
             if (scrollOffset >= 0) {
-                return 1;
+                goto done;
             }
             scrollOffset = 0;
-            return 1;
+            goto done;
 
         case 0x28:
             selectedRow++;
             if (selectedRow < 10) {
-                return 1;
+                goto done;
             }
             selectedRow = 9;
             scrollOffset++;
             if (maxScroll >= scrollOffset) {
-                return 1;
+                goto done;
             }
             scrollOffset = maxScroll;
-            return 1;
+            goto done;
 
         case 0x2e:
         {
@@ -828,19 +874,21 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
                 }
             }
             ReadSaveFiles(searchPattern);
-            return 1;
+            goto done;
         }
 
         default:
-            return 1;
+            goto done;
         }
     }
     case 7:
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
-        return 1;
+        goto done;
     default:
-        return 1;
+        goto done;
     }
+done:
+    return 1;
 }
 
 /* Function start: 0x43C5B0 */
@@ -854,40 +902,39 @@ char* MakeSavePath(char* param)
 /* Function start: 0x43C5D0 */
 void SC_DuctNav::ReadSaveFiles(char* pattern)
 {
-    int* pool;
     int* node;
-    int* prevNode;
-    int count;
+    int* next;
+    long handle;
     struct _finddata_t findData;
     struct _finddata_t nodeData;
-    long handle;
 
-    pool = (int*)saveFileList;
-    if (pool != 0) {
-        node = (int*)pool[0];
-        while (node != 0) {
-            { int n = 0; while (n-- != 0); }
-            node = (int*)node[0];
-        }
-        pool[2] = 0;
-        pool[3] = 0;
-        pool[1] = 0;
-        pool[0] = 0;
-        {
-            int* block = (int*)pool[4];
-            while (block != 0) {
-                int* nextBlock = (int*)block[0];
-                operator delete(block);
-                block = nextBlock;
+    {
+        int* pool = (int*)saveFileList;
+        if (pool != 0) {
+            node = (int*)pool[0];
+            while (node != 0) {
+                { int n = 0; while (n-- != 0); }
+                node = (int*)node[0];
             }
+            pool[2] = 0;
+            pool[3] = 0;
+            pool[1] = 0;
+            pool[0] = 0;
+            {
+                int* block = (int*)pool[4];
+                while (block != 0) {
+                    int* nextBlock = (int*)block[0];
+                    operator delete(block);
+                    block = nextBlock;
+                }
+            }
+            pool[4] = 0;
+            operator delete(pool);
+            saveFileList = 0;
         }
-        pool[4] = 0;
-        operator delete(pool);
-        saveFileList = 0;
     }
 
-    pool = (int*)new SaveFilePool();
-    saveFileList = pool;
+    saveFileList = (int*)new SaveFilePool();
 
     handle = _findfirst(pattern, &findData);
     if (handle == -1) {
@@ -898,65 +945,85 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
         _splitpath(findData.name, 0, 0, g_Buffer_0046aa00, 0);
         strcpy(findData.name, g_Buffer_0046aa00);
 
-        node = (int*)pool[0];
-        while (node != 0) {
+        next = ((SaveFilePool*)saveFileList)->head;
+        while (next != 0) {
+            node = next;
+            next = (int*)node[0];
             memcpy(&nodeData, (char*)(node) + 8, 0x118);
-            if (findData.time_write > *(long*)((char*)&nodeData + 0xC)) {
-                break;
+            if (nodeData.time_write < findData.time_write) {
+                SaveFilePool* pool = (SaveFilePool*)saveFileList;
+                int* newNode;
+                if (node == 0) {
+                    newNode = pool->AllocNode(0, (int)pool->head);
+                    memcpy((char*)(newNode) + 8, &findData, 0x118);
+                    {
+                        int* head = pool->head;
+                        if (head != 0) {
+                            head[1] = (int)newNode;
+                            pool->head = newNode;
+                        } else {
+                            pool->tail = newNode;
+                            pool->head = newNode;
+                        }
+                    }
+                } else {
+                    newNode = pool->AllocNode(node[1], (int)node);
+                    memcpy((char*)(newNode) + 8, &findData, 0x118);
+                    {
+                        int* prevPtr = (int*)node[1];
+                        if (prevPtr == 0) {
+                            prevPtr = (int*)pool;
+                        }
+                        prevPtr[0] = (int)newNode;
+                        node[1] = (int)newNode;
+                    }
+                }
+                goto next_file;
             }
-            node = (int*)node[0];
         }
 
-        if (node == 0) {
-            /* Insert at tail */
-            prevNode = (int*)pool[1];
+        {
+            /* Append at tail */
+            SaveFilePool* pool = (SaveFilePool*)saveFileList;
+            int* prevNode = pool->tail;
 
-            if (pool[3] == 0) {
-                int growBy = pool[5];
+            if (pool->freeList == 0) {
+                int count;
+                int growBy = pool->growBy;
                 int* block = (int*)operator new(growBy * 0x120 + 4);
-                block[0] = pool[4];
-                pool[4] = (int)block;
-                count = growBy;
+                block[0] = (int)pool->blocks;
+                pool->blocks = block;
+                count = pool->growBy;
                 {
                     int* ptr = (int*)((char*)block + count * 0x120 - 0x11c);
                     count--;
                     while (count >= 0) {
-                        ptr[0] = pool[3];
-                        pool[3] = (int)ptr;
-                        ptr = (int*)((char*)ptr - 0x120);
+                        ptr[0] = (int)pool->freeList;
                         count--;
+                        pool->freeList = ptr;
+                        ptr = (int*)((char*)ptr - 0x120);
                     }
                 }
             }
 
             {
-                int* entry = (int*)pool[3];
-                pool[3] = entry[0];
+                int* entry = pool->freeList;
+                pool->freeList = (int*)entry[0];
                 entry[1] = (int)prevNode;
                 entry[0] = 0;
-                pool[2]++;
+                pool->count++;
                 ClearSaveEntries((void*)(entry + 2), 1);
                 memcpy((char*)(entry) + 8, &findData, 0x118);
-                if ((int*)pool[1] != 0) {
-                    *(int*)pool[1] = (int)entry;
-                    pool[1] = (int)entry;
+                if (pool->tail != 0) {
+                    pool->tail[0] = (int)entry;
+                    pool->tail = entry;
                 } else {
-                    pool[0] = (int)entry;
-                    pool[1] = (int)entry;
+                    pool->head = entry;
+                    pool->tail = entry;
                 }
-            }
-        } else {
-            int* newNode = ((SaveFilePool*)pool)->AllocNode(node[1], (int)node);
-            memcpy((char*)(newNode) + 8, &findData, 0x118);
-            {
-                int* prevPtr = (int*)node[1];
-                if (prevPtr == 0) {
-                    prevPtr = pool;
-                }
-                prevPtr[0] = (int)newNode;
-                node[1] = (int)newNode;
             }
         }
+next_file:;
     } while (_findnext(handle, &findData) == 0);
 }
 

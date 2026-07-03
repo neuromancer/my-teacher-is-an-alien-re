@@ -100,12 +100,11 @@ void T_Object::Reset()
             list->current = list->tail;
         } else {
             ShowError("bad queue type %lu", listType);
-            goto skip_remove;
         }
-        list->current = list->head;
 
-    skip_remove:
-        data = (SpriteAction*)list->RemoveCurrent();
+        if (list->current != 0) {
+            data = (SpriteAction*)list->RemoveCurrent();
+        }
         EnqueueSpriteAction(data);
         if (data != 0) {
             delete data;

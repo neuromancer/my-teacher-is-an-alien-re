@@ -735,12 +735,7 @@ int SC_Slime::HandleInput(Sprite* spr) {
                         case 0:
                             closedShots[i].count++;
                             {
-                                int done;
-                                if (closedShots[i].max != 0 && closedShots[i].count >= closedShots[i].max) {
-                                    done = 1;
-                                } else {
-                                    done = 0;
-                                }
+                                int done = closedShots[i].max != 0 && closedShots[i].count >= closedShots[i].max;
                                 if (done != 0) {
                                     nextState = 2;
                                 } else {
@@ -952,8 +947,7 @@ int SlimeTable::IsSamplePlaying(int index)
     if (entry == 0) goto fail;
     if (entry->m_sample == 0) goto fail;
     if (entry->m_size != *(int*)((char*)entry->m_sample + 0xc)) goto fail;
-    if (AIL_sample_status(entry->m_sample) != 4) goto fail;
-    return 1;
+    if (AIL_sample_status(entry->m_sample) == 4) return 1;
 
 fail:
     return 0;

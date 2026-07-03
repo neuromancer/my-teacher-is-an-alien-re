@@ -165,8 +165,10 @@ extern "C" void LogCacheEntries() {
         return;
     }
     int idx = 1;
-    CacheNode* node = g_FileCache_0046b78c->head;
-    if (node != 0) {
+    CacheNode* volatile node;
+    CacheNode* h = g_FileCache_0046b78c->head;
+    node = h;
+    if (h != 0) {
         WriteToMessageLog("     %-20.20s %6.6s %10.10s %4.4s",
             "FILE", "FSIZE", "BSIZE", "HITS");
     } else {
@@ -178,8 +180,8 @@ extern "C" void LogCacheEntries() {
             node = node->next;
             WriteToMessageLog("%4d %-20.20s %6.6lu %10lu %4.4d",
                 idx, entry->name,
-                (unsigned long)entry->size,
-                (unsigned long)entry->tickTime,
+                entry->size,
+                entry->tickTime,
                 entry->hitCount);
             idx++;
         } while (node != 0);

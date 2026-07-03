@@ -261,20 +261,17 @@ int Target::Update()
         return 1;
     }
 
-    if (pendingAction == 1) goto case_miss;
-    if (pendingAction == 3) goto case_hit;
-    goto done_action;
-
-case_miss:
+    switch (pendingAction) {
+    case 1:
     if (handle == animRange.y) {
         *(int*)g_ScoreDisplay_0046ae6c -= hitMissPoints.end;
         Target::Deactivate();
         return 1;
     }
     Sprite::ResetAnimation(handle + 1, 0);
-    goto done_action;
+    break;
 
-case_hit:
+    case 3:
     active = pendingAction;
     Sprite::ResetAnimation(hitRange.x + handle, 0);
     if ((targetFlags & 1) != 0) {
@@ -304,8 +301,9 @@ case_hit:
     g_ScoreDisplay_0046ae6c->AdjustScore(scoreWeight.start);
     g_CombatEngine_0046ae78->hotspotX += combatBonus.start;
     *(int*)&g_CombatEngine_0046ae78->field_0xCC += combatBonus2.val;
+    break;
+    }
 
-done_action:
     pendingAction = 0;
     if (Sprite::Do(loc.x, loc.y, 1.0) != 0) {
         if (active == 3) {

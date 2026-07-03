@@ -308,58 +308,60 @@ done:
 void StringTable::TestStrings(void* textMgr, int maxWidth)
 {
     int overflow = 0;
-    HashNode* iter = (HashNode*)((hashTable->count == 0) - 1);
+    HashNode* iter = (HashNode*)(hashTable->count == 0 ? 0 : -1);
 
-    do {
-        if (iter == 0) {
-            if (overflow) {
-                ShowMessage("One or more strings in %s is too large. (see message.log)", filename);
+    if (iter != 0) {
+        HashNode* nextIter;
+        do {
+            HashTable* table = hashTable;
+            if (iter == (HashNode*)-1) {
+                unsigned int idx = 0;
+                if (table->numBuckets != 0) {
+                    HashNode** bucket = table->buckets;
+                    do {
+                        iter = bucket[idx];
+                        if (iter != 0) break;
+                        idx++;
+                    } while (idx < (unsigned int)table->numBuckets);
+                }
             }
-            return;
-        }
 
-        HashTable* table = hashTable;
-        if (iter == (HashNode*)-1) {
-            unsigned int idx = 0;
-            if (table->numBuckets != 0) {
-                HashNode** bucket = table->buckets;
-                do {
-                    iter = bucket[idx];
-                    if (iter != 0) break;
-                    idx++;
-                } while (idx < (unsigned int)table->numBuckets);
+            // Original bug at 0x44C4D2: the bucket scan result is dereferenced without rechecking the sentinel/null case.
+            nextIter = iter->next;
+            if (nextIter == 0) {
+                unsigned int idx = iter->bucketIndex + 1;
+                if (idx < (unsigned int)table->numBuckets) {
+                    HashNode** bucket = &table->buckets[idx];
+                    do {
+                        nextIter = *bucket;
+                        if (nextIter != 0) break;
+                        bucket++;
+                        idx++;
+                    } while (idx < (unsigned int)table->numBuckets);
+                }
             }
-        }
 
-        // Original bug at 0x44C4D2: the bucket scan result is dereferenced without rechecking the sentinel/null case.
-        HashNode* nextIter = iter->next;
-        if (nextIter == 0) {
-            unsigned int idx = iter->bucketIndex + 1;
-            if (idx < (unsigned int)table->numBuckets) {
-                HashNode** bucket = &table->buckets[idx];
-                do {
-                    nextIter = *bucket;
-                    if (nextIter != 0) break;
-                    bucket++;
-                    idx++;
-                } while (idx < (unsigned int)table->numBuckets);
+            {
+                char text[256];
+                unsigned int stringId = iter->key;
+                iter = nextIter;
+                GetString(stringId, text);
+                int width = ((AnimatedAsset*)textMgr)->GetTextWidth(text);
+
+                if (maxWidth < width) {
+                    overflow = 1;
+                    WriteToMessageLog(
+                        "mCStrLookUp::Validate() - String in file '%s' too big (len=%d). %d \"%s\"",
+                        filename,
+                        width,
+                        stringId,
+                        text);
+                }
             }
-        }
+        } while (nextIter != 0);
+    }
 
-        unsigned int stringId = iter->key;
-        char text[256];
-        GetString(stringId, text);
-        int width = ((AnimatedAsset*)textMgr)->GetTextWidth(text);
-        iter = nextIter;
-
-        if (maxWidth < width) {
-            overflow = 1;
-            WriteToMessageLog(
-                "mCStrLookUp::Validate() - String in file '%s' too big (len=%d). %d \"%s\"",
-                filename,
-                width,
-                stringId,
-                text);
-        }
-    } while (1);
+    if (overflow) {
+        ShowMessage("One or more strings in %s is too large. (see message.log)", filename);
+    }
 }

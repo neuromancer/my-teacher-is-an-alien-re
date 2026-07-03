@@ -520,11 +520,11 @@ SoundEntry* SC_OnScreenMessage::FindOrCreateSoundEntry(int soundId) {
                 }
                 MessageNode* curNode = (MessageNode*)m_messageList->current;
                 int entryGS;
-                if (curNode == 0) {
+                if (curNode != 0) {
+                    entryGS = ((SoundEntry*)curNode->data)->gameStateVal;
+                } else {
                     // Original bug at 0x448C60: null current reads fixed address 0x2c.
                     entryGS = *(int*)0x2C;
-                } else {
-                    entryGS = ((SoundEntry*)curNode->data)->gameStateVal;
                 }
                 if (gs->stateValues[idx] == entryGS) {
                     MessageNode* found = (MessageNode*)m_messageList->current;

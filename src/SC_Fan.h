@@ -15,7 +15,7 @@ class Sample;
 struct FanDim {
     int x;
     int y;
-    FanDim() { x = 0; y = 0; }
+    FanDim() { memset(this, 0, 8); }
 };
 
 // SC_Fan - Fan puzzle handler (case 62/0x3E)

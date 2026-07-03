@@ -47,11 +47,12 @@ int Sample::Load(char *filename) {
     file = fsopen(filename, "rb");
     if (file != 0) {
       Sample::m_data = (char *)AIL_mem_alloc_lock(Sample::m_field8);
-      if (Sample::m_data != 0) {
-        fread(Sample::m_data, Sample::m_field8, 1, file);
-        fclose(file);
-        return 0;
+      if (Sample::m_data == 0) {
+        return 1;
       }
+      fread(Sample::m_data, Sample::m_field8, 1, file);
+      fclose(file);
+      return 0;
     }
   }
   return 1;

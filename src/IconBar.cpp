@@ -239,16 +239,13 @@ int IconBar::AddMessage(SC_MessageParser* msg) {
     WriteMessageAddress(msg);
 
     if (act->lastKey == 0x77) {
-        if (g_IconBarEntries_00473320[4].field_14 == 0) {
-            return 0;
+        if (g_IconBarEntries_00473320[4].field_14 != 0) {
+            g_PendingAction_00472d58.CopyFrom(&SpriteAction(act->addressType, act->addressValue,
+                                 act->fromType, act->fromValue, 4, 0, 0, 0, 0, 0));
+            SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
+            return 1;
         }
-        {
-            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
-                             4, 0, 0, 0, 0, 0);
-            g_PendingAction_00472d58.CopyFrom(&temp);
-        }
-        SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
-        return 1;
+        return 0;
     }
 
     {

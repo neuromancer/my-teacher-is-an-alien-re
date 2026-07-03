@@ -22,9 +22,8 @@ extern void ShowError(const char* message, ...);
 void __cdecl CleanupNavNodes(void** array, int count)
 {
     void* node;
-    int i = count;
 
-    while (i-- != 0) {
+    while (count-- != 0) {
         node = *array;
         if (node != 0) {
             delete (mCNavNode*)node;

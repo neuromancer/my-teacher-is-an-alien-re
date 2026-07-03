@@ -253,10 +253,10 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
 /* Function start: 0x425FC0 */
 int GetFileSize(char* path) {
     struct _stat statbuf;
-    if (_stat(path, &statbuf) != 0) {
-        return -1;
+    if (_stat(path, &statbuf) == 0) {
+        return statbuf.st_size;
     }
-    return statbuf.st_size;
+    return -1;
 }
 
 /* Function start: 0x426490 */

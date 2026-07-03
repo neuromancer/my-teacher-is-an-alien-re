@@ -109,8 +109,7 @@ void ResetSpriteStates()
 
     digit = '1';
     i = 5;
-    *(int*)name = *(int*)g_SpriteString;
-    *(int*)(name + 4) = *(int*)(g_SpriteString + 4);
+    memcpy(name, g_SpriteString, 8);
 
     do {
         GameState* gs = g_GameState_0046aa30;

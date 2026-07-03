@@ -13,7 +13,7 @@ class SlimeTable;
 // (NOT SlimeDim/Rect) for counters and the unused teacher slot — proven by the
 // destructor only unwinding 6 members (screenSize, alarmSlotRect, kidHitRange,
 // planeClickRange, planeHomePos, teacherHitRange), not these.
-struct FA_Dim { int x; int y; FA_Dim() { x = 0; y = 0; } };
+struct FA_Dim { int x; int y; FA_Dim() { memset(this, 0, 8); } };
 
 // SC_FireAlarm - Fire alarm puzzle handler (case 64/0x40)
 // Constructor: 0x407290

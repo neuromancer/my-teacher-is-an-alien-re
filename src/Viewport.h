@@ -1,9 +1,11 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
+#include <string.h>
+
 struct ViewportPair {
     int a, b;
-    ViewportPair() { int* p = &a; p[0] = 0; p[1] = 0; }
+    ViewportPair() { memset(this, 0, 8); }
     ~ViewportPair();
 };
 
