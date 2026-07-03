@@ -560,7 +560,7 @@ end:
 void SC_Fan::RenderFan() {
     Sprite* sprite;
     void** ptr;
-    int state;
+    int fanFrame;
     int i;
 
     sprite = bgSprite;
@@ -568,9 +568,9 @@ void SC_Fan::RenderFan() {
         return;
     }
 
-    state = sprite->handle;
+    fanFrame = sprite->handle;
 
-    if (state == 3) {
+    if (fanFrame == 3) {
         if (stopSwitchSprite != 0) {
             if (stopSwitchSprite->Do(stopSwitchSprite->loc.x, stopSwitchSprite->loc.y, 1.0)) {
                 DisplaySprites(0);
@@ -593,9 +593,9 @@ void SC_Fan::RenderFan() {
 
     sprite = bgSprite;
     if (sprite->Do(sprite->loc.x, sprite->loc.y, 1.0)) {
-        if (state == 0) {
+        if (fanFrame == 0) {
             DisplaySprites(1);
-        } else if (state == 2) {
+        } else if (fanFrame == 2) {
             if (stopSwitchSprite != 0) {
                 stopSwitchSprite->ResetAnimation(1, 0);
             }
