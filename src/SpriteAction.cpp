@@ -3,7 +3,6 @@
 #include "GameState.h"
 #include "FileArchive.h"
 #include "globals.h"
-extern "C" void WriteToLog(const char* format, ...);
 #include "string.h"
 #include <string.h>
 #include <stdlib.h>
@@ -120,7 +119,7 @@ SpriteAction::~SpriteAction() {
 }
 
 /* Function start: 0x444D90 */
-extern "C" void SendGameMessage(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
+void SendGameMessage(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
     SpriteAction action(a, b, c, d, e, f, g, h, i, j);
     EnqueueSpriteAction((void*)&action);
 }

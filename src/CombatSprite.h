@@ -60,10 +60,10 @@ public:
     void ParseSpriteData(char* line);          // 0x409500
 
     // Member variables (after Parser 0x90 base)
-    SpriteHashTable* spriteTable;      // 0x90
-    SpriteDataEntry* currentEntry;     // 0x94 — current sprite data entry
-    int currentNode;                   // 0x98 — current linked list node
-    int entryList;                     // 0x9C — entry list pointer from hash lookup
+    SpriteHashTable* spriteTable;  // 0x90
+    int currentEntry;              // 0x94 — current SpriteDataEntry*
+    int currentNode;               // 0x98 — current linked list node
+    int entryList;                 // 0x9C — entry list pointer from hash lookup
 };
 
 // Global variables used by CombatSprite parsing

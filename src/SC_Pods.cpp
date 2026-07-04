@@ -19,15 +19,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "string.h"
 extern void ReportUnknownLabel(const char* name);
 
-extern "C" void ShowError(const char* format, ...);
 
 #include "SlimeTable.h"
 #include "globals.h"
 
-extern "C" int FileExists(const char*);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 void __fastcall InitCombatScreen(void* self);
 
 

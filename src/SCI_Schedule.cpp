@@ -13,9 +13,8 @@
 #include <string.h>
 
 #include "globals.h"
+#include "string.h"
 
-extern "C" void WriteToLog(const char*, ...);
-extern "C" void ShowError(const char* format, ...);
 
 /* Function start: 0x434C10 */
 SCI_Schedule::SCI_Schedule()

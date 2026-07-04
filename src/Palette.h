@@ -34,4 +34,6 @@ Palette* __fastcall CreatePaletteBuffer(Palette* buffer);
 // InitPalette at 0x41DBE0 - constructs Palette via default constructor
 Palette* __fastcall InitPalette(Palette* buffer);
 
+void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count);
+
 #endif // PALETTE_H

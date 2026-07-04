@@ -22,8 +22,11 @@
 
 // External functions
 #include "GameLoopHelper.h"
-extern "C" void WriteToLog(const char* format, ...);
-extern "C" void WriteToMessageLog(const char* format, ...);
+
+// Also declared in string.h; local prototypes keep this TU's MSVC 4.20
+// register allocation stable.
+void WriteToLog(const char* format, ...);
+void WriteToMessageLog(const char* format, ...);
 
 
 
@@ -224,14 +227,10 @@ int GameEngine::ProcessEvents() {
 
     count = 0;
     while (m_eventPool->m_count != 0) {
-        SpriteAction action = m_eventPool->PopSafe();
-
-        ProcessMessage((SC_MessageParser*)&action);
+        ProcessMessage((SC_MessageParser*)&m_eventPool->PopSafe());
         count = count + 1;
     }
 
-    //if (count > 0) {
-    //}
     return count;
 }
 
@@ -371,8 +370,9 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
     }
 
     if (g_ZBufferManager_0046aa24 != 0) {
+        ZBufferManager* zbm = g_ZBufferManager_0046aa24;
 
-        queue = g_ZBufferManager_0046aa24->m_queueA0;
+        queue = zbm->m_queueA0;
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
@@ -385,7 +385,7 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
             }
         }
 
-        queue = g_ZBufferManager_0046aa24->m_queueA4;
+        queue = zbm->m_queueA4;
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
@@ -398,10 +398,10 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
             }
         }
 
-        if (g_ZBufferManager_0046aa24->m_queue9c->head != 0) {
+        if (zbm->m_queue9c->head != 0) {
         }
-        g_ZBufferManager_0046aa24->m_queue9c->ClearList();
-        g_ZBufferManager_0046aa24->m_palette = 0;
+        zbm->m_queue9c->ClearList();
+        zbm->m_palette = 0;
     }
 
     foundHandler = FindHandlerInList(action->addressType);
@@ -417,13 +417,14 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
         if (handler == 0) {
             ShowError("queue fault 0101");
         }
-        list->current = list->head;
+        ListNode* head = list->head;
+        list->current = head;
         if (list->type != 1 && list->type != 2) {
             ((EventList*)list)->InsertNode(handler);
-        } else if (list->head == 0) {
+        } else if (head == 0) {
             ((EventList*)list)->InsertNode(handler);
         } else {
-            while (list->current != 0) {
+            do {
                 Handler* currentHandler;
 
                 currentHandler = (Handler*)list->current->data;
@@ -453,7 +454,7 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
                 if (list->current != 0) {
                     list->current = list->current->next;
                 }
-            }
+            } while (list->current != 0);
         }
     }
 
@@ -474,12 +475,11 @@ void GameEngine::HandleSystemMessage(SC_MessageParser* msg) {
     }
 
     handler = (Handler*)m_activeHandler;
-    if (handler == 0) {
+    if (handler != 0) {
+        handler->Init(msg);
+    } else {
         ShowError("missing modual %d", action->addressType);
-        return;
     }
-
-    handler->Init(msg);
 }
 
 /* Function start: 0x431560 */
@@ -519,15 +519,9 @@ int GameEngine::AddHandler(Handler* handler) {
     }
     ListNode* head = list->head;
     list->current = head;
-    if (list->type != 1 && list->type != 2) {
+    if ((list->type != 1 && list->type != 2) || head == 0) {
         ((EventList*)list)->InsertNode(handler);
-        return 1;
-    }
-    if (head == 0) {
-        ((EventList*)list)->InsertNode(handler);
-        return 1;
-    }
-    {
+    } else {
         do {
                 Handler* currentHandler;
 

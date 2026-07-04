@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-extern "C" {
+
     char* FindAfterSubstring(char* s1, char* s2); // 0x426570 - strstr + skip past match
     void ShowError(const char* format, ...);
     void ExtractQuotedString(char *param_1,char *param_2,int param_3);
@@ -18,6 +18,8 @@ extern "C" {
     void WriteToLog(const char *param_1, ...);
     FILE* fsopen(const char* filename, const char* mode);
     char* internal_ReadLine(char* buffer, int size, FILE* stream);
-}
+
+char* GetSoundFilename(int handle);
+
 
 #endif // STRING_H

@@ -18,9 +18,7 @@
 #include <string.h>
 #include <stdio.h>
 
-extern "C" void ShowError(const char* format, ...);
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 
 
@@ -236,7 +234,7 @@ void HotspotAction::ProcessQueue100() {
 
     if (messagesQueue != 0) {
         messagesQueue->current = messagesQueue->head;
-        while (*(int*)messagesQueue != 0) {
+        while (messagesQueue->head != 0) {
             if (messagesQueue->current != 0) {
                 data = messagesQueue->current->data;
             } else {
@@ -259,7 +257,7 @@ void HotspotAction::ProcessQueue104() {
 
     if (incorrectQueue != 0) {
         incorrectQueue->current = incorrectQueue->head;
-        while (*(int*)incorrectQueue != 0) {
+        while (incorrectQueue->head != 0) {
             if (incorrectQueue->current != 0) {
                 data = incorrectQueue->current->data;
             } else {
@@ -282,7 +280,7 @@ void HotspotAction::ProcessQueueFC() {
 
     if (actionsQueue != 0) {
         actionsQueue->current = actionsQueue->head;
-        while (*(int*)actionsQueue != 0) {
+        while (actionsQueue->head != 0) {
             if (actionsQueue->current != 0) {
                 data = actionsQueue->current->data;
             } else {
@@ -303,17 +301,17 @@ void HotspotAction::ProcessQueueFC() {
 /* Function start: 0x41B993 */
 int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
     char label[64];
-    char buf_C0[128];
-    char buf_140[128];
-    char local_40[16];
-    int local_14;
-    int local_38;
+    char nameBuf[128];
+    char opBuf[128];
+    char stateName[16];
+    int value;
+    int value2;
     int result;
     SpriteAction* sa;
     Queue* list;
 
-    buf_C0[0] = 0;
-    buf_140[0] = 0;
+    nameBuf[0] = 0;
+    opBuf[0] = 0;
     label[0] = 0;
 
     sscanf(line, " %s ", label);
@@ -322,9 +320,9 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         sscanf(line, " %s %d", label, &hotspotId);
     }
     else if (strcmp(label, "ROLLOVER") == 0) {
-        sscanf(line, " %s %s", label, buf_C0);
-        local_14 = g_Mouse_0046aa18->FindStateByName(buf_C0);
-        rolloverStateIdx = local_14;
+        sscanf(line, " %s %s", label, nameBuf);
+        value = g_Mouse_0046aa18->FindStateByName(nameBuf);
+        rolloverStateIdx = value;
         ExtractQuotedString(line, rolloverText, 0x40);
     }
     else if (strcmp(label, "CORRECT") == 0) {
@@ -355,11 +353,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -372,7 +370,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "MESSAGE") == 0) {
@@ -387,11 +385,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -404,7 +402,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "INCORRECTMESSAGE") == 0) {
@@ -419,11 +417,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -436,7 +434,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "PREMSG") == 0) {
@@ -451,11 +449,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -468,7 +466,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "CHECKMSG") == 0) {
@@ -483,11 +481,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -500,26 +498,26 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "SWITCHFOCUS") == 0) {
-        sscanf(line, " %s %s %d", label, buf_C0, &local_14);
+        sscanf(line, " %s %s %d", label, nameBuf, &value);
         if (messagesQueue == 0) {
             messagesQueue = new Queue();
         }
         sa = new SpriteAction(
-            g_StringTable_0046aa34->FindState(buf_C0),
-            local_14, parentHandlerId, parentModuleParam, 4, 0, local_14, 0, 0, 0);
+            g_StringTable_0046aa34->FindState(nameBuf),
+            value, parentHandlerId, parentModuleParam, 4, 0, value, 0, 0, 0);
         list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -532,7 +530,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "SWITCHPREVIOUSROOM") == 0) {
@@ -546,11 +544,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -563,24 +561,24 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "PLAYSOUND") == 0) {
-        sscanf(line, " %s %d", label, &local_14);
+        sscanf(line, " %s %d", label, &value);
         if (messagesQueue == 0) {
             messagesQueue = new Queue();
         }
-        sa = new SpriteAction(4, local_14, parentHandlerId, parentModuleParam, 2, local_14, 0, 0, 0, 0);
+        sa = new SpriteAction(4, value, parentHandlerId, parentModuleParam, 2, value, 0, 0, 0, 0);
         list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -593,24 +591,24 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "PLAYCINEMATIC") == 0) {
-        sscanf(line, " %s %d", label, &local_14);
+        sscanf(line, " %s %d", label, &value);
         if (messagesQueue == 0) {
             messagesQueue = new Queue();
         }
-        sa = new SpriteAction(3, local_14, parentHandlerId, parentModuleParam, 4, local_14, 0, 0, 0, 0);
+        sa = new SpriteAction(3, value, parentHandlerId, parentModuleParam, 4, value, 0, 0, 0, 0);
         list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -623,13 +621,13 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "CHECKAVAILIABLE") == 0) {
-        result = sscanf(line, " %s %s %s %d", label, buf_C0, buf_140, &local_14);
+        result = sscanf(line, " %s %s %s %d", label, nameBuf, opBuf, &value);
         if (result < 4) {
-            local_14 = 0;
+            value = 0;
         }
         {
             GameState* gs = g_GameState_0046aa30;
@@ -647,25 +645,25 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
             } else {
                 c = g_PeriodCharTable_0046cb94[val];
             }
-            sprintf(local_40, "%c%s", (int)c, buf_C0);
+            sprintf(stateName, "%c%s", c, nameBuf);
         }
         if (conditionsQueue == 0) {
             conditionsQueue = new Queue();
         }
         sa = new SpriteAction(2,
-            (g_GameState_0046aa30)->FindState(local_40),
+            (g_GameState_0046aa30)->FindState(stateName),
             parentHandlerId, parentModuleParam,
-            g_StringState_0046aa38->FindState(buf_140),
-            local_14, 0, 0, 0, 0);
+            g_StringState_0046aa38->FindState(opBuf),
+            value, 0, 0, 0, 0);
         list = conditionsQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -678,31 +676,31 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "CHECKGAMESTATE") == 0) {
-        result = sscanf(line, " %s %s %s %d", label, buf_C0, buf_140, &local_14);
+        result = sscanf(line, " %s %s %s %d", label, nameBuf, opBuf, &value);
         if (result < 4) {
-            local_14 = 0;
+            value = 0;
         }
         if (conditionsQueue == 0) {
             conditionsQueue = new Queue();
         }
         sa = new SpriteAction(2,
-            (g_GameState_0046aa30)->FindState(buf_C0),
+            (g_GameState_0046aa30)->FindState(nameBuf),
             0, 0,
-            g_StringState_0046aa38->FindState(buf_140),
-            local_14, 0, 0, 0, 0);
+            g_StringState_0046aa38->FindState(opBuf),
+            value, 0, 0, 0, 0);
         list = conditionsQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -715,22 +713,22 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "CHECKOBJECT") == 0) {
         sscanf(line, " %s %d", label, &checkObjectId);
     }
     else if (strcmp(label, "GAMESTATE") == 0) {
-        result = sscanf(line, "%s %s %s %d", label, buf_C0, buf_140, &local_14);
+        result = sscanf(line, "%s %s %s %d", label, nameBuf, opBuf, &value);
         if (messagesQueue == 0) {
             messagesQueue = new Queue();
         }
         sa = new SpriteAction(2,
-            (g_GameState_0046aa30)->FindState(buf_C0),
+            (g_GameState_0046aa30)->FindState(nameBuf),
             0, 0,
-            g_StringState_0046aa38->FindState(buf_140),
-            local_14, 0, 0, 0, 0);
+            g_StringState_0046aa38->FindState(opBuf),
+            value, 0, 0, 0, 0);
         if ((sa->instruction == 0x11 || sa->instruction == 0x12) && result < 4) {
             sa->extra1 = 1;
         }
@@ -741,11 +739,11 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -758,27 +756,27 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "SWITCHROOM") == 0) {
-        result = sscanf(line, " %s %d %d", label, &local_14, &local_38);
+        result = sscanf(line, " %s %d %d", label, &value, &value2);
         if (result != 3) {
             ShowError("Error in ThotsLvl.cpp: %s in parse file is incomplete", line);
         }
         if (messagesQueue == 0) {
             messagesQueue = new Queue();
         }
-        sa = new SpriteAction(0x20, local_38, parentHandlerId, parentModuleParam, 4, local_14, 0, 0, 0, 0);
+        sa = new SpriteAction(0x20, value2, parentHandlerId, parentModuleParam, 4, value, 0, 0, 0, 0);
         list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
@@ -791,7 +789,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "ACTION") == 0) {
@@ -805,15 +803,15 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
-                        ((Queue*)list)->Push(sa);
+                        list->Push(sa);
                         break;
                     }
                     if (list->current != 0) {
@@ -822,30 +820,30 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "OBJECT") == 0) {
-        sscanf(line, " %s %d %s", label, &local_14, buf_C0);
+        sscanf(line, " %s %d %s", label, &value, nameBuf);
         if (messagesQueue == 0) {
             messagesQueue = new Queue();
         }
-        sa = new SpriteAction(0x1e, local_14, parentHandlerId, parentModuleParam,
-            g_StringState_0046aa38->FindState(buf_C0),
+        sa = new SpriteAction(0x1e, value, parentHandlerId, parentModuleParam,
+            g_StringState_0046aa38->FindState(nameBuf),
             0, 0, 0, 0, 0);
         list = messagesQueue;
         list->ResetForSortedAdd(sa);
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent(sa);
+                list->InsertAtCurrent(sa);
             } else {
                 do {
-                    if (*(int*)list->current->data < sa->addressType) {
-                        ((Queue*)list)->InsertAtCurrent(sa);
+                    if (((SpriteAction*)list->current->data)->addressType < sa->addressType) {
+                        list->InsertAtCurrent(sa);
                         break;
                     }
                     if (list->tail == list->current) {
-                        ((Queue*)list)->Push(sa);
+                        list->Push(sa);
                         break;
                     }
                     if (list->current != 0) {
@@ -854,7 +852,7 @@ int HotspotAction::LBLParse(char* line) { // prologue at 0x41B960
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent(sa);
+            list->InsertAtCurrent(sa);
         }
     }
     else if (strcmp(label, "END") == 0) {

@@ -11,9 +11,7 @@
 #include <new>
 
 #include "globals.h"
-extern "C" void ShowError(const char* format, ...);
-extern "C" void WriteToLog(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+#include "string.h"
 
 /* Function start: 0x421C40 */
 SC_SaveLoad::SC_SaveLoad()

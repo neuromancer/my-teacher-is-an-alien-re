@@ -17,7 +17,13 @@
 #include <string.h>
 #include <smack.h>
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+#include "string.h"
+#include "main.h"
+#include "Graphics.h"
+#include "GameWindow.h"
+#include "CDData.h"
+#include "Palette.h"
+#include "MouseControl.h"
 extern char* MakeAnimName(int id);
 
 #define g_GameState_0046aa30 (g_GameState_0046aa30)
@@ -30,26 +36,17 @@ class MouseControl;
 
 
 // Engine/Misc
-extern "C" void SetVideoRes(int, int);
-extern "C" void WriteToLog(const char* format, ...);
 extern void BlankScreen();
-#include "MouseControl.h"
 
 // File operations
-extern "C" char* FormatAssetPath(char*, ...);
-extern "C" int FileExists(const char*);
 
 // Palette
-#include "Palette.h"
 
 // Screen dimensions
-extern "C" int* GetScreenWidth();
-extern "C" int* GetScreenHeight();
 
-extern "C" void __stdcall SmackSummary(void*, void*);
 
 /* Function start: 0x4307B0 */
-extern "C" void ShowSmackSummary(unsigned int handle)
+void ShowSmackSummary(unsigned int handle)
 {
     unsigned int summary[21];
     char buffer[1036];
@@ -101,9 +98,6 @@ void __fastcall ClearActionList(LinkedList* list);
 // SmackWait is linked via smackw32.lib (IAT entry at 0x47655c in original binary)
 
 // Text rendering (font system)
-extern "C" void SetFontColor(int index);            // 0x4525EC - sets palette color for text
-extern "C" void SetFontPosition(int x, int y);      // 0x4524C2 - sets text cursor position
-extern "C" void DrawFontText(char* text, int len);   // 0x45329B - renders text via GDI
 
 // CinematicAction = SoundCommand (vtable 0x461030, sdtor 0x430980)
 #include "SoundCommand.h"
@@ -113,7 +107,7 @@ static char g_CinematicPath_00473cb0[256];
 static char g_AnimNameBuf_00473cf0[64];
 
 // Dead duplicate of MakeSoundName.
-extern "C" char* MakeSoundName_Cine(char* baseName)
+char* MakeSoundName_Cine(char* baseName)
 {
     int len = strlen(baseName);
     if (len < 4) {
@@ -138,7 +132,7 @@ extern "C" char* MakeSoundName_Cine(char* baseName)
 }
 
 // Dead duplicate of MakeAnimName.
-extern "C" char* GetCinematicFilename(int param_1)
+char* GetCinematicFilename(int param_1)
 {
     if (param_1 >= 5000) {
         int stateIdx = g_PeriodStateIdx_0046cb90;

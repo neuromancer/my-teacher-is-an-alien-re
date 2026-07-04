@@ -35,7 +35,7 @@ public:
 
     // Virtual methods (extending Parser's 3: LBLParse, OnProcessStart, OnProcessEnd)
     // +0x0C: virtual destructor (sdtor) -- automatic
-    virtual int virtual4();             // +0x10
+    virtual void virtual4();            // +0x10
     virtual int Activate();             // +0x14
     virtual int GetNextNode();          // +0x18
     virtual void virtual7();            // +0x1C
@@ -58,7 +58,7 @@ public:
     virtual ~OnDir_SubNode();           // 0x449D80, sdtor at 0x449D60
 
     virtual int LBLParse(char*);        // [0] 0x449EE0
-    virtual int virtual4();             // [4] 0x44A000
+    virtual void virtual4();            // [4] 0x44A000
     virtual int Activate();             // [5] 0x449DD0
     int ParseThenGoto(char* line);      // 0x449E70
 
@@ -80,7 +80,7 @@ public:
     virtual ~BG_SubNode();              // 0x44A0E0, sdtor at 0x44A0C0
 
     virtual int LBLParse(char*);        // 0x44A4D0 (not in our address range)
-    virtual int virtual4();             // [4] 0x44A550
+    virtual void virtual4();            // [4] 0x44A550
     virtual int Activate();             // +0x14 = 0x44A1F0 (DoAction)
     virtual void virtual7();            // +0x1C = 0x44A1D0 (Init)
 

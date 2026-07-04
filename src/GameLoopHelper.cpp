@@ -1,7 +1,7 @@
 #include "GameLoopHelper.h"
 #include <string.h>
+#include "string.h"
 
-extern "C" void WriteToLog(const char*, ...);
 extern void FreeMemory(void*);
 
 struct AnimData {

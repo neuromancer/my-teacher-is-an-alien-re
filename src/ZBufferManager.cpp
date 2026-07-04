@@ -17,6 +17,8 @@
 #include "VideoTable.h"
 #include "AnimatedAsset.h"
 #include "InvSlotItem.h"
+#include "Graphics.h"
+#include "PaletteUtils.h"
 
 
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
@@ -68,13 +70,9 @@ struct CommandType2 : public SoundCommand {
 
 
 
-extern "C" void FlipScreen();
 int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4);
 
 // Functions for rectangle drawing
-extern "C" int __cdecl SetFillColor(unsigned char color);
-extern "C" int __cdecl DrawRectOutline(int left, int right, int top, int bottom);
-extern "C" int __cdecl VideoFillRect(int left, int right, int top, int bottom);
 
 struct CommandType3 : public SoundCommand {
     unsigned int priority;  // 0x04
@@ -564,7 +562,6 @@ void ZBufferManager::DrawRect(int p1, int p2, int p3, int p4, int p5, int p6, in
     }
 }
 
-extern "C" void SetFontPosition(int, int);
 
 // TextRenderEntry: 0x64-byte entry for queued text rendering (vtable 0x461040)
 // Execute at vtable[0] = 0x403840

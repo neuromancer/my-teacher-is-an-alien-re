@@ -54,4 +54,8 @@ public:
 };
 int __cdecl CalculateBufferSize(int param_1,unsigned int param_2);
 
+void SetVideoRes(int width, int height);
+
+char* GetVideoBufferNameSlot(int handle);
+
 #endif // VBUFFER_H

@@ -14,22 +14,12 @@
 #include "globals.h"
 #include <stdio.h>
 #include <string.h>
+#include "string.h"
 
-extern "C" void ShowError(const char* format, ...);
 
 /* Function start: 0x40BBF0 */
 EngineC::EngineC()
 {
-    int* p;
-    p = &field_0xF4;
-    p[0] = 0;
-    p[1] = 0;
-    p = &field_0xFC;
-    p[0] = 0;
-    p[1] = 0;
-    p = &field_0x108;
-    p[0] = 0;
-    p[1] = 0;
     memset(&mouseReleased, 0, 0xC * 4);
 }
 
@@ -62,14 +52,14 @@ void EngineC::RenderBackground() {
     int mouseY;
     InputState* mouse;
 
-    if (g_ScoreDisplay_0046ae6c->hitCount != field_0xFC) {
-        field_0xFC++;
-        int atLimit = (field_0x100 != 0 && field_0xFC >= field_0x100);
+    if (g_ScoreDisplay_0046ae6c->hitCount != hitCounter.x) {
+        hitCounter.x++;
+        int atLimit = (hitCounter.y != 0 && hitCounter.x >= hitCounter.y);
         if (atLimit) {
             g_ActiveCombat_00468a1c->statusPtr[0] = 1;
         } else {
-            // Original bug at 0x40BDC0: zero field_0x100 falls through to this divide.
-            value = (field_0xFC * 6) / field_0x100;
+            // Original bug at 0x40BDC0: zero hitCounter.y falls through to this divide.
+            value = (hitCounter.x * 6) / hitCounter.y;
             if (value >= 0) {
                 frame = 5;
                 if (value <= 5) {
@@ -82,8 +72,8 @@ void EngineC::RenderBackground() {
         }
     }
 
-    if (field_0xF4 != g_ScoreDisplay_0046ae6c->missCount) {
-        field_0xF4 = g_ScoreDisplay_0046ae6c->missCount;
+    if (missCounter.x != g_ScoreDisplay_0046ae6c->missCount) {
+        missCounter.x = g_ScoreDisplay_0046ae6c->missCount;
     }
 
     if (g_CombatEngine_0046ae78->currentFrame >= 0x68b) {
@@ -94,17 +84,17 @@ void EngineC::RenderBackground() {
             if (mouse != 0 && mouse->y >= 0x78) {
                 goto draw_engine_sprites;
             }
-            mouseY = (mouse == 0) ? 0 : mouse->y;
-            mouseX = (mouse == 0) ? 0 : mouse->x;
+            mouseY = (mouse != 0) ? mouse->y : 0;
+            mouseX = (mouse != 0) ? mouse->x : 0;
 
             if (sprite118->animation_data->targetBuffer->CheckHit(mouseX, mouseY) == 0xfa) {
-                field_0x108++;
-                int atLimit2 = (field_0x10C != 0 && field_0x108 >= field_0x10C);
+                shotCounter.x++;
+                int atLimit2 = (shotCounter.y != 0 && shotCounter.x >= shotCounter.y);
                 if (atLimit2) {
                     g_ActiveCombat_00468a1c->statusPtr[1] = 1;
                 } else {
-                    // Original bug at 0x40BDC0: zero field_0x10C falls through to this divide.
-                    value = (field_0x108 * 6) / field_0x10C;
+                    // Original bug at 0x40BDC0: zero shotCounter.y falls through to this divide.
+                    value = (shotCounter.x * 6) / shotCounter.y;
                     if (value >= 0) {
                         frame = 5;
                         if (value <= 5) {
@@ -119,8 +109,11 @@ void EngineC::RenderBackground() {
                 mouse = g_InputManager_0046aa08->pMouse;
                 mouseY = (mouse == 0) ? 0 : mouse->y;
                 mouseX = (mouse == 0) ? 0 : mouse->x;
-                sprite114->loc.x = mouseX - 0x48;
-                sprite114->loc.y = mouseY - 0x41;
+                {
+                    Sprite* s = sprite114;
+                    s->loc.x = mouseX - 0x48;
+                    s->loc.y = mouseY - 0x41;
+                }
                 sprite114->ResetAnimation(0, 0);
                 g_ActiveCombat_00468a1c->bgSound->Play(0);
             }
@@ -142,11 +135,14 @@ draw_engine_sprites:
             mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5) + 5, 0);
     }
 
-    if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc.x, g_BgSprite_0046ae50->loc.y, 1.0) != 0) {
-        mouse = g_InputManager_0046aa08->pMouse;
-        mouseX = (mouse == 0) ? 0 : mouse->x;
-        g_BgSprite_0046ae50->ResetAnimation(
-            mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5), 0);
+    {
+        Sprite* bg = g_BgSprite_0046ae50;
+        if (bg->Do(bg->loc.x, bg->loc.y, 1.0) != 0) {
+            mouse = g_InputManager_0046aa08->pMouse;
+            mouseX = (mouse == 0) ? 0 : mouse->x;
+            g_BgSprite_0046ae50->ResetAnimation(
+                mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5), 0);
+        }
     }
 }
 
@@ -249,12 +245,12 @@ int EngineC::LBLParse(char* line) {
         Parser::ProcessFile(sprite118, this, 0);
     } else if (strcmp(token, "MAX_NUM_HITS") == 0) {
         sscanf(line, " %s %d", token, &value);
-        field_0xFC = 0;
-        field_0x100 = value;
+        hitCounter.x = 0;
+        hitCounter.y = value;
     } else if (strcmp(token, "NUM_ENGINE_SHOTS") == 0) {
         sscanf(line, " %s %d", token, &value);
-        field_0x108 = 0;
-        field_0x10C = value;
+        shotCounter.x = 0;
+        shotCounter.y = value;
     } else if (strcmp(token, "END_DERIVED_ENGINE_INFO") == 0) {
         return 1;
     } else {

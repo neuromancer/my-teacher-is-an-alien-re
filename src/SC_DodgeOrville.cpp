@@ -11,11 +11,10 @@
 #include "main.h"
 #include "Animation.h"
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+#include "string.h"
+#include "CDData.h"
 extern char* MakeAnimName(int);
-extern "C" char* FormatAssetPath(char*, ...);
 // FUN_00413e10 = ParseFile in Parser.h
-extern "C" void ShowError(const char* format, ...);
 #include "SoundList.h"
 #include "ZBufferManager.h"
 #include "globals.h"

@@ -1,4 +1,5 @@
 #include "SC_DuctNav.h"
+#include "main.h"
 #include "Sprite.h"
 #include "ZBufferManager.h"
 #include "Palette.h"
@@ -21,10 +22,10 @@
 #include "T_MenuHotspot.h"
 #include "globals.h"
 
-extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode);
-extern "C" int __cdecl DeleteFileAndDir(char* path);
-extern "C" void TouchFileTimestamp(const char* filename);
 
+#include "string.h"
+#include "CDData.h"
+#include "AnimatedAsset.h"
 struct SaveFilePool {
     int* head;     // 0x00
     int* tail;     // 0x04
@@ -184,7 +185,6 @@ int SC_DuctNav::LBLParse(char* line)
     return 0;
 }
 
-extern "C" void WriteToLog(const char* format, ...);
 // AnimatedAsset::LoadFont now in AnimatedAsset.cpp
 extern void ShowError(const char* format, ...);
 
@@ -578,7 +578,6 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
 
 }
 
-#include "AnimatedAsset.h"
 
 /* Function start: 0x43B7E0 */
 void SC_DuctNav::Update(int p1, int p2) {

@@ -20,4 +20,12 @@ public:
   int ResolvePath(char* param_1);
 };
 
+int __cdecl CopyFileContent(const char* src, const char* dest);
+int __cdecl DeleteFileAndDir(char* path);
+void __cdecl DeleteMatchingFiles(char* pattern, ...);
+char* FormatAssetPath(char* format, ...);
+void LogCacheEntries();
+void LogCacheStats();
+FILE* __cdecl OpenSaveFile(char* path, char* mode);
+
 #endif

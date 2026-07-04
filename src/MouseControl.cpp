@@ -177,7 +177,6 @@ int MouseControl::FindStateByName(char* name) {
     return -1;
 }
 
-extern "C" int SetCursorVisible(unsigned int param_1);
 
 #pragma optimize("y", off)
 

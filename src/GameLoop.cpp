@@ -1,7 +1,6 @@
 #include "GameLoop.h"
 #include "Handler.h"
 #include "SpriteAction.h"
-extern "C" void WriteToLog(const char* format, ...);
 #include "SC_Question.h"
 #include "Memory.h"
 #include "SC_Game.h"
@@ -38,6 +37,7 @@ extern "C" void WriteToLog(const char* format, ...);
 #include "SC_WordSearch.h"
 #include <stdio.h>
 #include <string.h>
+#include "string.h"
 
 /* Function start: 0x424050 */
 GameLoop::~GameLoop()

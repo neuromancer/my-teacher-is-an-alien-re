@@ -19,11 +19,14 @@
 #include <new.h>
 #include "AILSample.h"
 
-extern "C" void SetVideoRes(int, int);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void ShowError(const char* format, ...);
-extern "C" void WriteToLog(const char* format, ...);
-extern "C" char* MakeAudioName(char* baseName);
+// Also declared in VBuffer.h / SpriteAction.h / string.h; local prototypes
+// keep this TU's MSVC 4.20 register allocation stable.
+void SetVideoRes(int, int);
+void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+void ShowError(const char* format, ...);
+void WriteToLog(const char* format, ...);
+char* MakeAudioName(char* baseName);
+
 extern __declspec(dllimport) int __stdcall AIL_sample_status(void*);
 
 /* Function start: 0x44EBA0 */

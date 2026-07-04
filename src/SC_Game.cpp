@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 #include "globals.h"
 
@@ -340,4 +339,3 @@ int SC_Game::Exit(SC_MessageParser* msg) {
     return 1;
 }
 
-extern "C" void ShowError(const char*, ...);

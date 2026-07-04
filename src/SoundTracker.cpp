@@ -5,6 +5,8 @@
 #include <io.h>
 #include "globals.h"
 
+#include "string.h"
+#include "main.h"
 struct FilePosEntry;
 
 // Pooled cache list node — layout: next(+0x00), prev(+0x04), entry(+0x08); 12 bytes
@@ -33,11 +35,7 @@ struct SoundPool {
     ~SoundPool();
 };
 
-extern "C" int FileExists(const char*);
-extern "C" char* internal_ReadLine(char*, int, FILE*);
-extern "C" void ShowError(const char* format, ...);
 extern void EncryptAndWrite(char*, FILE*);
-extern "C" FILE* fsopen(const char*, const char*);
 // sscanf from stdio.h
 // _findfirst/_findnext from io.h
 // FUN_00454510 = sprintf — CRT function
@@ -371,15 +369,15 @@ void SoundTracker::Init() {
 void SoundTracker::Cleanup() {
     char lineBuf[256];
     SoundPoolNode* volatile node;
-    char* data;
+    FilePosEntry* entry;
 
     FILE* fp = fsopen("cfg\\miscache.dat", "w");
     node = g_SoundPool_00469134->head;
     while (node != 0) {
-        data = (char*)node->entry + 4;
+        entry = node->entry;
         node = node->next;
         sprintf(lineBuf, "%-32s %-32s %4lu %4d \n",
-                data, data + 0x20, *(int*)(data + 0x44), *(int*)(data - 4));
+                entry->filename, entry->key, entry->posLo, entry->accessCount);
         EncryptAndWrite(lineBuf, fp);
     }
     fclose(fp);

@@ -2,12 +2,12 @@
 #include "globals.h"
 #include "string.h"
 
-extern "C" {
+
 
 #pragma optimize("y", off)
 
 /* Function start: 0x4525EC */
-int __cdecl SetFillColor(unsigned char param_1)
+int __cdecl SetFillColor(int param_1)
 {
     unsigned char al;
     unsigned int eax;
@@ -50,9 +50,9 @@ int __cdecl ApplyVideoPalette(void)
     return 0;
 }
 
-}
 
-extern "C" {
+
+
 
 #pragma optimize("y", off)
 
@@ -147,4 +147,4 @@ int __cdecl GetGlobalTextX()
     return g_DrawPosX_0046d0aa;
 }
 
-} // extern "C"
+ // extern "C"

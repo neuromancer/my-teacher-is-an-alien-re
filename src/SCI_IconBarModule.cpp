@@ -18,17 +18,15 @@
 // FUN_004459a0 = T_Hotspot::DoItem — callers updated
 #include "Hotspot.h"
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" int FileExists(const char*);
-extern "C" void __cdecl DeleteMatchingFiles(char* pattern, ...);
-extern "C" void SetVideoRes(int, int);
-extern "C" void WriteToLog(const char*, ...);
 #include "ZBufferManager.h"
 #include "ZBuffer.h"
 #include "SoundCommand.h"
 #include "Palette.h"
 #include "SpriteAction.h"
+#include "CDData.h"
+#include "VBuffer.h"
+#include "main.h"
+#include "string.h"
 
 /* Function start: 0x401000 */
 SCI_IconBarModule::SCI_IconBarModule() {
@@ -159,20 +157,22 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
 
         gs = g_GameState_0046aa30;
         {
+        int val = currentRoom;
         int prevIdx = gs->FindState("PREVIOUSROOM");
         if (prevIdx < 0 || gs->maxStates - 1 < prevIdx) {
             ShowError("Invalid gamestate %d", prevIdx);
         }
-        gs->stateValues[prevIdx] = currentRoom;
+        gs->stateValues[prevIdx] = val;
         }
 
         gs = g_GameState_0046aa30;
         {
+        int val = moduleParam;
         int prevInstIdx = gs->FindState("PREVIOUSROOMINSTANCE");
         if (prevInstIdx < 0 || gs->maxStates - 1 < prevInstIdx) {
             ShowError("Invalid gamestate %d", prevInstIdx);
         }
-        gs->stateValues[prevInstIdx] = moduleParam;
+        gs->stateValues[prevInstIdx] = val;
         }
 
         gs = g_GameState_0046aa30;

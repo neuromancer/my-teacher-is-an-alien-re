@@ -14,12 +14,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "CDData.h"
+#include "main.h"
 
 extern char GetDirectionChar(int dir);
 extern int FindCharIndex(char ch);
 extern char* MakeAnimName(int index);
-extern "C" char* FormatAssetPath(char* format, ...);
-extern "C" int FileExists(const char* path);
 extern void EnqueueSpriteAction(void* action);
 extern void ParseSpriteAction(void* action, void* parent);
 extern void ReportUnknownLabel(const char* name);
@@ -178,8 +178,8 @@ int mCNavNode_TypeA::LBLParse(char* line) {
 }
 
 /* Function start: 0x44AC30 */
-int mCNavNode_TypeA::virtual4() {
-    return NavSubNode::virtual4();
+void mCNavNode_TypeA::virtual4() {
+    NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeD stubs
@@ -218,8 +218,8 @@ int mCNavNode_TypeD::LBLParse(char* line) {
 }
 
 /* Function start: 0x44A6C0 */
-int mCNavNode_TypeD::virtual4() {
-    return NavSubNode::virtual4();
+void mCNavNode_TypeD::virtual4() {
+    NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeLogic (DO_LOGICFNC)
@@ -272,9 +272,9 @@ int mCNavNode_TypeLogic::LBLParse(char* line)
 }
 
 /* Function start: 0x44AB40 */
-int mCNavNode_TypeLogic::virtual4()
+void mCNavNode_TypeLogic::virtual4()
 {
-    return NavSubNode::virtual4();
+    NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeB stubs
@@ -333,8 +333,8 @@ int mCNavNode_TypeB::LBLParse(char* line) {
 }
 
 /* Function start: 0x44A8F0 */
-int mCNavNode_TypeB::virtual4() {
-    return NavSubNode::virtual4();
+void mCNavNode_TypeB::virtual4() {
+    NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeC stubs
@@ -345,8 +345,8 @@ int mCNavNode_TypeC::Activate() {
 }
 
 /* Function start: 0x44AC50 */
-int mCNavNode_TypeC::virtual4() {
-    return NavSubNode::virtual4();
+void mCNavNode_TypeC::virtual4() {
+    NavSubNode::virtual4();
 }
 
 // mCNavNode_TypeE stubs
@@ -383,6 +383,6 @@ int mCNavNode_TypeE::LBLParse(char* line) {
 }
 
 /* Function start: 0x44AD80 */
-int mCNavNode_TypeE::virtual4() {
-    return NavSubNode::virtual4();
+void mCNavNode_TypeE::virtual4() {
+    NavSubNode::virtual4();
 }

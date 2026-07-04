@@ -27,6 +27,7 @@
 #include "mCNavigator.h"
 #include "TimedEvent.h"
 
+#include "VideoTable.h"
 /* Function start: 0x42BCD0 */
 SC_CombatBase::SC_CombatBase()
 {
@@ -369,8 +370,6 @@ int SC_CombatBase::ProcessEvents()
 
 /* Function start: 0x42C230 */
 void SC_CombatBase::ResetState() {}
-extern "C" int __cdecl SetDrawColors(int, int);
-extern "C" int __cdecl SetDrawPosition(int, int);
 
 /* Function start: 0x42C960 */
 void SC_CombatBase::ProcessInput() {

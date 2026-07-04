@@ -53,9 +53,9 @@ public:
     ~AnimatedAsset();
 };
 
-extern "C" int GetGlobalTextX();
-extern "C" int GetGlobalTextY();
-extern "C" int GetGlobalTextAlign();
-extern "C" int GetGlobalVertAlign();
+int GetGlobalTextX();
+int GetGlobalTextY();
+int GetGlobalTextAlign();
+int GetGlobalVertAlign();
 
 #endif // ANIMATEDASSET_H

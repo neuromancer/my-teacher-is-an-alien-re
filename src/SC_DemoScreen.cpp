@@ -3,10 +3,10 @@
 #include "Palette.h"
 #include "Memory.h"
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void WriteToLog(const char* format, ...);
 #include "MouseControl.h"
 #include "globals.h"
+#include "SpriteAction.h"
+#include "string.h"
 
 /* Function start: 0x44E5C0 */
 SC_DemoScreen::SC_DemoScreen() {

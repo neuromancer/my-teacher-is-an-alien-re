@@ -8,9 +8,12 @@
 #include "Memory.h"
 #include "string.h"
 #include "GlyphRect.h"
+#include "ScaleBuffer.h"
+#include "Blit.h"
+#include "Graphics.h"
+#include "PaletteUtils.h"
 
 // g_BackBuffer_0046aa14 and g_InputManager_0046aa08 now in globals.h
-extern "C" void SetVideoRes(int width, int height);
 
 static int g_VBufferHandleTableInitialized = 0;
 static int g_VBufferHandleTable[0x20];
@@ -31,7 +34,6 @@ void InitVBufferHandleTable(void)
 }
 
 // GetVideoBufferNameSlot(handle) = 0x4734B0 + handle * 64
-extern "C" char* GetVideoBufferNameSlot(int handle);  // 0x44C650
 
 /* Function start: 0x410ED0 */
 void RegisterVBufferHandle(int handle)
@@ -58,7 +60,6 @@ int GetVideoBufferCount()
     return count;
 }
 
-extern "C" void WriteToLog(const char* format, ...);
 
 /* Function start: 0x410F40 */
 void DumpVBufferHandles()
@@ -96,18 +97,11 @@ void __cdecl OffsetRect(int* rect, int offsetX, int offsetY);
 int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* destY);
 int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4);
 
-extern "C" {
-    void ApplyVideoPalette();
-    int SetFillColor(int);
-    unsigned int GetCurrentVideoMode();
-    int InvalidateVideoMode();
-    void BlitBufferOpaque(int, int, int, int, int, int, unsigned int, unsigned int);
-    void BlitBufferTransparent(int, int, int, int, int, int, unsigned int, unsigned int);
-    void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
-}
+
+
 
 /* Function start: 0x425A90 */
-extern "C" void SetVideoRes(int width, int height)
+void SetVideoRes(int width, int height)
 {
     int* inputManager;
 

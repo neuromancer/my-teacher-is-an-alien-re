@@ -26,4 +26,9 @@ public:
     char baseDir[0x40];    // offset 0xF8 - base directory path for CDData
     char padding_138[4];   // offset 0x138
     int startParam;        // offset 0x13C - start parameter for GameLoop
-};
+};void* GetGameWindowHandle();
+int* GetScreenHeight();
+int* GetScreenWidth();
+int* GetWindowWidth();
+
+

@@ -9,11 +9,11 @@ ObjectPool::~ObjectPool()
     int* node;
     int* nextNode;
 
-    if (memory != 0 && size > 0) {
-        for (i = 0; i < size; i++) {
+    if (memory != 0) {
+        for (i = 0; i < (unsigned int)size; i++) {
             node = (int*)((int*)memory)[i];
             while (node != 0) {
-                volatile int countdown = 0;
+                int countdown = 0;
                 do {
                     int prev = countdown;
                     countdown--;
@@ -21,7 +21,7 @@ ObjectPool::~ObjectPool()
                 } while (1);
 
                 int* dataPtr = (int*)(node + 2);
-                volatile int counter = 0;
+                int counter = 0;
                 do {
                     if (*dataPtr != 0) {
                         FreeMemory((void*)*dataPtr);

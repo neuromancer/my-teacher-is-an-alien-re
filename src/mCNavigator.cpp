@@ -10,9 +10,9 @@
 #include "Memory.h"
 #include "GameOutcome.h"
 
-extern "C" {
+
 #include "mss.h"
-}
+
 
 extern void ShowError(const char* message, ...);
 

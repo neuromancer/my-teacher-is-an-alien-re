@@ -33,6 +33,7 @@ public:
     // Full game methods
     DialogQuestion* GetDialogByIndex(int index);
     DialogQuestion* FindDialogById(int id);
+    void ResetSpriteStates();       // 0x417FE0 - callers pass this in ECX
 
     // Fields (matching Handler31 layout)
     int field_A8;                   // 0xA8

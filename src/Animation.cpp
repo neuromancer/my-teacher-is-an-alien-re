@@ -13,17 +13,17 @@
 #include <windows.h>
 #include <new>
 
-extern "C" {
+
+#include "Graphics.h"
 void *GetGameWindowHandle();
 int *GetScreenHeight();
 int *GetScreenWidth();
-}
+
 
 // BlankScreen moved to Graphics.cpp (0x419390)
 void BlankScreen();
 
 // SetPaletteEntriesAnimation moved to Palette.cpp (0x41DE40)
-extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count);
 
 // Smack functions are linked via smackw32.lib (IAT entries in original binary at 0x004765xx)
 
@@ -31,12 +31,8 @@ extern "C" void SetPaletteEntriesAnimation(void *palette, unsigned int start, un
 #include "GameLoopHelper.h"
 
 // Font display functions
-extern "C" void SetFontPosition(int, int);
-extern "C" void SetFontColor(int);
-extern "C" void DrawFontText(char*, int);
 
 // WriteToLog (C++ linkage to match stubs.cpp)
-extern "C" void WriteToLog(const char* format, ...);
 
 /* Function start: 0x41A9D0 */
 Animation::Animation() {

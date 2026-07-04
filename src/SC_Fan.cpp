@@ -23,9 +23,6 @@
 #include "main.h"
 #include "string.h"
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" int FileExists(const char*);
-extern "C" void WriteToLog(const char* format, ...);
 extern char* __cdecl ResolveAssetPath(char* name, ...);
 // FUN_00427880 = Weapon::UpdateProjectiles — callers updated
 

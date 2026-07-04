@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <new>
+#include "string.h"
 
 /* Function start: 0x420CE0 */
 T_MenuHotspot::T_MenuHotspot(int param)
@@ -154,7 +155,6 @@ void T_MenuButton::SimpleUpdate()
     sprite->Do(sprite->loc.x, sprite->loc.y, 1.0);
 }
 
-extern "C" void ShowError(const char* format, ...);
 
 extern void ParseSpriteAction(void*, void*);
 // FUN_0040cf40 = ListNode::Init — constructor in LinkedList.h

@@ -3,9 +3,12 @@
 
 #include <windows.h>
 
-extern "C" {
-    int __cdecl CopyPaletteData(int index, int count, void* dest);
-    int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, void* data);
-}
 
+    int __cdecl CopyPaletteData(int index, int count, unsigned char* dest);
+    int __cdecl SetPaletteEntries_(unsigned int start, unsigned int count, unsigned char* data);
+
+
+int __cdecl SetFillColor(int param_1);
+
+int __cdecl ApplyVideoPalette(void);
 #endif // PALETTEUTILS_H

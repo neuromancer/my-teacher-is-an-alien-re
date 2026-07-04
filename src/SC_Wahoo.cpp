@@ -30,14 +30,12 @@
 #include "MouseControl.h"
 #include "SC_Question.h"
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 // FUN_00421930 = TimeOut::~TimeOut (full game)
 
-extern "C" void ShowError(const char* format, ...);
 // FUN_00412a50 = Parser::LBLParse in Parser.h
-extern char* __cdecl ResolveAssetPath(char* name, ...);
 #include "string.h"
+extern char* __cdecl ResolveAssetPath(char* name, ...);
 
 // FUN_00410fb0 = VBuffer ctor — callers updated to use new
 #include "RockThrower.h"
@@ -67,9 +65,6 @@ void DetectionObj::Render() {}
 
 #include "globals.h"
 
-extern "C" int FileExists(const char*);
-extern "C" void SetVideoRes(int, int);
-extern "C" void WriteToLog(const char* format, ...);
 
 /* Function start: 0x437830 */
 SC_Wahoo::SC_Wahoo() {
@@ -85,14 +80,14 @@ SC_Wahoo::~SC_Wahoo() {
 
 /* Function start: 0x437A40 */
 void SC_Wahoo::Init(SC_MessageParser* msg) {
-    int uVar1 = handlerId;
-    int* puVar6 = (int*)&spriteAction;
-    int iVar7;
-    for (iVar7 = 0x30; iVar7 != 0; iVar7--) {
-        *puVar6 = 0;
-        puVar6++;
+    int savedId = handlerId;
+    int* memberPtr = (int*)&spriteAction;
+    int count;
+    for (count = 0x30; count != 0; count--) {
+        *memberPtr = 0;
+        memberPtr++;
     }
-    handlerId = uVar1;
+    handlerId = savedId;
 
     CopyCommandData(msg);
 
@@ -109,20 +104,20 @@ void SC_Wahoo::Init(SC_MessageParser* msg) {
     moduleParam = ((SpriteAction*)msg)->addressValue;
 
     GameState* gameState = g_GameState_0046aa30;
-    unsigned int uVar3 = gameState->FindLabel("PLAY_RIGHT_BRIDGE");
-    if ((int)uVar3 < 0 || gameState->maxStates - 1 < (int)uVar3) {
-        ShowError("Invalid gamestate %d", uVar3);
+    unsigned int stateIdx = gameState->FindLabel("PLAY_RIGHT_BRIDGE");
+    if ((int)stateIdx < 0 || gameState->maxStates - 1 < (int)stateIdx) {
+        ShowError("Invalid gamestate %d", stateIdx);
     }
-    playRightBridge = gameState->stateValues[uVar3];
+    playRightBridge = gameState->stateValues[stateIdx];
 
     ParseFile(this, "mis\\cb_bridge.mis", (char*)0);
 
     gameState = g_GameState_0046aa30;
-    uVar3 = gameState->FindLabel("PLAY_RIGHT_BRIDGE");
-    if ((int)uVar3 < 0 || gameState->maxStates - 1 < (int)uVar3) {
-        ShowError("Invalid gamestate %d", uVar3);
+    stateIdx = gameState->FindLabel("PLAY_RIGHT_BRIDGE");
+    if ((int)stateIdx < 0 || gameState->maxStates - 1 < (int)stateIdx) {
+        ShowError("Invalid gamestate %d", stateIdx);
     }
-    playRightBridge = gameState->stateValues[uVar3];
+    playRightBridge = gameState->stateValues[stateIdx];
 
     if (spriteAction == 0) {
         spriteAction = new SpriteAction(
@@ -303,7 +298,7 @@ int SC_Wahoo::Exit(SC_MessageParser* msg) {
 
 /* Function start: 0x438470 */
 void SC_Wahoo::OnProcessEnd() {
-    int iVar1;
+    int cursorX;
 
     cursorHitbox.left = 0;
     cursorHitbox.top = 200;
@@ -348,12 +343,12 @@ void SC_Wahoo::OnProcessEnd() {
     }
 
     if (consoleSprite != 0) {
-        iVar1 = 0;
+        cursorX = 0;
         // Original bug at 0x438470: DAT_0046aa08 is dereferenced after only the earlier Refresh guard.
         if (g_InputManager_0046aa08->pMouse != 0) {
-            iVar1 = g_InputManager_0046aa08->pMouse->x;
+            cursorX = g_InputManager_0046aa08->pMouse->x;
         }
-        consoleSprite->ResetAnimation(iVar1 / (screenSize.x / 5), 0);
+        consoleSprite->ResetAnimation(cursorX / (screenSize.x / 5), 0);
     }
 
     if (startSound != 0) {
@@ -680,12 +675,12 @@ int SC_Wahoo::ProcessClick(Projectile* proj) {
         if (!bVar1) goto LAB_004392b0;
 
         {
-        unsigned int uVar2 = detectionMask->CheckHit(
+        unsigned int hitZone = detectionMask->CheckHit(
             iVar7 - playAreaHitbox.left,
             proj->nextPos.y - playAreaHitbox.top);
 
-        if ((int)uVar2 < 1 || 3 < (int)uVar2 ||
-            (pvVar6 = (&resetSwitchSprite)[uVar2],
+        if ((int)hitZone < 1 || 3 < (int)hitZone ||
+            (pvVar6 = (&resetSwitchSprite)[hitZone],
              ((Sprite*)pvVar6)->handle != 0)) {
             if (missSound != 0) {
                 missSound->Play(100, 1);
@@ -699,7 +694,7 @@ int SC_Wahoo::ProcessClick(Projectile* proj) {
             iVar7 = ((Sprite*)pvVar6)->animation_data->smk->FrameNum;
         }
 
-        if (uVar2 != 2) {
+        if (hitZone != 2) {
             iVar3 = (iVar7 - 1) / 4 + 1;
         } else {
             if (iVar7 >= 0 && iVar7 <= 3) {
@@ -799,11 +794,11 @@ LAB_00439160:
         if (resetSwitchSprite->handle == 1) {
             pvVar6 = g_GameState_0046aa30;
             {
-            unsigned int uVar2 = ((GameState*)pvVar6)->FindLabel("NUM_ACTIONS");
-            if ((int)uVar2 < 0 || ((GameState*)pvVar6)->maxStates - 1 < (int)uVar2) {
-                ShowError("Invalid gamestate %d", uVar2);
+            unsigned int stateIdx = ((GameState*)pvVar6)->FindLabel("NUM_ACTIONS");
+            if ((int)stateIdx < 0 || ((GameState*)pvVar6)->maxStates - 1 < (int)stateIdx) {
+                ShowError("Invalid gamestate %d", stateIdx);
             }
-            piVar4 = &((GameState*)pvVar6)->stateValues[uVar2];
+            piVar4 = &((GameState*)pvVar6)->stateValues[stateIdx];
             }
             *piVar4 = *piVar4 + 5;
             resetSwitchSprite->ResetAnimation(0, 0);

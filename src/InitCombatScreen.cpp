@@ -25,14 +25,8 @@ void __fastcall InitCombatScreen(void* self)
 
     Sprite* navSpr = g_Navigator_0046ae70->sprite;
     Animation* anim = navSpr->animation_data;
-    int fh = 0;
-    if (anim != 0) {
-        fh = anim->targetBuffer->height;
-    }
-    int fw = 0;
-    if (anim != 0) {
-        fw = anim->targetBuffer->width;
-    }
+    int fh = (anim != 0) ? anim->targetBuffer->height : 0;
+    int fw = (anim != 0) ? anim->targetBuffer->width : 0;
     fh -= g_Viewport_0046ae54->dim.b;
     fw -= g_Viewport_0046ae54->dim.a;
     g_Viewport_0046ae54->SetDimensions2(fw, fh);

@@ -22,6 +22,7 @@ struct SlimeDim {
     int x;
     int y;
     SlimeDim() { memset(this, 0, 8); }
+    SlimeDim(int ax, int ay) { x = ax; y = ay; }
     ~SlimeDim();
 };
 
@@ -56,7 +57,7 @@ public:
     void Serialize(void*);                   // 0x444CD0
 };
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
+void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 void EnqueueSpriteAction(void*);
 void EnqueueSpriteAction(SpriteAction*);
 

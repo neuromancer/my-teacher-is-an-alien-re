@@ -13,12 +13,14 @@
 #include "FileSystem.h"
 #include "globals.h"
 
-extern "C" {
+
+#include "main.h"
+#include "Memory.h"
 void ParsePath(const char *, char *, char *, char *, char *);
 int __cdecl FileExists(const char* path);           // 0x4195A0
 int __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
 __declspec(dllimport) unsigned long __stdcall timeGetTime(void);
-}
+
 void ShowError(const char* format, ...);
 
 /* Function start: 0x432EC0 */
@@ -84,17 +86,11 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
 }
 
 extern int __cdecl GetFileSize(char*);
-extern "C" int FileExists(const char*);
-extern "C" void WriteToLog(const char*, ...);
 
 // FileCache globals
 #include "MemoryCache.h"
-#include "Memory.h"
 
 // Forward declarations (defined below)
-extern "C" int __cdecl DeleteFileAndDir(char*);
-extern "C" void LogCacheStats();
-extern "C" void LogCacheEntries();
 
 /* Function start: 0x434030 */
 void __cdecl FileCacheEntryCleanup(void* entries, int count) {
@@ -145,7 +141,7 @@ void __cdecl FileCacheCleanup() {
 }
 
 /* Function start: 0x434520 */
-extern "C" void LogCacheStats() {
+void LogCacheStats() {
     if (g_FileCache_0046b78c == 0) {
         WriteToMessageLog("HDCache::LogStats() - HDCache not initialized");
         return;
@@ -159,7 +155,7 @@ extern "C" void LogCacheStats() {
 }
 
 /* Function start: 0x4345B0 */
-extern "C" void LogCacheEntries() {
+void LogCacheEntries() {
     if (g_FileCache_0046b78c == 0) {
         WriteToMessageLog("HDCache::LogCache() - HDCache not initialized");
         return;
@@ -320,8 +316,6 @@ int CDData::LBLParse(char* line) {
     return 0;
 }
 
-extern "C" char* FormatAssetPath(char* format, ...);
-extern "C" int __cdecl CopyFileContent(const char*, const char*);
 
 /* Function start: 0x433230 */
 int CDData::ResolvePath(char* name) {
@@ -347,7 +341,7 @@ int CDData::ResolvePath(char* name) {
 }
 
 /* Function start: 0x426050 */
-extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode) {
+FILE* __cdecl OpenSaveFile(char* path, char* mode) {
     char dir[64];
     dir[0] = 0;
     _splitpath(path, 0, dir, 0, 0);
@@ -358,7 +352,7 @@ extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode) {
 }
 
 /* Function start: 0x4260A0 */
-extern "C" int __cdecl DeleteFileAndDir(char* path) {
+int __cdecl DeleteFileAndDir(char* path) {
     char dir[64];
     int result;
 
@@ -374,7 +368,7 @@ extern "C" int __cdecl DeleteFileAndDir(char* path) {
 }
 
 /* Function start: 0x4260F0 */
-extern "C" char* FormatAssetPath(char* format, ...)
+char* FormatAssetPath(char* format, ...)
 {
     char localPath[260];
 
@@ -408,7 +402,7 @@ char* __cdecl ResolveAssetPath(char* name, ...) {
 }
 
 /* Function start: 0x426220 */ /* ~96% match */
-extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
+int __cdecl CopyFileContent(const char* src, const char* dest) {
     int hSrc;
     int hDest;
     unsigned int totalLen;
@@ -461,7 +455,7 @@ extern "C" int __cdecl CopyFileContent(const char* src, const char* dest) {
 #include "FileSystem.h"
 
 /* Function start: 0x426330 */
-extern "C" void __cdecl DeleteMatchingFiles(char* pattern, ...) {
+void __cdecl DeleteMatchingFiles(char* pattern, ...) {
     char resolved[260];
     char dir[64];
     char fullpath[64];

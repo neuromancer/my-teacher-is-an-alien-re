@@ -1,4 +1,5 @@
 #include "AnimatedAsset.h"
+#include "StateFlag.h"
 
 #include "Animation.h"
 #include "GameState.h"
@@ -28,15 +29,15 @@
 
 #include "globals.h"
 
+#include "SpriteAction.h"
 static char s_TeacherDemo[] = "Teacher v(0.950)";
 
 GameWindow g_GameWindow;
 
 
-extern "C" {
+
 void ClearMessageLog();
 void SetVideoRes(int, int);
-void SetStateFlag(int, int);
 int SetCursorVisible(unsigned int);
 int FileExists(const char *);
 int* GetScreenWidth();
@@ -45,7 +46,7 @@ void ParsePath(const char *, char *, char *, char *, char *);
 int ProcessMessages();
 
 // Bridge globals (extern "C" linkage) — now in globals.h
-}
+
 
 // Bridge globals (C++ linkage, defined in stubs.cpp)
 extern char* g_Buffer_0046aa00;   // = g_Buffer_0046aa00
@@ -73,7 +74,6 @@ void CleanupMemoryCache();
 
 extern void __cdecl FileCacheCleanup();
 extern void __cdecl FileCacheEntryCleanup(void*, int);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "GameEngine.h"
 // g_GameEngine_0046a6ec, g_GameState_0046aa30 etc. — declared in globals.h
@@ -299,7 +299,7 @@ void CleanupCinematic(void) {}
 
 
 /* Function start: 0x425E90 */
-extern "C" int ProcessMessages() {
+int ProcessMessages() {
   MSG local_1c;
   int iVar1;
 
@@ -325,13 +325,13 @@ extern "C" int ProcessMessages() {
 }
 
 /* Function start: 0x425FA0 */
-extern "C" int FileExists(const char *filename) {
+int FileExists(const char *filename) {
   return _access(filename, 0) == 0;
 }
 
 
 /* Function start: 0x425FF0 */
-extern "C" void TouchFileTimestamp(const char* filename) {
+void TouchFileTimestamp(const char* filename) {
     SYSTEMTIME sysTime;
     FILETIME fileTime;
     GetSystemTime(&sysTime);
@@ -489,7 +489,7 @@ const char* __cdecl CDData_ResolvePath(const char *format, ...) {
 #pragma optimize("y", on)
 
 /* Function start: 0x4265A0 */
-extern "C" void ShowLoadingScreen(void) {
+void ShowLoadingScreen(void) {
     const char* path;
     VBuffer* buffer;
     int x;
@@ -570,7 +570,7 @@ void CleanupMemoryCache() {
 }
 
 // ParsePath is a CRT library function in the full game (0x4560F0, in library range)
-extern "C" void ParsePath(const char *fullPath, char *drive, char *dir, char *fname,
+void ParsePath(const char *fullPath, char *drive, char *dir, char *fname,
                char *ext) {
   unsigned char *lastSlash;
   unsigned char *dotPos;

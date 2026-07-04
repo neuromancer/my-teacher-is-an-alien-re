@@ -133,7 +133,12 @@ GameState::~GameState()
     }
 
     if (stateLabels != 0) {
-        delete (ObjectPool*)stateLabels;
+        // Original compiles this `delete` with an EH-tracked temp: the pointer is
+        // spilled to a stack slot and ~ObjectPool runs via the shared unwind
+        // funclet (mov ecx,[ebp-0x14] / jmp 0x433F10) before FreeMemory.
+        ObjectPool* volatile pool = (ObjectPool*)stateLabels;
+        pool->~ObjectPool();
+        FreeMemory((void*)pool);
         stateLabels = 0;
     }
 }
@@ -181,7 +186,7 @@ void GameState::SetMaxStates(int count)
         ShowError("GameState::SetMaxStates - Already Called");
     }
     maxStates = count;
-    stateValues = new int[count];
+    stateValues = new int[maxStates];
     ClearStates();
 
     ObjectPool* pool = new ObjectPool(0x11, count);
@@ -192,6 +197,7 @@ void GameState::SetMaxStates(int count)
 int GameState::LBLParse(char* line)
 {
     int index;
+    int idxCopy;
     int defaultValue;
     int numParsed;
     char keyword[32];
@@ -206,6 +212,7 @@ int GameState::LBLParse(char* line)
         SetMaxStates(index);
     } else if (strcmp(keyword, "LABEL") == 0) {
         numParsed = sscanf(line, "%s %d %s %d", keyword, &index, labelName, &defaultValue);
+        idxCopy = index;
 
         // Get pool and allocate+copy label string
         int* pool = (int*)stateLabels;
@@ -219,18 +226,14 @@ int GameState::LBLParse(char* line)
             hash = hash * 33 + *p;
             p++;
         }
-        unsigned int h = hash % (unsigned int)pool[1];
+        volatile unsigned int h = hash % (unsigned int)pool[1];
 
         // Search for existing entry with same label
         GSHashEntry* entry;
         if ((int*)pool[0] != 0) {
             entry = ((GSHashEntry**)pool[0])[h];
-search_loop:
-            if (entry != 0) {
-                if (strcmp(entry->label, newLabel) != 0) {
-                    entry = entry->next;
-                    goto search_loop;
-                }
+            while (entry != 0 && strcmp(entry->label, newLabel) != 0) {
+                entry = entry->next;
             }
         } else {
             entry = 0;
@@ -238,31 +241,28 @@ search_loop:
 
         if (entry == 0) {
             // Not found - allocate bucket array if needed
-            if ((int*)pool[0] == 0) {
+            int* bucketArr = (int*)pool[0];
+            if (bucketArr == 0) {
                 int numBuckets = pool[1];
                 int* buckets = new int[numBuckets];
-                int cnt = numBuckets * 4;
-                cnt >>= 2;
-                memset(buckets, 0, cnt * 4);
                 pool[0] = (int)buckets;
+                memset(buckets, 0, numBuckets * 4);
                 pool[1] = numBuckets;
             }
 
             // Allocate from free list, grow if needed
             if (pool[3] == 0) {
-                int growBy = pool[5];
-                int* block = new int[growBy * 4 + 1];
+                int* block = new int[pool[5] * 4 + 1];
                 block[0] = pool[4];
                 pool[4] = (int)block;
-                int cnt = growBy;
-                int stride = cnt;
+                int cnt = pool[5];
+                int* ptr = (int*)((char*)block + cnt * 16 - 12);
                 cnt--;
-                int* ptr = (int*)((char*)block + stride * 16 - 12);
                 while (cnt >= 0) {
                     ptr[0] = pool[3];
+                    cnt--;
                     pool[3] = (int)ptr;
                     ptr -= 4;
-                    cnt--;
                 }
             }
 
@@ -271,24 +271,28 @@ search_loop:
             pool[3] = (int)entry->next;
             pool[2]++;
             entry->label = 0;
-            { volatile int n = 0; while (n-- != 0); }
+            { int k = 0; while (k-- != 0); }
             entry->stateIndex = 0;
-            { volatile int n = 0; while (n-- != 0); }
-            entry->bucketIndex = h;
+            { int k = 0; while (k-- != 0); }
+            unsigned int bIdx = h;
+            entry->bucketIndex = bIdx;
+            int ofs = bIdx * 4;
             entry->label = newLabel;
-            int* buckets = (int*)pool[0];
-            entry->next = (GSHashEntry*)buckets[h];
-            buckets = (int*)pool[0];
-            buckets[h] = (int)entry;
+            char* buckets = (char*)pool[0];
+            entry->next = *(GSHashEntry**)(buckets + ofs);
+            buckets = (char*)pool[0];
+            *(int*)(buckets + ofs) = (int)entry;
         }
 
-        entry->stateIndex = index;
+        entry->stateIndex = idxCopy;
 
         if (numParsed > 3) {
-            if (index < 0 || maxStates - 1 < index) {
-                ShowError("Invalid gamestate %d", index);
+            int val = defaultValue;
+            int idx = index;
+            if (idx < 0 || maxStates - 1 < idx) {
+                ShowError("Invalid gamestate %d", idx);
             }
-            stateValues[index] = defaultValue;
+            stateValues[idx] = val;
         }
     } else if (strcmp(keyword, "END") == 0) {
         return 1;

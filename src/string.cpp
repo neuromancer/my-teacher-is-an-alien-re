@@ -7,15 +7,15 @@
 #include <ctype.h>
 #include <windows.h>
 #include "string.h"
+#include "MouseControl.h"
 #include "Memory.h"
 #include "globals.h"
 #include "GameState.h"
 #include <mbstring.h>
 
-extern "C" {
-extern void SetCursorVisible(int visible);
+
 extern void* GetGameWindowHandle();
-}
+
 
 extern void ShutdownGameSystems();
 
@@ -71,7 +71,7 @@ char* MakeAudioName(char* baseName)
 }
 
 /* Function start: 0x44E530 */
-extern "C" char* GetSoundFilename(int handle)
+char* GetSoundFilename(int handle)
 {
     if (handle >= 0x1388) {
         int idx = g_PeriodStateIdx_0046cb90;
@@ -176,7 +176,7 @@ void WriteToMessageLog(const char *msg,...)
 // g_StringTable_00472e30 — defined in globals.cpp
 
 /* Function start: 0x425DC0 */
-extern "C" void AddToStringTable(char *param_1)
+void AddToStringTable(char *param_1)
 {
     char local_20[32];
     int iVar2;
@@ -192,7 +192,7 @@ extern "C" void AddToStringTable(char *param_1)
 }
 
 /* Function start: 0x425E40 */
-extern "C" void WriteToLog(const char *param_1, ...)
+void WriteToLog(const char *param_1, ...)
 {
     if (!(g_LogEnabled_00472e28 & 1)) return;
 
@@ -204,11 +204,11 @@ extern "C" void WriteToLog(const char *param_1, ...)
     fclose(fp);
 }
 
-extern "C" {
+
 FILE *fsopen(const char* filename, const char* mode);
 void ParsePath(const char* path, char* drive, char* dir, char* fname, char* ext);
 void* AllocateMemory_Wrapper(int size);
-}
+
 
 
 

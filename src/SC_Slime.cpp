@@ -18,15 +18,14 @@
 #include "CombatWeapon.h"
 #include "Projectile.h"
 #include "SC_Question.h"
-extern "C" void SetVideoRes(int, int);
 #include "string.h"
-extern "C" void WriteToLog(const char* format, ...);
 // g_SlimeField_00468bbc — declared in globals.h
 
 #include "SlimeTable.h"
 
 // TimerWrapper = TimeOut (ctor 0x421920 wraps 0x421960, dtor 0x421930)
 #include "TimeOut.h"
+#include "VBuffer.h"
 
 /* Function start: 0x40CF60 */
 SC_Slime::SC_Slime() {
@@ -693,16 +692,39 @@ int SC_Slime::HandleInput(Sprite* spr) {
     int* pos = &projectile->nextPos.x;
     int i;
 
-    if (pos[1] <= 0x4f || armMaskSprite == 0) {
-        if (spr->animation_data == 0) {
-            if (finalFrame != 0) {
-                goto checkProjectileDone;
+    if (pos[1] > 0x4f && armMaskSprite != 0) {
+        for (i = 1; i <= 2; i++) {
+            Sprite* arm = (&leftArmSprite)[i - 1];
+            if (arm->handle == 0 &&
+                armMaskSprite->animation_data->targetBuffer->CheckHit(pos[0], pos[1] - 0x4f) == i) {
+                slimeRound++;
+                {
+                    int done = tentacleShotsNeeded != 0 && slimeRound >= tentacleShotsNeeded;
+                    if (done != 0) {
+                        int offset = arm->ranges[arm->handle].dim.y - arm->animation_data->smk->FrameNum;
+                        arm->ResetAnimation(2, offset);
+                        armMaskSprite->ResetAnimation(-1, 0);
+                    }
+                }
+                if (sound4 != 0) {
+                    sound4->Play(100, 1);
+                }
+                return 1;
             }
-        } else if (spr->animation_data->smk->FrameNum != finalFrame) {
+        }
+    } else {
+        if (spr->animation_data == 0) {
+            if (finalFrame == 0) {
+                goto bgCheck;
+            }
             goto checkProjectileDone;
         }
-
-        if (bgSprite != 0) {
+        if (spr->animation_data->smk->FrameNum != finalFrame) {
+            goto checkProjectileDone;
+        }
+    bgCheck:
+        {
+            if (bgSprite != 0) {
             for (i = 0; i < 2; i++) {
                 Rect* slot = &invSlots[i];
                 int inSlot;
@@ -713,42 +735,44 @@ int SC_Slime::HandleInput(Sprite* spr) {
                     inSlot = 1;
                 }
                 if (inSlot != 0) {
-                    int hitValue;
-                    if (bgSprite->animation_data != 0) {
-                        int frame = bgSprite->animation_data->smk->FrameNum;
-                        hitValue = g_SlimeHitTable_00468bc0[frame + i * 0x3d];
-                    } else {
-                        hitValue = g_SlimeHitTable_00468bc0[i * 0x3d];
-                    }
-
-                    if (hitValue != 0) {
-                        if (sound4 != 0) {
-                            sound4->Play(100, 1);
+                    if (bgSprite->animation_data == 0) {
+                        if (g_SlimeHitTable_00468bc0[i * 0x3d] != 0) {
+                            goto slotHit;
                         }
-                        return 1;
+                        goto checkSwitch;
+                    }
+                    if (g_SlimeHitTable_00468bc0[bgSprite->animation_data->smk->FrameNum + i * 0x3d] == 0) {
+                        goto checkSwitch;
                     }
 
-                    Sprite* sw = (&leftSwitchSprite)[i];
-                    if (sw != 0) {
-                        int nextState = sw->handle;
-                        switch (nextState) {
+                slotHit:
+                    if (sound4 != 0) {
+                        sound4->Play(100, 1);
+                    }
+                    return 1;
+
+                checkSwitch:
+                    {
+                        Sprite* sw = (&leftSwitchSprite)[i];
+                        if (sw == 0) {
+                            goto checkProjectileDone;
+                        }
+                        switch (sw->handle) {
                         case 0:
                             closedShots[i].count++;
                             {
                                 int done = closedShots[i].max != 0 && closedShots[i].count >= closedShots[i].max;
                                 if (done != 0) {
-                                    nextState = 2;
+                                    sw->ResetAnimation(2, 0);
                                 } else {
-                                    nextState++;
+                                    sw->ResetAnimation(sw->handle + 1, 0);
                                 }
                             }
-                            sw->ResetAnimation(nextState, 0);
                             break;
 
                         case 1:
                         case 3:
-                            nextState++;
-                            sw->ResetAnimation(nextState, 0);
+                            sw->ResetAnimation(sw->handle + 1, 0);
                             break;
 
                         case 2:
@@ -782,27 +806,8 @@ int SC_Slime::HandleInput(Sprite* spr) {
                         slimeTable->Play(10);
                         return 1;
                     }
-                    break;
                 }
             }
-        }
-    } else {
-        for (i = 1; i <= 2; i++) {
-            Sprite* arm = (&leftArmSprite)[i - 1];
-            if (arm->handle == 0 &&
-                armMaskSprite->animation_data->targetBuffer->CheckHit(pos[0], pos[1] - 0x4f) == i) {
-                int needed = tentacleShotsNeeded;
-                int round = slimeRound + 1;
-                slimeRound = round;
-                if (needed != 0 && round >= needed) {
-                    int offset = arm->ranges[arm->handle].dim.y - arm->animation_data->smk->FrameNum;
-                    arm->ResetAnimation(2, offset);
-                    armMaskSprite->ResetAnimation(-1, 0);
-                }
-                if (sound4 != 0) {
-                    sound4->Play(100, 1);
-                }
-                return 1;
             }
         }
     }
@@ -810,12 +815,15 @@ int SC_Slime::HandleInput(Sprite* spr) {
 checkProjectileDone:
     if (spr->animation_data == 0) {
         if (finalFrame != 0) {
-            return 0;
+            goto returnZero;
         }
-    } else if (spr->animation_data->smk->FrameNum != finalFrame) {
-        return 0;
+        goto targetCheck;
+    }
+    if (spr->animation_data->smk->FrameNum != finalFrame) {
+        goto returnZero;
     }
 
+targetCheck:
     {
         int hitTarget;
         if (pos[0] < targetRect.left || targetRect.right < pos[0] ||
@@ -834,6 +842,9 @@ checkProjectileDone:
         }
     }
     return 1;
+
+returnZero:
+    return 0;
 }
 
 /* Function start: 0x40DEB0 */

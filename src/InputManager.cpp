@@ -5,14 +5,17 @@
 #include "Memory.h"
 #include "globals.h" // For globals like g_WaitForInputValue_0046ac04
 
-extern "C" int* GetScreenWidth();  // 0x4205E0
-extern "C" int* GetScreenHeight(); // 0x4205F0
+// Also declared in GameWindow.h / Graphics.h / main.h; kept as local prototypes
+// because pulling those headers into this TU shifts MSVC 4.20's register allocation.
+int* GetScreenWidth();  // 0x4205E0
+int* GetScreenHeight(); // 0x4205F0
+int GetMousePosition(int*, int*); // 0x4239E4 - in Graphics.cpp
+int ProcessMessages(); // 0x4192F0 - Message pump loop
+
 // Forward declarations for functions implemented below
 void InitClickTimers();      // 0x421AC0
 int MapJoystickValue(int value, int min, int max, int range); // 0x421CE0
-extern "C" int GetMousePosition(int*, int*); // 0x4239E4 - in Graphics.cpp
 
-extern "C" int ProcessMessages(); // 0x4192F0 - Message pump loop
 
 Timer g_leftClickTimer;  // 0x43de40
 Timer g_rightClickTimer; // 0x43de58
@@ -65,7 +68,7 @@ void InputManager::InitDevices(int param_1) {
         pJoystick = 0;
     }
 
-    if (joyGetNumDevs() >= 1 && joyGetPos(0, &joyInfo) == 0) {
+    if ((int)joyGetNumDevs() >= 1 && joyGetPos(0, &joyInfo) == 0) {
         pState = new InputState();
         pJoystick = pState;
         if (param_1 == 1) {
@@ -103,9 +106,9 @@ int InputManager::PollMouse(InputState* state) {
     } else {
         {
             int eax = bounds.left;
-            if (eax > localPos.x) goto clamp_x;
+            if (localPos.x < eax) goto clamp_x;
             eax = bounds.right;
-            if (eax < localPos.x) goto clamp_x;
+            if (localPos.x > eax) goto clamp_x;
             eax = localPos.x;
             goto set_x;
         clamp_x:
@@ -116,9 +119,9 @@ int InputManager::PollMouse(InputState* state) {
 
         {
             int eax = bounds.top;
-            if (eax > localPos.y) goto clamp_y;
+            if (localPos.y < eax) goto clamp_y;
             eax = bounds.bottom;
-            if (eax < localPos.y) goto clamp_y;
+            if (localPos.y > eax) goto clamp_y;
             eax = localPos.y;
             goto set_y;
         clamp_y:
@@ -193,7 +196,7 @@ int MapJoystickValue(int value, int min, int max, int range)
 }
 
 /* Function start: 0x426570 */
-extern "C" char* FindAfterSubstring(char* s1, char* s2) {
+char* FindAfterSubstring(char* s1, char* s2) {
     char* p = strstr(s1, s2);
     if (p != 0) {
         p += strlen(s2);

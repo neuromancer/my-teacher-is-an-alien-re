@@ -11,14 +11,12 @@
 #include "SC_Question.h"
 #include <string.h>
 #include <stdio.h>
+#include "CDData.h"
+#include "main.h"
+#include "string.h"
 
-extern "C" int FileExists(const char*);
-extern "C" void ShowLoadingScreen();
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void ShowError(const char* format, ...);
 extern void __fastcall UpdateWordSearchCursor(int*);
 extern char* MakeAnimName(int);
-extern "C" char* FormatAssetPath(char*, ...);
 
 GauntletEntry::GauntletEntry() {
     fields[3] = 0;

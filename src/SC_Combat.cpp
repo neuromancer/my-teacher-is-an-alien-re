@@ -8,12 +8,10 @@
 #include "globals.h"
 #include <string.h>
 #include <stdio.h>
+#include "VBuffer.h"
+#include "string.h"
 
-extern "C" void WriteToLog(const char*, ...);
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void SetVideoRes(int, int);
 extern void FreeMemory(void*);
 
 /* Function start: 0x449100 */

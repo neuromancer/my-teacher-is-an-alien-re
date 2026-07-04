@@ -3,9 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern "C" {
+
     int FileExists(const char* filename);
-}
+
 extern char* g_SetupCfgPath_0046c4ac;
 
 #include <stdio.h>

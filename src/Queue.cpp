@@ -1,7 +1,6 @@
 #include "Queue.h"
 #include "Memory.h"
 #include "string.h"
-extern "C" void WriteToLog(const char* format, ...);
 #include <memory.h>
 #include <new.h>
 #include "TimedEvent.h"
@@ -227,26 +226,23 @@ SpriteAction TimedEventPool::PopSafe()
 /* Function start: 0x42D1A0 */
 SpriteAction TimedEventPool::Pop()
 {
-    PooledEvent* headNode;
-    SpriteAction localAction;
-
-    headNode = list.head;
-    localAction.CopyFrom((SpriteAction*)((int*)headNode + 2));
+    PooledEvent* headNode = list.head;
+    SpriteAction* src = (SpriteAction*)((int*)headNode + 2);
+    SpriteAction localAction(*src);
 
     PooledEvent* nextNode = headNode->next;
     list.head = nextNode;
-    if (nextNode == 0) {
-        list.tail = 0;
+    if (nextNode != 0) {
+        nextNode->prev = 0;
     }
     else {
-        nextNode->prev = 0;
+        list.tail = 0;
     }
 
     int counter = 0;
-    SpriteAction* ebx = (SpriteAction*)((int*)headNode + 2);
     do {
-        ebx->~SpriteAction();
-        ebx = (SpriteAction*)((char*)ebx + 0x38);
+        src->~SpriteAction();
+        src = (SpriteAction*)((char*)src + 0x38);
         int tmp = counter;
         counter--;
         if (tmp == 0) break;

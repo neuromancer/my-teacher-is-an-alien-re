@@ -20,7 +20,7 @@ void FreeFromGlobalHeap(void* ptr)
 }
 
 // Wrapper used by menu/UI code
-extern "C" void* AllocateMemory_Wrapper(int size)
+void* AllocateMemory_Wrapper(int size)
 {
     return malloc(size);
 }

@@ -17,14 +17,14 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern "C" void SetVideoRes(int, int);
-extern "C" void WriteToLog(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 // FUN_0040b760 = VBuffer sdtor — callers updated
 // FUN_00404b80 = LinkedList::GetCurrentData — callers updated
 // FUN_00404d70 = ListNode sdtor — callers updated to use delete
 #include "globals.h"
 
+#include "string.h"
+#include "InputManager.h"
+#include "MouseControl.h"
 /* Function start: 0x4399E0 */
 SC_ExtBridge::SC_ExtBridge() {
     memset(&actionMsg, 0, 0x18);
@@ -193,8 +193,6 @@ void SC_ExtBridge::ShutDown(SC_MessageParser* msg)
 }
 
 #include "mCNavigator.h"
-#include "MouseControl.h"
-#include "InputManager.h"
 
 /* Function start: 0x43A030 */
 void SC_ExtBridge::Update(int p1, int p2)

@@ -2,13 +2,16 @@
 #include <windows.h>
 #include <string.h>
 
-extern "C" void ShowMessage(char *param_1, ...);
-extern "C" void WriteToMessageLog(const char *msg, ...);
+// Also declared in string.h; kept as local prototypes because pulling the whole
+// header into this hand-asm-matched TU shifts MSVC 4.20's register allocation.
+void ShowMessage(char *param_1, ...);
+void WriteToMessageLog(const char *msg, ...);
+
 
 #pragma optimize("y", off)
 
 /* Function start: 0x4524C2 */
-extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
+int __cdecl SetDrawPosition(int param_1, int param_2)
 {
     g_DrawPosX_0046d0aa = param_1;
     g_DrawPosY_0046d0b6 = param_2;
@@ -16,7 +19,7 @@ extern "C" int __cdecl SetDrawPosition(int param_1, int param_2)
 }
 
 /* Function start: 0x453C9B */
-extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_2)
+int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_2)
 {
     g_TextAlignH_0046d0a8 = param_1;
     g_TextAlignV_0046d0a9 = param_2;
@@ -24,7 +27,7 @@ extern "C" int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_
 }
 
 /* Function start: 0x453CCE */
-extern "C" int __cdecl GetPixelAt(int x, int y)
+int __cdecl GetPixelAt(int x, int y)
 {
     short result;
 
@@ -41,7 +44,7 @@ extern "C" int __cdecl GetPixelAt(int x, int y)
 }
 
 /* Function start: 0x4528EF */
-extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
+int __cdecl ReleaseVideoBuffer(unsigned int param_1)
 {
     HGLOBAL hMem;
     int* puVar2;
@@ -61,7 +64,7 @@ extern "C" int __cdecl ReleaseVideoBuffer(unsigned int param_1)
 }
 
 /* Function start: 0x452946 */
-extern "C" int __cdecl GetVideoBufferData(unsigned int handle)
+int __cdecl GetVideoBufferData(unsigned int handle)
 {
     int result;
 
@@ -74,7 +77,7 @@ extern "C" int __cdecl GetVideoBufferData(unsigned int handle)
 }
 
 /* Function start: 0x4529D5 */
-extern "C" int __cdecl CreateTable(int width, int height) {
+int __cdecl CreateTable(int width, int height) {
     int i = 0;
     while (i < 32 && g_VBufDataPtrs_0046de54[i] != 0) {
         i++;
@@ -138,7 +141,7 @@ extern "C" int __cdecl CreateTable(int width, int height) {
 #pragma optimize("y", on)
 
 /* Function start: 0x452B6E */
-extern "C" int ClearVideoBuffer(void) {
+int ClearVideoBuffer(void) {
     if (g_CurrentVideoBuffer_0046db3c >= 0) {
         memset((char*)g_VideoBufferBase_0046db4e, (char)g_FillColorDword_0046d079, g_VideoBufferSize_0046db4a);
     }
@@ -150,7 +153,7 @@ extern "C" int ClearVideoBuffer(void) {
 #pragma optimize("y", off)
 
 /* Function start: 0x452BAE */
-extern "C" int __cdecl SelectVideoBuffer(unsigned int param_1) {
+int __cdecl SelectVideoBuffer(unsigned int param_1) {
     int width;
     int height;
 
@@ -202,7 +205,7 @@ typedef int (__stdcall *WinGBitBltFunc)(HDC, int, int, int, int, HDC, int, int);
 typedef int (__stdcall *WinGStretchBltFunc)(HDC, int, int, int, int, HDC, int, int, int, int);
 
 /* Function start: 0x452D6B */
-extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
+int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
 {
     int iVar1;
     int w;
@@ -240,7 +243,7 @@ extern "C" int __cdecl BlitToDevice(int param_1, int param_2, int param_3, int p
 }
 
 /* Function start: 0x452E0F */
-extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int srcY2, int destX1, int destX2, int destY1, int destY2)
+int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int srcY2, int destX1, int destX2, int destY1, int destY2)
 {
     int srcWidth;
     int srcHeight;
@@ -279,7 +282,7 @@ extern "C" int __cdecl StretchBlitBuffer(int srcX1, int srcX2, int srcY1, int sr
 }
 
 /* Function start: 0x452FAA */
-extern "C" int __cdecl ReleaseBufferEntry(unsigned int param_1)
+int __cdecl ReleaseBufferEntry(unsigned int param_1)
 {
     int result;
 
@@ -291,10 +294,10 @@ extern "C" int __cdecl ReleaseBufferEntry(unsigned int param_1)
 }
 
 // Forward declaration
-extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4);
+int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4);
 
 /* Function start: 0x4531D8 */
-extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
+int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 {
     int* ptr;
     int counter;
@@ -335,7 +338,7 @@ extern "C" int __cdecl CreateTableFromBuffer(int buffer, int width, int height)
 }
 
 /* Function start: 0x4524D9 */
-extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4)
+int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4)
 {
     int iVar1;
     int iVar2;
@@ -360,10 +363,10 @@ extern "C" int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int 
 }
 
 // Forward declaration for ClipAndVideoFillRect
-extern "C" int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4);
+int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4);
 
 /* Function start: 0x452556 */
-extern "C" int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, int param_4)
+int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, int param_4)
 {
     int iVar1;
     int iVar2;
@@ -402,7 +405,7 @@ extern "C" int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, in
 }
 
 /* Function start: 0x453D37 */
-extern "C" int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4)
+int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4)
 {
     if (param_1 <= g_ClipRight_0046d0ca) {
         if (param_1 < g_ClipLeft_0046d0c6) {

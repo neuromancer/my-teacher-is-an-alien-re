@@ -13,7 +13,6 @@
 
 extern void ShowError(const char* message, ...);
 extern int FindCharIndex(char ch);
-extern "C" char* FindAfterSubstring(char* s1, char* s2);
 
 // g_NavSprite_0046c514 — defined in globals.cpp
 
@@ -160,8 +159,8 @@ int OnDir_SubNode::LBLParse(char* param_1)
 }
 
 /* Function start: 0x44A000 */
-int OnDir_SubNode::virtual4() {
-    return NavSubNode::virtual4();
+void OnDir_SubNode::virtual4() {
+    NavSubNode::virtual4();
 }
 
 // =========================================================================
@@ -171,8 +170,9 @@ int OnDir_SubNode::virtual4() {
 /* Function start: 0x44A010 */
 BG_SubNode::BG_SubNode() : NavSubNode()
 {
-    frameCounter = 0;
-    maxFrames = 0;
+    int* p = &frameCounter;
+    p[0] = 0;
+    p[1] = 0;
     memset(&state, 0, 6 * 4);
     BG_SubNode::virtual7();
 }
@@ -258,36 +258,31 @@ int BG_SubNode::Activate()
             local = h;
             if (spritePool->memory != 0) {
                 node = ((NavNode**)spritePool->memory)[local];
-loop:
-                if (node == 0) goto not_found;
-                if ((unsigned int)node->key == spriteId) goto found;
-                node = node->next;
-                goto loop;
+                while (node != 0) {
+                    if ((unsigned int)node->key == spriteId) goto found;
+                    node = node->next;
+                }
             }
-not_found:
             node = 0;
 found:
             if (node == 0) {
                 ShowError("BG_SubNode::DoAction() - Invalid Sprite Id S%d of %s", (int)local, ((mCNavNode*)parentNode)->nodeName);
             } else {
                 local = (int)node->value;
-                g_CombatSprite_0046ae5c->PlayById((int)local);
+                g_CombatSprite_0046ae5c->PlayById((unsigned int)node->value);
             }
         }
     }
 
 do_sprite:
     ;
-    int done = g_NavSprite_0046c514->Do(g_NavSprite_0046c514->loc.x, g_NavSprite_0046c514->loc.y, 1.0);
+    Sprite* spr = g_NavSprite_0046c514;
+    int done = spr->Do(spr->loc.x, spr->loc.y, 1.0);
     if (done != 0) {
         int count = frameCounter + 1;
         int isDone;
         frameCounter = count;
-        if (maxFrames != 0 && maxFrames <= count) {
-            isDone = 1;
-        } else {
-            isDone = 0;
-        }
+        isDone = (maxFrames != 0 && count >= maxFrames);
         if (isDone) {
             state = 2;
         }
@@ -317,31 +312,26 @@ void BG_SubNode::AddSpriteList(unsigned int param_1)
 
     ObjectPool* pool;
     unsigned int key;
-    unsigned int poolSize;
-    int* mem;
 
     pool = spritePool;
     key = pool->allocatedCount;
-    poolSize = pool->size;
-    {
-        unsigned int h = (key >> 4) % poolSize;
-        local_10 = h;
-    }
-    mem = (int*)pool->memory;
+    local_10 = (key >> 4) % (unsigned int)pool->size;
 
-    if (mem != 0) {
-        node = (NavNode*)mem[local_10];
+    if (pool->memory != 0) goto have_mem;
+    goto not_found2;
+have_mem:
+    node = ((NavNode**)pool->memory)[local_10];
 loop2:
-        if (node == 0) goto not_found2;
-        if ((unsigned int)node->key == key) goto found2;
-        node = node->next;
-        goto loop2;
-    }
+    if (node == 0) goto not_found2;
+    if ((unsigned int)node->key == key) goto found2;
+    node = node->next;
+    goto loop2;
 not_found2:
     node = 0;
 found2:
     if (node == 0) {
-        if (mem == 0) {
+        if (pool->memory == 0) {
+            volatile unsigned int poolSize = pool->size;
             int* newMem = (int*)operator new(poolSize * 4);
             pool->memory = newMem;
             memset(newMem, 0, poolSize * 4);
@@ -352,18 +342,19 @@ found2:
             int h = (int)local_10;
             node->bucketIndex = h;
             node->key = key;
-            NavNode** buckets = (NavNode**)pool->memory;
-            node->next = buckets[h];
-            buckets = (NavNode**)pool->memory;
-            buckets[h] = node;
+            int ofs = h * 4;
+            NavNode** bucket = (NavNode**)((char*)pool->memory + ofs);
+            node->next = *bucket;
+            bucket = (NavNode**)((char*)pool->memory + ofs);
+            *bucket = node;
         }
     }
     node->value = (void*)param_1;
 }
 
 /* Function start: 0x44A550 */
-int BG_SubNode::virtual4() {
-    return NavSubNode::virtual4();
+void BG_SubNode::virtual4() {
+    NavSubNode::virtual4();
 }
 
 // =========================================================================
@@ -371,7 +362,7 @@ int BG_SubNode::virtual4() {
 // =========================================================================
 
 /* Function start: 0x44AE00 */
-int NavSubNode::virtual4() { return 0; }
+void NavSubNode::virtual4() { }
 /* Function start: 0x44AD90 */
 int NavSubNode::Activate() { return 1; }
 

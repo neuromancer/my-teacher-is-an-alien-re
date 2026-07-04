@@ -2,7 +2,6 @@
 #include "string.h"
 #include "Memory.h"
 
-extern "C" void ShowError(const char* format, ...);
 
 /* Function start: 0x431C30 */
 void EventList::InsertNode(void* data) {
@@ -67,4 +66,12 @@ void* EventList::RemoveCurrent()
 
     current = head;
     return result;
+}
+
+/* Function start: 0x431D00 */
+ListNode* ListNode::Init(void* nodeData) {
+    prev = 0;
+    next = 0;
+    data = nodeData;
+    return this;
 }

@@ -16,7 +16,6 @@
 #include "MouseControl.h"
 #include "InputManager.h"
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x418690 */
 NavCrystal::NavCrystal(int id) {
@@ -40,17 +39,19 @@ int NavCrystal::LBLParse(char* line) {
     sscanf(line, " %s", label);
 
     if (strcmp(label, "LOC") == 0) {
-        int idx, x, y;
+        int y, idx, x;
         sscanf(line, " %s %d %d %d", label, &idx, &x, &y);
-        dimArray1[idx].x = x;
-        dimArray1[idx].y = y;
+        SlimeDim* d = &dimArray1[idx];
+        d->x = x;
+        d->y = y;
         return 0;
     }
     if (strcmp(label, "PZLOC") == 0) {
-        int idx, x, y;
+        int y, idx, x;
         sscanf(line, " %s %d %d %d", label, &idx, &x, &y);
-        dimArray2[idx].x = x;
-        dimArray2[idx].y = y;
+        SlimeDim* d = &dimArray2[idx];
+        d->x = x;
+        d->y = y;
         return 0;
     }
     if (strcmp(label, "PATTERN") == 0) {
@@ -58,26 +59,26 @@ int NavCrystal::LBLParse(char* line) {
         char p0[8], p1[8], p2[8], p3[8];
         sscanf(line, " %s %d %d %s %s %s %s", label, &rot, &base, p0, p1, p2, p3);
 
-        base = base * 4;
-        if (p0[0] == '1') patternData[rot * 64 + base * 4 + 0] = 1;
-        if (p0[1] == '1') patternData[rot * 64 + base * 4 + 1] = 1;
-        if (p0[2] == '1') patternData[rot * 64 + base * 4 + 2] = 1;
-        if (p0[3] == '1') patternData[rot * 64 + base * 4 + 3] = 1;
-        int r = base + 1;
+        int row = base * 4;
+        if (p0[0] == '1') patternData[rot * 64 + row * 4 + 0] = 1;
+        if (p0[1] == '1') patternData[rot * 64 + row * 4 + 1] = 1;
+        if (p0[2] == '1') patternData[rot * 64 + row * 4 + 2] = 1;
+        if (p0[3] == '1') patternData[rot * 64 + row * 4 + 3] = 1;
+        int r = row + 1;
         if (p1[0] == '1') patternData[rot * 64 + r * 4 + 0] = 1;
         if (p1[1] == '1') patternData[rot * 64 + r * 4 + 1] = 1;
         if (p1[2] == '1') patternData[rot * 64 + r * 4 + 2] = 1;
         if (p1[3] == '1') patternData[rot * 64 + r * 4 + 3] = 1;
-        r = base + 2;
+        r = row + 2;
         if (p2[0] == '1') patternData[rot * 64 + r * 4 + 0] = 1;
         if (p2[1] == '1') patternData[rot * 64 + r * 4 + 1] = 1;
         if (p2[2] == '1') patternData[rot * 64 + r * 4 + 2] = 1;
         if (p2[3] == '1') patternData[rot * 64 + r * 4 + 3] = 1;
-        base = base + 3;
-        if (p3[0] == '1') patternData[rot * 64 + base * 4 + 0] = 1;
-        if (p3[1] == '1') patternData[rot * 64 + base * 4 + 1] = 1;
-        if (p3[2] == '1') patternData[rot * 64 + base * 4 + 2] = 1;
-        if (p3[3] == '1') patternData[rot * 64 + base * 4 + 3] = 1;
+        r = row + 3;
+        if (p3[0] == '1') patternData[rot * 64 + r * 4 + 0] = 1;
+        if (p3[1] == '1') patternData[rot * 64 + r * 4 + 1] = 1;
+        if (p3[2] == '1') patternData[rot * 64 + r * 4 + 2] = 1;
+        if (p3[3] == '1') patternData[rot * 64 + r * 4 + 3] = 1;
         return 0;
     }
     if (strcmp(label, "END") == 0) {
@@ -218,21 +219,16 @@ void SC_Roach::UpdateProgress()
     int frame = (seconds / 2) % 24;
 
     if (rotateIndex != phase) {
-        int snd;
         if (phase == 1 && rotatePending == 0) {
-            snd = 10;
+            bgSound->Play(10);
         } else if (phase == 3) {
-            snd = 3;
+            bgSound->Play(3);
         } else if (phase == 5) {
-            snd = 4;
+            bgSound->Play(4);
         } else if (phase == 8) {
-            snd = 5;
-        } else {
-            goto skip_sound;
+            bgSound->Play(5);
         }
-        bgSound->Play(snd);
     }
-skip_sound:
     rotateIndex = phase;
     if (phase == 10) {
         circleSprite->ResetAnimation(frame, 0);
@@ -258,14 +254,8 @@ void SC_Roach::RenderBoard()
     if (crys != 0) {
         if (crys->sprite != 0) {
             InputState* pm = g_InputManager_0046aa08->pMouse;
-            int mouseY = 0;
-            if (pm != 0) {
-                mouseY = pm->y;
-            }
-            int mouseX = 0;
-            if (pm != 0) {
-                mouseX = pm->x;
-            }
+            int mouseY = (pm == 0) ? 0 : pm->y;
+            int mouseX = (pm == 0) ? 0 : pm->x;
             crys->sprite->Do(
                 mouseX - crys->dimArray1[crys->rotation].x,
                 mouseY - crys->dimArray1[crys->rotation].y,
@@ -287,12 +277,12 @@ void SC_Roach::RenderBoard()
     CrystalSource* src = &sources[0];
     do {
         if (src->crystalPtr != 0) {
-            SlimeDim pos;
-            pos.x = src->sourceX;
-            pos.y = src->sourceY;
+            SlimeDim pos = *(SlimeDim*)&src->sourceX;
             NavCrystal* crys = src->crystalPtr;
+            int py = pos.y;
+            int px = pos.x;
             if (crys->sprite != 0) {
-                crys->sprite->Do(pos.x, pos.y, 1.0);
+                crys->sprite->Do(px, py, 1.0);
             }
         }
         src++;
@@ -307,14 +297,18 @@ void SC_Roach::RenderBoard()
         int* cell = cellPtr;
         do {
             int id = *cell;
-            if (id >= 0 && id < 8 && drawn[id] == 0) {
+            if (id > -1 && id < 8 && drawn[id] == 0) {
                 drawn[id] = 1;
                 NavCrystal* crys = crystals[id];
-                if (crys != 0 && crys->sprite != 0) {
-                    crys->sprite->Do(
-                        cellPtr[4] - crys->dimArray2[crys->rotation].x,
-                        cellPtr[5] - crys->dimArray2[crys->rotation].y,
-                        1.0);
+                if (crys != 0) {
+                    int py = cellPtr[5];
+                    int px = cellPtr[4];
+                    if (crys->sprite != 0) {
+                        crys->sprite->Do(
+                            px - crys->dimArray2[crys->rotation].x,
+                            py - crys->dimArray2[crys->rotation].y,
+                            1.0);
+                    }
                 }
             }
             cell++;
@@ -332,8 +326,8 @@ void SC_Roach::RenderBoard()
 /* Function start: 0x4198B0 */
 int SC_Roach::TryPlacePiece(int* msg)
 {
-    int found = -1;
     int* cellPtr = (int*)grid + 4;
+    int found = -1;
     int idx = 0;
     int mouseX = msg[7] + 10;
 
@@ -378,9 +372,9 @@ found_cell:
     row = 0;
     do {
         int patternIdx = row % 4 + (row / 4) * 6 + found;
-        int count = 4;
-        int* dest = (int*)grid + patternIdx * 8;
         int zero = 0;
+        int* dest = (int*)grid + patternIdx * 8;
+        int count = 4;
         do {
             NavCrystal* crys = currentPiece;
             if (*pattern != zero) {
@@ -467,8 +461,8 @@ found:
         currentPiece = crystals[crystalId];
     }
 
-    int* gridPtr = (int*)grid;
     int count = 0x24;
+    int* gridPtr = (int*)grid;
     do {
         int* cell = gridPtr;
         int i = 4;
@@ -524,25 +518,21 @@ void SC_Roach::OnProcessEnd()
     SC_Combat::OnProcessEnd();
 
     int row = 0;
-    SlimeDim cellSize;
-    cellSize.x = 0x2a;
-    cellSize.y = 0x2a;
-    SlimeDim start;
-    start.x = 0xce;
-    start.y = 0x40;
+    SlimeDim cellSize(0x2a, 0x2a);
+    SlimeDim start(0xce, 0x40);
     int* gridPtr = (int*)grid + 4;
 
     do {
         int col = 0;
         int* cell = gridPtr;
         do {
-            SlimeDim sd;
-            sd.x = col * cellSize.x + start.x;
-            sd.y = row * cellSize.y + start.y;
-            cell[0] = sd.x;
-            cell[1] = sd.y;
-            cell[2] = cellSize.x + sd.x;
-            cell[3] = cellSize.y + sd.y;
+            {
+                SlimeDim sd(col * cellSize.x + start.x, row * cellSize.y + start.y);
+                cell[0] = sd.x;
+                cell[1] = sd.y;
+                cell[2] = cellSize.x + sd.x;
+                cell[3] = cellSize.y + sd.y;
+            }
             cell += 8;
             col++;
         } while (col < 6);
@@ -556,9 +546,9 @@ void SC_Roach::OnProcessEnd()
     sources[3].crystalPtr = crystals[3];
     sources[4].crystalPtr = crystals[4];
     sources[5].crystalPtr = crystals[5];
-    currentPiece = 0;
     sources[6].crystalPtr = crystals[6];
     sources[7].crystalPtr = crystals[7];
+    currentPiece = 0;
 
     progressObj = new Timer();
 

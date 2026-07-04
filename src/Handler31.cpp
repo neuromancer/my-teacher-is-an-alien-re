@@ -13,18 +13,15 @@
 #include "StringTable.h"
 #include "AnimatedAsset.h"
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" void ShowMessage(char *param_1, ...);
-extern "C" void WriteToMessageLog(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 #include "InputManager.h"
 #include "MouseControl.h"
 #include "GameState.h"
 #include "FlagArray.h"
+#include "string.h"
 
 
-extern void ResetSpriteStates();
+#include "SCI_Dialog.h"
 
 /* Function start: 0x418060 */
 /* Function start: 0x418086 */
@@ -289,7 +286,7 @@ void Handler31::ShutDown(SC_MessageParser* msg) {
         }
     }
 
-    ResetSpriteStates();
+    ((SCI_Dialog*)this)->ResetSpriteStates();
 
     int* arr = &g_IconBarState_00473334;
     do {
@@ -353,8 +350,9 @@ void Handler31::Update(int param1, int param2) {
             activeQuestion = 0;
         }
     } else {
+        ListNode* head;
         list = questionQueue;
-        if (list != 0 && list->head != 0) {
+        if (list != 0 && (head = list->head) != 0) {
             pMouse = g_InputManager_0046aa08->pMouse;
             if (pMouse == 0 || pMouse->y < 10) {
                 buttonIdx = -1;
@@ -364,10 +362,11 @@ void Handler31::Update(int param1, int param2) {
                 buttonIdx = 0;
             }
 
-            list->current = list->head;
-            if (list->head != 0) {
+            list->current = head;
+            if (questionQueue->head != 0) {
+                int drawY = 0xA;
                 do {
-                    node = list->current;
+                    node = questionQueue->current;
                     nodeData = 0;
                     if (node != 0) {
                         nodeData = (SC_Question*)node->data;
@@ -375,24 +374,29 @@ void Handler31::Update(int param1, int param2) {
                     // Original bug at 0x417500: null current question calls Update with ECX=0.
                     nodeData->Update(0x12, yPos);
 
+                    Sprite* spr;
                     if (count == buttonIdx) {
-                        optionHiSprite->Do(0x12, yPos, 1.0);
+                        spr = optionHiSprite;
                     } else {
-                        optionSprite->Do(0x12, yPos, 1.0);
+                        spr = optionSprite;
                     }
+                    spr->Do(0x12, drawY, 1.0);
+                    drawY += 0x22;
 
                     count++;
                     yPos += 0x22;
 
-                    if (list->tail == list->current) break;
-                    if (yPos > 0x11A) break;
-                    if (list->current != 0) {
-                        list->current = list->current->next;
+                    Queue* q = questionQueue;
+                    node = q->current;
+                    if (q->tail == node) break;
+                    if (drawY > 0x11A) break;
+                    if (node != 0) {
+                        q->current = node->next;
                     }
-                } while (list->head != 0);
+                } while (questionQueue->head != 0);
             }
         } else {
-            ResetSpriteStates();
+            ((SCI_Dialog*)this)->ResetSpriteStates();
             SendGameMessage(savedCommand, savedMsgData, 0x1F, moduleParam, 4, 0, 0, 0, 0, 0);
         }
     }
@@ -425,10 +429,12 @@ int Handler31::AddMessage(SC_MessageParser* msg) {
         if (action->button1 >= 2) {
             action->addressType = 0x1F;
             pMouse = g_InputManager_0046aa08->pMouse;
-            if (pMouse != 0 && pMouse->y >= 10) {
-                action->addressValue = pMouse != 0 ? (pMouse->y - 10) / 0x22 : 0;
-            } else {
+            if (pMouse == 0 || pMouse->y < 10) {
                 action->addressValue = -1;
+            } else if (pMouse != 0) {
+                action->addressValue = (pMouse->y - 10) / 0x22;
+            } else {
+                action->addressValue = 0;
             }
             action->instruction = 2;
             return 1;
@@ -704,8 +710,8 @@ void Handler31::Init(SC_MessageParser* msg) {
     }
     sprintf(dialogFile, "mis\\dialog%2.2d.mis", gs->stateValues[periodIdx]);
 
-    if (questionQueue != 0) {
-        Queue* list = questionQueue;
+    Queue* list = questionQueue;
+    if (list != 0) {
         if (list->head != 0) {
             list->current = list->head;
             if (list->head != 0) {
@@ -717,45 +723,56 @@ void Handler31::Init(SC_MessageParser* msg) {
                 } while (list->head != 0);
             }
         }
-        FreeMemory(questionQueue);
+        FreeMemory(list);
         questionQueue = 0;
     }
 
     questionQueue = new Queue(4);
 
-    periodIdx = g_GameState_0046aa30->FindState("PERIOD");
-    if (periodIdx < 0 || g_GameState_0046aa30->maxStates - 1 < periodIdx) {
+    gs = g_GameState_0046aa30;
+    periodIdx = gs->FindState("PERIOD");
+    if (periodIdx < 0 || gs->maxStates - 1 < periodIdx) {
         ShowError("Invalid gamestate %d", periodIdx);
     }
-    periodVal = g_GameState_0046aa30->stateValues[periodIdx];
+    periodVal = gs->stateValues[periodIdx];
 
-    roomInstIdx = g_GameState_0046aa30->FindState("ROOMINSTANCE");
-    if (roomInstIdx < 0 || g_GameState_0046aa30->maxStates - 1 < roomInstIdx) {
+    gs = g_GameState_0046aa30;
+    roomInstIdx = gs->FindState("ROOMINSTANCE");
+    if (roomInstIdx < 0 || gs->maxStates - 1 < roomInstIdx) {
         ShowError("Invalid gamestate %d", roomInstIdx);
     }
-    int _roomInst = g_GameState_0046aa30->stateValues[roomInstIdx];
+    int _roomInst = gs->stateValues[roomInstIdx];
 
-    if (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
-        ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+    gs = g_GameState_0046aa30;
+    int _charIdx = g_PeriodStateIdx_0046cb90;
+    if (_charIdx < 0 || gs->maxStates - 1 < _charIdx) {
+        ShowError("Invalid gamestate %d", _charIdx);
     }
-    if (g_GameState_0046aa30->stateValues[g_PeriodStateIdx_0046cb90] == -1 &&
-        (g_PeriodStateIdx_0046cb90 < 0 || g_GameState_0046aa30->maxStates - 1 < g_PeriodStateIdx_0046cb90)) {
-        ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
+    int _val = gs->stateValues[_charIdx];
+    char _ch;
+    if (_val == -1) {
+        _charIdx = g_PeriodStateIdx_0046cb90;
+        gs = g_GameState_0046aa30;
+        if (_charIdx < 0 || gs->maxStates - 1 < _charIdx) {
+            ShowError("Invalid gamestate %d", _charIdx);
+        }
+        _ch = g_PeriodCharTable_0046cb94[gs->stateValues[_charIdx]];
+    } else {
+        _ch = g_PeriodCharTable_0046cb94[_val];
     }
+
+    ParseFile(this, dialogFile, "[PERIOD%2.2d_SS%d_DIALOG%d_%c]",
+              periodVal, _roomInst, ((SpriteAction*)msg)->extra1, (int)_ch);
 
     {
-        int _charIdx = g_GameState_0046aa30->stateValues[g_PeriodStateIdx_0046cb90];
-        char _ch = g_PeriodCharTable_0046cb94[_charIdx];
-        int _extra1 = ((SpriteAction*)msg)->extra1;
-        ParseFile(this, dialogFile, "[PERIOD%2.2d_SS%d_DIALOG%d_%c]",
-                  periodVal, _roomInst, _extra1, (int)_ch);
-    }
-
-    if (palette != 0) {
-        if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToMessageLog("ddouble palette");
+        Palette* pal = palette;
+        if (pal != 0) {
+            Palette** slot = &g_ZBufferManager_0046aa24->m_palette;
+            if (*slot != 0) {
+                WriteToMessageLog("ddouble palette");
+            }
+            *slot = pal;
         }
-        g_ZBufferManager_0046aa24->m_palette = palette;
     }
 
     g_GlyphFont_0046aa28->LoadFont("elements\\text1.smk");

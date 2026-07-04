@@ -3,6 +3,7 @@
 #include "string.h"
 #include <string.h>
 
+// CRT-internal C symbol (no MSVC 4.2 header declares it) — extern "C" required.
 extern "C" void __cdecl _amsg_exit(int);
 
 // Handler base class destructor

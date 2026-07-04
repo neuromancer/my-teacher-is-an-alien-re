@@ -24,9 +24,7 @@
 // SC_Rats globals — defined in globals.cpp
 
 // Extern functions
-extern "C" int FileExists(const char*);
 extern void __fastcall InitCombatScreen(void*);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 // FUN_00450b10 = EngineB::EngineB — callers updated to use placement new
 #include "EngineB.h"

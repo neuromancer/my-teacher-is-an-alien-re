@@ -8,7 +8,7 @@
 // SmackSummary stub: present in original SMACKW32.DLL but absent from the
 // version of smackw32.lib bundled in this repo. Provide a minimal stub so the
 // EXE links; only the debug-only ShowSmackSummary code path uses it.
-extern "C" void __stdcall SmackSummary(void*, unsigned int* summary)
+void __stdcall SmackSummary(void*, unsigned int* summary)
 {
     for (int i = 0; i < 21; i++) {
         summary[i] = 1;

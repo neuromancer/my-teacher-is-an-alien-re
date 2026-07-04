@@ -31,19 +31,6 @@ int TextInput::ProcessKey(int key) {
     int result = 0;
 
     switch (key) {
-    case 8:
-        len--;
-        if (len < 0) len = 0;
-        editBuf[len] = 0;
-        return result;
-    case 0xD:
-        strcpy(origBuf, editBuf);
-        result = 1;
-        return result;
-    case 0x1B:
-        strcpy(editBuf, origBuf);
-        result = 1;
-        break;
     default:
         if (key == 0x2D) key = 0x5F;
         if ((key >= 0x41 && key <= 0x5A) || (key >= 0x30 && key <= 0x39) ||
@@ -51,15 +38,27 @@ int TextInput::ProcessKey(int key) {
             editBuf[len] = (char)key;
             if (font->GetTextWidth(editBuf) > maxWidth) {
                 editBuf[len] = 0;
-                return result;
+                break;
             }
             len++;
             if (len > maxLen - 1) {
                 len = maxLen - 1;
             }
             editBuf[len] = 0;
-            return result;
         }
+        break;
+    case 8:
+        len--;
+        if (len < 0) len = 0;
+        editBuf[len] = 0;
+        break;
+    case 0xD:
+        strcpy(origBuf, editBuf);
+        result = 1;
+        break;
+    case 0x1B:
+        strcpy(editBuf, origBuf);
+        result = 1;
         break;
     }
     return result;

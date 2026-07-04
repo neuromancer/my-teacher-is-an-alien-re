@@ -12,7 +12,7 @@ class Sample;
  * Size: 0xA8 (168 bytes)
  * Functions: 0x4327C0-0x432DA0
  */
-extern "C" int SetCursorVisible(unsigned int);
+int SetCursorVisible(unsigned int);
 
 struct Point {
     Point() {}

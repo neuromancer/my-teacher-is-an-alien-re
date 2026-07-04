@@ -17,9 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern "C" int FileExists(const char* filename);
-extern "C" void ShowLoadingScreen();
 
+#include "main.h"
 extern void ParseSpriteAction(void*, void*);
 extern void EnqueueSpriteAction(void*);
 
@@ -37,7 +36,6 @@ SCI_SearchScreen::~SCI_SearchScreen()
 
 #include "globals.h"
 #include "SC_CombatBase.h"
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x40B510 */
 void SCI_SearchScreen::Init(SC_MessageParser* msg) {
@@ -226,7 +224,7 @@ int SCI_SearchScreen::LBLParse(char* line) {
 }
 
 /* Function start: 0x40EFB0 */
-extern "C" void ClearGameStateSave() {
+void ClearGameStateSave() {
     g_FanField1_00472be0 = 0;
     g_FanField2_00472be4 = 0;
     g_FanField3_00472be8 = 0;
@@ -296,6 +294,6 @@ void InitDefaultSearchCoords()
 static void AtExitHandler() {}
 
 /* Function start: 0x44EB60 */
-extern "C" void RegisterAtExitHandler() {
+void RegisterAtExitHandler() {
     atexit(AtExitHandler);
 }

@@ -27,8 +27,6 @@ static _PVFV _init_iconbar = _iconbar_crt_init;
 #pragma data_seg()
 
 // External functions
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" void SetVideoRes(int, int);         // 0x425A90 - in VBuffer.cpp
 
 // FUN_0044ccf0 is a thiscall Sprite method (4 stack params)
 
@@ -234,6 +232,7 @@ int IconBar::AddMessage(SC_MessageParser* msg) {
     SpriteAction* act;
     GameState* gs;
     int result;
+    int inBounds;
 
     act = (SpriteAction*)msg;
     WriteMessageAddress(msg);
@@ -245,103 +244,85 @@ int IconBar::AddMessage(SC_MessageParser* msg) {
             SendGameMessage(0x2d, 1, handlerId, moduleParam, 4, 0, 0, 0, 0, 0);
             return 1;
         }
-        return 0;
-    }
-
-    {
-        int inBounds;
+    } else {
         if (g_IconBarLeft_00473310 <= act->mousePos.x && g_IconBarRight_00473318 >= act->mousePos.x &&
             g_IconBarTop_00473314 <= act->mousePos.y && g_IconBarBottom_0047331c >= act->mousePos.y) {
             inBounds = 1;
         } else {
             inBounds = 0;
         }
-        if (inBounds == 0) {
-            return 0;
-        }
-    }
+        if (inBounds != 0) {
+            if (act->button1 < 2) {
+                goto ret_one;
+            }
 
-    if (act->button1 < 2) {
-        return 1;
-    }
+            if (g_SelectedItem_0046a6e4 != 0) {
+                SendGameMessage(0x1e, ((Handler*)g_SelectedItem_0046a6e4)->moduleParam,
+                             handlerId, moduleParam, 0x17, 0, 0, 0, 0, 0);
+            }
 
-    if (g_SelectedItem_0046a6e4 != 0) {
-        SendGameMessage(0x1e, ((Handler*)g_SelectedItem_0046a6e4)->moduleParam,
-                     handlerId, moduleParam, 0x17, 0, 0, 0, 0, 0);
-    }
+            buttonIndex = FindClickedEntry((int*)msg);
 
-    buttonIndex = FindClickedEntry((int*)msg);
+            if (buttonIndex == -1) {
+                goto ret_one;
+            }
 
-    if (buttonIndex == -1) {
-        return 1;
-    }
-
-    if (buttonIndex == 4) {
-        {
-            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
-                             4, 0, 0, 0, 0, 0);
-            g_PendingAction_00472d58.CopyFrom(&temp);
-        }
-        PlayButtonSound(buttonIndex);
-        return 1;
-    }
-
-    if (buttonIndex == 5) {
-        {
-            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
-                             4, 0, 0, 0, 0, 0);
-            g_PendingAction_00472d58.CopyFrom(&temp);
-        }
-        PlayButtonSound(buttonIndex);
-        return 1;
-    }
-
-    if (buttonIndex == 0) {
-        {
-            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
-                             4, 0, 0, 0, 0, 0);
-            g_IconBarAction_00472d20.CopyFrom(&temp);
-        }
-        PlayButtonSound(buttonIndex);
-        return 1;
-    }
-
-    if (buttonIndex == 2) {
-        result = 0;
-        if (handlerId == 0x20) {
-            result = ((GameState*)g_GameState2_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
-        }
-        {
-            SpriteAction temp(act->addressType, act->addressValue, act->fromType, act->fromValue,
-                             4, result, 0, 0, 0, 0);
-            g_HotspotAction_00472d90.CopyFrom(&temp);
-        }
-        gs = g_GameState_0046aa30;
-        {
-        int idx = gs->FindState("PERIOD");
-        if (idx < 0 || gs->maxStates - 1 < idx) {
-            ShowError("Invalid gamestate %d", idx);
-        }
-        if (gs->stateValues[idx] == 1) {
-            return 1;
-        }
-        PlayButtonSound(buttonIndex);
-        return 1;
-        }
-    }
-
-    if (buttonIndex == 1) {
-        result = ((GameState*)g_GameState2_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
-        if (handlerId == 0x20) {
-            if (result == 5 || result == 0x12) {
-                SendGameMessage(4, 0x1b86, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+            if (buttonIndex == 4) {
+                g_PendingAction_00472d58.CopyFrom(&SpriteAction(act->addressType, act->addressValue,
+                                     act->fromType, act->fromValue, 4, 0, 0, 0, 0, 0));
+play_sound:
+                PlayButtonSound(buttonIndex);
+ret_one:
                 return 1;
             }
+
+            if (buttonIndex == 5) {
+                g_PendingAction_00472d58.CopyFrom(&SpriteAction(act->addressType, act->addressValue,
+                                     act->fromType, act->fromValue, 4, 0, 0, 0, 0, 0));
+                goto play_sound;
+            }
+
+            if (buttonIndex == 0) {
+                g_IconBarAction_00472d20.CopyFrom(&SpriteAction(act->addressType, act->addressValue,
+                                     act->fromType, act->fromValue, 4, 0, 0, 0, 0, 0));
+                goto play_sound;
+            }
+
+            if (buttonIndex == 2) {
+                result = 0;
+                if (handlerId == 0x20) {
+                    result = ((GameState*)g_GameState2_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
+                }
+                g_HotspotAction_00472d90.CopyFrom(&SpriteAction(act->addressType, act->addressValue,
+                                     act->fromType, act->fromValue, 4, result, 0, 0, 0, 0));
+                gs = g_GameState_0046aa30;
+                {
+                int idx = gs->FindState("PERIOD");
+                if (idx < 0 || gs->maxStates - 1 < idx) {
+                    ShowError("Invalid gamestate %d", idx);
+                }
+                if (gs->stateValues[idx] == 1) {
+                    return 1;
+                }
+                goto play_sound;
+                }
+            }
+
+            if (buttonIndex == 1) {
+                result = ((GameState*)g_GameState2_0046aa3c)->FindState((char*)g_StateString_0046aa2c);
+                if (handlerId == 0x20) {
+                    if (result == 5 || result == 0x12) {
+                        SendGameMessage(4, 0x1b86, handlerId, moduleParam, 2, 0, 0, 0, 0, 0);
+                        return 1;
+                    }
+                }
+            }
+
+            goto play_sound;
         }
     }
 
-    PlayButtonSound(buttonIndex);
-    return 1;
+    return 0;
 }
 
 /* Function start: 0x42DD30 */
@@ -356,14 +337,14 @@ void IconBar::Update(int param1, int param2) {
     int mouseY;
     int* mousePos;
     GameState* gs;
+    Sprite* spr;
 
     if (handlerId != param2) {
         return;
     }
 
-    g_SchoolMenuSprite_0046af08->Do(
-        g_SchoolMenuSprite_0046af08->loc.x,
-        g_SchoolMenuSprite_0046af08->loc.y, 1.0);
+    spr = g_SchoolMenuSprite_0046af08;
+    spr->Do(spr->loc.x, spr->loc.y, 1.0);
 
     entry = g_IconBarEntries_00473320;
     do {
@@ -439,15 +420,18 @@ int IconBar::FindClickedEntry(int* param) {
     int x;
     int y;
     int found;
+    int* p;
 
+    // Original iterates a cursor anchored at field_14 (0x473334..0x47340C,
+    // stride 0x24); bounds are read via negative offsets from the cursor.
     i = 0;
-    IconBarEntry* entry = g_IconBarEntries_00473320;
+    p = &g_IconBarEntries_00473320[0].field_14;
     do {
-        if (entry->field_14 != 0) {
+        if (*p != 0) {
             x = param[7];
-            if (entry->bounds.left <= x && entry->bounds.right >= x) {
+            if (p[-4] <= x && p[-2] >= x) {
                 y = param[8];
-                if (entry->bounds.top <= y && entry->bounds.bottom >= y) {
+                if (p[-3] <= y && p[-1] >= y) {
                     found = 1;
                 } else {
                     found = 0;
@@ -457,9 +441,9 @@ int IconBar::FindClickedEntry(int* param) {
                 }
             }
         }
-        entry = entry + 1;
+        p = p + 9;
         i = i + 1;
-    } while (entry < &g_IconBarEntries_00473320[6]);
+    } while (p < &g_IconBarEntries_00473320[6].field_14);
     return -1;
 }
 
@@ -471,8 +455,8 @@ void IconBar::PlayButtonSound(int buttonIndex) {
     if (buttonIndex < 0 || buttonIndex > 6) {
         ShowError("Error in SC_IconBr.cpp: Invalid array index");
     } else {
-        i = 2;
         pSlot = &g_IconBarEntries_00473320[buttonIndex].slot0;
+        i = 2;
         do {
             if (*pSlot != 0) {
                 EnqueueSpriteAction(*pSlot);
@@ -577,7 +561,7 @@ void IconBarEntry::RegisterSlot(SpriteAction* obj) {
     pSlot = &slot0;
     do {
         if (*pSlot == 0) {
-            *pSlot = obj;
+            (&slot0)[i] = obj;
             return;
         }
         pSlot = pSlot + 1;

@@ -1,7 +1,7 @@
 #include "globals.h"
 #include <string.h>
 
-extern "C" {
+
 
 #pragma optimize("y", off)
 
@@ -92,4 +92,4 @@ int __cdecl BlitBufferTransparent(int srcX1, int srcX2, int srcY1, int srcY2, in
     return 0;
 }
 
-}
+

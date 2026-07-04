@@ -3,9 +3,9 @@
 #include "globals.h"
 #include <stdio.h>
 #include <string.h>
+#include "SpriteAction.h"
+#include "string.h"
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x43A4C0 */
 EngineA::EngineA() {

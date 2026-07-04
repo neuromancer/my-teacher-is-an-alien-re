@@ -61,7 +61,7 @@ static void BuildScaleTable(unsigned char* output, unsigned int count, unsigned 
 }
 
 /* Function start: 0x452FCE */
-extern "C" void __cdecl ScaleBuffer(void* srcData, void* destData, unsigned int srcWidth, unsigned int srcHeight, unsigned int destWidth, unsigned int destHeight)
+void __cdecl ScaleBuffer(void* srcData, void* destData, unsigned int srcWidth, unsigned int srcHeight, unsigned int destWidth, unsigned int destHeight)
 {
     unsigned char xTable[130];
     unsigned char yTable[130];

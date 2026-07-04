@@ -29,17 +29,18 @@
 
 // T_MenuHotspot is the 0x1A8-byte menu button widget
 #include "T_MenuHotspot.h"
+#include "string.h"
+
 
 // extern "C" functions (matching stubs.cpp)
-extern "C" {
+
     // FUN_00413e10 = ParseFile in Parser.h
     int FileExists(const char*);
     void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
     char* GetSoundFilename(int handle);
-}
+
 // C++ linkage functions (matching stubs.cpp)
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
-extern "C" void WriteToLog(const char* format, ...);
 
 
 
@@ -814,8 +815,10 @@ opt_loop:
         if (opt == 0) goto next_opt;
         {
             SlimeDim optCoords = action->mousePos;
+            int oy = optCoords.y;
+            int ox = optCoords.x;
             if (opt->sprite == 0) goto opt_miss;
-            if (opt->bounds.HitTest(optCoords.x, optCoords.y)) {
+            if (opt->bounds.HitTest(ox, oy)) {
                 hitOpt = 1;
                 goto opt_done;
             }
@@ -908,8 +911,8 @@ char_click:
         }
 
         // Update global character selection
-        gs = g_GameState_0046aa30;
         hitResult = g_PeriodStateIdx_0046cb90;
+        gs = g_GameState_0046aa30;
         gs->ValidateIndex(hitResult);
         stateVals = gs->stateValues;
         stateVals[hitResult] = i;
@@ -935,12 +938,10 @@ char_click:
             T_MenuHotspot* selSpr = *selPtr;
             gs = g_GameState_0046aa30;
             int periodIdx2 = g_PeriodStateIdx_0046cb90;
-            int pIdx = gs->FindState("PERIOD");
-            gs->ValidateIndex(pIdx);
+            i = gs->FindState("PERIOD");
+            gs->ValidateIndex(i);
             stateVals = gs->stateValues;
-            int period = stateVals[pIdx];
-            int offset = (g_GameState_0046aa30)->GetStateValue(periodIdx2);
-            int fullIdx = period * 3 + offset;
+            int fullIdx = stateVals[i] * 3 + (g_GameState_0046aa30)->GetStateValue(periodIdx2);
             char* sndFile = GetSoundFilename(selSpr->soundEntries[fullIdx - 3]);
             menuSound->Load(sndFile);
             menuSound->Play(100, 1);
@@ -953,7 +954,27 @@ next_opt:
     optPtr++;
     i++;
     if (i < 9) goto opt_loop;
-    goto check_go;
+    /* fall through */
+
+check_go:
+    if (selectedOption <= -1) goto check_back;
+    if (IsCharacterActive() == 0) goto check_back;
+
+    // Check go button hit
+    {
+        SlimeDim* goMouse = &action->mousePos;
+        SlimeDim goCoords = *goMouse;
+        T_MenuHotspot* goSpr = okayButton;
+        int gy = goCoords.y;
+        int gx = goCoords.x;
+        if (goSpr->sprite != 0 &&
+            goSpr->bounds.HitTest(gx, gy) != 0) {
+            hitResult = 1;
+        } else {
+            hitResult = 0;
+        }
+    }
+    goto go_eval;
 
 opt_click:
     // Option was clicked - reset all
@@ -989,12 +1010,10 @@ opt_click:
         T_MenuHotspot* selOpt2 = *selPtr;
         gs = g_GameState_0046aa30;
         int charStateIdx = g_PeriodStateIdx_0046cb90;
-        int pIdx = gs->FindState("PERIOD");
-        gs->ValidateIndex(pIdx);
+        hitOpt = gs->FindState("PERIOD");
+        gs->ValidateIndex(hitOpt);
         stateVals = gs->stateValues;
-        int period = stateVals[pIdx];
-        int offset = (g_GameState_0046aa30)->GetStateValue(charStateIdx);
-        int fullIdx = period * 3 + offset;
+        int fullIdx = stateVals[hitOpt] * 3 + (g_GameState_0046aa30)->GetStateValue(charStateIdx);
         char* sndFile = GetSoundFilename(selOpt2->soundEntries[fullIdx - 3]);
         menuSound->Load(sndFile);
         menuSound->Play(100, 1);
@@ -1002,24 +1021,7 @@ opt_click:
     selectedOption = i;
     goto check_go;
 
-check_go:
-    if (selectedOption <= -1) goto check_back;
-    if (IsCharacterActive() == 0) goto check_back;
-
-    // Check go button hit
-    {
-        SlimeDim goCoords;
-        int* goMouse = &action->mousePos.x;
-        goCoords.x = goMouse[0];
-        goCoords.y = goMouse[1];
-        T_MenuHotspot* goSpr = okayButton;
-        if (goSpr->sprite != 0 &&
-            goSpr->bounds.HitTest(goCoords.x, goCoords.y) != 0) {
-            hitResult = 1;
-        } else {
-            hitResult = 0;
-        }
-    }
+go_eval:
     if (hitResult != 0) {
         // Go button clicked - increment NUM_ACTIONS
         gs = g_GameState_0046aa30;
@@ -1128,21 +1130,23 @@ set_captured:
     }
 
 check_back:
-    if (cancelButton == 0) goto done;
     {
-        SlimeDim backCoords;
-        backCoords.x = ((SpriteAction*)msg)->mousePos.x;
-        backCoords.y = ((SpriteAction*)msg)->mousePos.y;
         T_MenuHotspot* backSpr = cancelButton;
-        if (backSpr->sprite != 0 &&
-            backSpr->bounds.HitTest(backCoords.x, backCoords.y) != 0) {
-            hitResult = 1;
-        } else {
-            hitResult = 0;
+        if (backSpr == 0) goto done;
+        {
+            SlimeDim backCoords = *(SlimeDim*)&((SpriteAction*)msg)->mousePos;
+            int by = backCoords.y;
+            int bx = backCoords.x;
+            if (backSpr->sprite != 0 &&
+                backSpr->bounds.HitTest(bx, by) != 0) {
+                hitResult = 1;
+            } else {
+                hitResult = 0;
+            }
         }
-    }
-    if (hitResult != 0) {
-        PlayMenuSound();
+        if (hitResult != 0) {
+            PlayMenuSound();
+        }
     }
 
 done:

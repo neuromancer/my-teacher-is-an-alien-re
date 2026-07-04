@@ -12,11 +12,14 @@
 
 #include "Palette.h"
 
+// Also declared in VBuffer.h; local prototype keeps this TU's MSVC 4.20
+// register allocation stable.
+void SetVideoRes(int, int);
+
 class FuncCaller0x425a90 {
 public:
     static void __cdecl Call(int, int);  // 0x425a90
 };
-extern "C" void SetVideoRes(int, int);
 
 /* Function start: 0x434660 */
 EngineInfoParser::EngineInfoParser() : Parser() {

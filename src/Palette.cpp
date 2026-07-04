@@ -8,9 +8,10 @@
 #include <string.h>
 #include "Memory.h"
 #include "Animation.h"
+#include "Graphics.h"
+#include "main.h"
 
 extern char* __cdecl ResolveAssetPath(char* name, ...);
-extern "C" int FileExists(const char*);
 
 /* Function start: 0x41DBE0 */
 Palette* __fastcall InitPalette(Palette* buffer)
@@ -36,8 +37,8 @@ void Palette::Cleanup()
 
 
 
-extern "C" {
-}
+
+
 
 /* Function start: 0x41DBF0 */
 Palette::Palette(char* filename)
@@ -140,7 +141,7 @@ void Palette::SetPalette(UINT start, UINT count)
 }
 
 /* Function start: 0x41DE40 */
-extern "C" void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count) {
+void __cdecl SetPaletteEntriesAnimation(void *palette, unsigned int start, unsigned int count) {
   SetPaletteEntries_(start, count, (unsigned char *)palette + start * 3);
 }
 
@@ -162,7 +163,6 @@ void Palette::FadeTo(int targetR, int targetG, int targetB, float fraction, int 
     }
 }
 
-extern "C" void FlipScreen();
 
 /* Function start: 0x41DF10 */
 unsigned int Palette::SetAndApply(unsigned int start, unsigned int count)

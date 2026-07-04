@@ -537,7 +537,6 @@ push_result:
 /* Function start: 0x413120 */
 #include "Sprite.h"
 
-extern "C" char* strstr(const char*, const char*);
 
 /* Function start: 0x413120 */
 void Parser::HandleToken(int tokenType, char* line) {
@@ -575,21 +574,26 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 4:
         result = EndComment();
-        if ((result & 2) == 0) {
-            result = result | 1;
-        } else {
+        if ((result & 2) != 0) {
             result = result & 0xFFFFFFFE;
+        } else {
+            result = result | 1;
         }
         PushConditionalState(result);
         break;
 
     case 6:
         {
-            int value = 0;
-            int scanResult = 0;
+            // Original quirk: 'value' is never zero-initialized; the not-found
+            // path below reads it uninitialized (and always fails the != 3 check).
+            int value;
+            int scanResult;
             pcVar7 = FindAfterSubstring(line, "SET_GAMESTATE_");
             if (pcVar7 != 0) {
                 scanResult = sscanf(pcVar7, " %s %s %d ", local_38, local_90, &value);
+            } else {
+                // Original quirk: the not-found path reads the (still zero) %d slot.
+                scanResult = value;
             }
             if (scanResult != 3) {
                 ShowError("Parser::HandleToken - Invalid SET_GAMESTATE statement '%s'", line);

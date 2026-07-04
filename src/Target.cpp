@@ -1,6 +1,5 @@
 #include "Target.h"
 #include "globals.h"
-extern "C" void WriteToMessageLog(const char* msg, ...);
 #include "Sprite.h"
 #include "Memory.h"
 #include "SoundList.h"
@@ -14,6 +13,7 @@ extern "C" void WriteToMessageLog(const char* msg, ...);
 #include <string.h>
 #include <stdio.h>
 
+#include "VideoTable.h"
 extern char* __cdecl ResolveAssetPath(char*, ...);
 
 // ============================================================================
@@ -49,7 +49,6 @@ Target::~Target()
     }
 }
 
-extern "C" int __cdecl GetPixelAt(int x, int y);
 
 /* Function start: 0x4425F0 */ /* ~81% match */
 void Target::Spawn()

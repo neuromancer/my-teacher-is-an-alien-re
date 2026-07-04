@@ -12,9 +12,7 @@
 #include "SpaceShipEngine.h"
 #include "Parser.h"
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" int FileExists(const char* path);
-extern "C" void ShowLoadingScreen();
+#include "main.h"
 extern Parser* ParseFile(Parser* parser, char* filename, char* key_format, ...);
 
 #include "globals.h"

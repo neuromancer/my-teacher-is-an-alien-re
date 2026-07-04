@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <windows.h>
 
-extern "C" FILE* fsopen(const char*, const char*);
 
 /* Function start: 0x44BFA0 */
 StringTable::StringTable(char* f, int loadNow) {

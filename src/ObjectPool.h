@@ -28,8 +28,8 @@ public:
             }
             int numBuckets = objSz + (int)((double)objSz * 0.3);
             int* buckets = new int[numBuckets];
-            memset(buckets, 0, numBuckets * 4);
             memory = buckets;
+            memset(buckets, 0, numBuckets * 4);
             size = numBuckets;
         }
     }

@@ -13,27 +13,26 @@
 #include <stdlib.h>
 #include <new.h>
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 // FUN_00413e10 = ParseFile in Parser.h
-extern "C" void SetVideoRes(int, int);
 
 
 
 // FUN_00429c10 = SC_PRHotSpot::~SC_PRHotSpot — callers updated
 // FUN_0042bc50 = LinkedList::RemoveCurrent COMDAT — callers updated to use RemoveCurrent()
 
+#include "string.h"
+#include "VBuffer.h"
+#include "CDData.h"
+#include "MouseControl.h"
 extern char* PTR_s_cfg_practice_sav_0046ad68;  // -> "cfg\\practice.sav" (globals.cpp)
 #define g_PracticeSavePath PTR_s_cfg_practice_sav_0046ad68
-extern "C" FILE* __cdecl OpenSaveFile(char* path, char* mode); // 0x426050
 void SavePracticeState();   // 0x42B100
 void LoadPracticeState();   // 0x42B270
 // FUN_00429df0 = SC_PRHotSpot::Update — callers updated
 // FUN_00420f00 = T_MenuHotspot::Update — callers updated
 #include "SC_PRHotSpot.h"
 #include "T_MenuHotspot.h"
-#include "MouseControl.h"
 
-extern "C" void WriteToLog(const char* format, ...);
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
 
 // FUN_00429b60 = SC_PRHotSpot ctor — callers updated to use new

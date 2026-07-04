@@ -2,9 +2,9 @@
 #include "VBuffer.h"
 #include "VideoTable.h"
 
-extern "C" {
+
     void ScaleBuffer(void*, void*, unsigned int, unsigned int, unsigned int, unsigned int);
-}
+
 
 /* Function start: 0x4119D0 */
 void __stdcall DrawScaledSprite(int x, int y, void* data, double scale)

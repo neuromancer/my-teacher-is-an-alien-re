@@ -4,4 +4,6 @@
 #include <windows.h>
 #define TODO(name) MessageBoxA(0, "TODO: " name, "TODO", 0)
 
+void __stdcall SmackSummary(void*, unsigned int* summary);
+
 #endif

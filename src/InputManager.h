@@ -2,6 +2,7 @@
 #define INPUTMANAGER_H
 
 #include <windows.h>
+#include <string.h>
 #include <mmsystem.h>
 #include "GlyphRect.h"
 
@@ -18,7 +19,7 @@ struct InputState : public MousePoint {
     int prevButtons;// 0xC
     int ext1;       // 0x10
     int ext2;       // 0x14
-    InputState() : MousePoint(), buttons(0), prevButtons(0), ext1(0), ext2(0) {}
+    InputState() { memset(this, 0, sizeof(InputState)); }
     ~InputState() {}
 };
 
@@ -47,5 +48,7 @@ public:
 
 // Global input functions
 int WaitForInput();
+
+char* FindAfterSubstring(char* s1, char* s2);
 
 #endif // INPUTMANAGER_H

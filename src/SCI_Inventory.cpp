@@ -11,15 +11,13 @@
 #include "Palette.h"
 #include "InputManager.h"
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" char* GetSoundFilename(int handle);
 
 #include "MsgList.h"
+#include "string.h"
+#include "MouseControl.h"
 #define g_InventoryList ((LinkedList*)g_MsgList_0046a6dc)
 #include "ZBufferManager.h"
 
-#include "MouseControl.h"
 #include "T_MenuHotspot.h"
 // DAT_0046a6dc is g_MsgList_0046a6dc — use g_MsgList_0046a6dc via globals.h
 // FUN_004407c0 = RemoveCurrent COMDAT — callers updated
@@ -345,15 +343,7 @@ int SCI_Inventory::AddMessage(SC_MessageParser* msg) {
             nextNode->prev = node->prev;
         }
 
-        {
-            volatile int zero = 0;
-            int i = zero;
-            int j = i - 1;
-            while (i != 0) {
-                i = j;
-                j = i - 1;
-            }
-        }
+        { int i = 0; while (i-- != 0); }
 
         node->next = pool->freeList;
         pool->freeList = node;
@@ -694,9 +684,9 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
                                          j * sizeof(InventoryPoolNode));
                 while (j >= 0) {
                     nodePtr->next = pool->freeList;
+                    j--;
                     pool->freeList = nodePtr;
                     nodePtr--;
-                    j--;
                 }
             }
         }
@@ -709,15 +699,7 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
             pool->count++;
             newNode->item = 0;
 
-            {
-                volatile int zero = 0;
-                int k = zero;
-                int l = k - 1;
-                while (k != 0) {
-                    k = l;
-                    l = k - 1;
-                }
-            }
+            { int k = 0; while (k-- != 0); }
 
             newNode->item = item;
 
@@ -755,15 +737,7 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
                 node->next->prev = node->prev;
             }
 
-            {
-                volatile int zero = 0;
-                int k = zero;
-                int l = k - 1;
-                while (k != 0) {
-                    k = l;
-                    l = k - 1;
-                }
-            }
+            { int k = 0; while (k-- != 0); }
 
             node->next = pool->freeList;
             pool->freeList = node;
@@ -964,6 +938,7 @@ Rect::~Rect() {}
 #include "Palette.h"
 #include "GameState.h"
 #include <new.h>
+
 
 /* Function start: 0x43FDD0 */
 int SCI_Inventory::LBLParse(char* line) {

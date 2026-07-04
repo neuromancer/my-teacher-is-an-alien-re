@@ -1,23 +1,21 @@
 #include "GameWindow.h"
+#include "MouseControl.h"
+#include "Graphics.h"
 #include "globals.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <smack.h>
 
-extern "C" {
+
 int GetColorBitDepth();
 void ShowMessage(const char *);
 int ShowMessageYesNo(char *, ...);
-void InitVideoSystem();
-void InitMouseSettings();
-int SetCursorVisible(unsigned int);
 void AddToStringTable(char *);
 int InvalidateVideoMode();
 int CleanupVideoSystem();
-}
 
-extern "C" int* GetWindowWidth();
+
 
 LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
@@ -177,24 +175,24 @@ void GameWindow::Shutdown() {
 }
 
 /* Function start: 0x4205D0 */
-extern "C" void* GetGameWindowHandle() {
+void* GetGameWindowHandle() {
   return g_GameWindow.hWnd;
 }
 
 /* Function start: 0x420600 */
-extern "C" int* GetWindowWidth() {
+int* GetWindowWidth() {
   return &g_WindowWidth_00472d10;
 }
 
 // g_ScreenWidth_00472d08, g_ScreenHeight_00472d0c — defined in globals.cpp
 
 /* Function start: 0x4205E0 */
-extern "C" int* GetScreenWidth() {
+int* GetScreenWidth() {
   return &g_ScreenWidth_00472d08;
 }
 
 /* Function start: 0x4205F0 */
-extern "C" int* GetScreenHeight() {
+int* GetScreenHeight() {
   return &g_ScreenHeight_00472d0c;
 }
 

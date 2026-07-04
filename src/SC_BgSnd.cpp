@@ -10,8 +10,7 @@
 #include <mss.h>
 #include "string.h"
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" char* GetSoundFilename(int handle);
+
 
 /* Function start: 0x4392E0 */
 SC_BgSnd::SC_BgSnd() {

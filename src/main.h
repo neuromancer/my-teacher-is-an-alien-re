@@ -3,9 +3,6 @@
 
 #include <windows.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /* Function declarations from main.cpp */
 
@@ -23,8 +20,7 @@ void ShutdownGameSystems(void);
 void CleanupCinematic(void);
 void PlayIntroCinematic(void);
 
-#ifdef __cplusplus
-}
-#endif
+
+void TouchFileTimestamp(const char* filename);
 
 #endif /* MAIN_H */

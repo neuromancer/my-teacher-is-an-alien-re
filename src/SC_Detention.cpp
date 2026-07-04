@@ -11,9 +11,8 @@
 #include "VBuffer.h"
 #include "ZBufferManager.h"
 #include "MouseControl.h"
+#include "string.h"
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 
 

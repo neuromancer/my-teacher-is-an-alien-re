@@ -7,9 +7,8 @@
 #include "RenderEntry.h"
 #include "Memory.h"
 #include "globals.h"
+#include "string.h"
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 
 /* Function start: 0x414220 */
 SC_ZBuffer::SC_ZBuffer() {

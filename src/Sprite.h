@@ -58,4 +58,5 @@ public:
     void ConfigStates(int);                        // 0x44D2A0
 };
 
+
 #endif // SPRITE_H

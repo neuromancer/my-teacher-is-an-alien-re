@@ -5,11 +5,10 @@
 #include "HashTable.h"
 #include "VBuffer.h"
 #include <string.h>
+#include "Graphics.h"
+#include "PaletteUtils.h"
+#include "VideoTable.h"
 
-extern "C" int __cdecl SetFillColor(unsigned char param_1);
-extern "C" int __cdecl SetDrawPosition(int param_1, int param_2);
-extern "C" int __cdecl DrawCircle(int param_1);
-extern "C" int __cdecl DrawLine(int param_1, int param_2);
 
 // NOTE: 0x434660 is EngineInfoParser::EngineInfoParser (COMDAT),
 // not Projectile. See EngineInfoParser.cpp for the correct implementation.

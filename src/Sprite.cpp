@@ -14,13 +14,16 @@
 
 #include "VBuffer.h"
 
-extern "C" void WriteToLog(const char* format, ...);
+// Also declared in string.h / CDData.h; local prototypes keep this TU's
+// MSVC 4.20 register allocation stable.
+void WriteToLog(const char* format, ...);
+char* FormatAssetPath(char*, ...);
 
 // Video buffer name table: 32 entries × 64 bytes at 0x4734B0
 static char g_VideoBufferNameTable[32][64];
 
 /* Function start: 0x44C650 */
-extern "C" char* GetVideoBufferNameSlot(int handle)
+char* GetVideoBufferNameSlot(int handle)
 {
     return g_VideoBufferNameTable[handle];
 }
@@ -84,7 +87,6 @@ void Sprite::StopAnimationSound()
 }
 
 extern char* __cdecl ResolveAssetPath(char*, ...);
-extern "C" char* FormatAssetPath(char*, ...);
 
 /* Function start: 0x44C880 */
 void Sprite::InitAnimation()
@@ -693,8 +695,11 @@ void Sprite::ConfigRange(int state, int start, int count, int param_4) {
     if (start < 1 || count < 1) {
         ShowError("Sprite::SetRange#2 %s %d range[%d, %d]", sprite_filename, state, start, count);
     }
-    ranges[state].dim.x = start;
-    ranges[state].dim.y = count;
+    {
+        Range* r = &ranges[state];
+        r->dim.x = start;
+        r->dim.y = count;
+    }
     ranges[state].repeatLimit = param_4;
     ranges[state].frameCounter = 0;
     flags |= 0x20;

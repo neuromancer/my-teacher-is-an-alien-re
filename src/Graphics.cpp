@@ -8,16 +8,15 @@
 #include "globals.h"
 
 // External functions
-extern "C" void* GetGameWindowHandle();
-extern "C" int SetCursorVisible(unsigned int);
 
 // Forward declarations
+#include "PaletteUtils.h"
+#include "MouseControl.h"
+#include "Graphics.h"
+#include "GameWindow.h"
 int InitStockFont(int);
-extern "C" int GetColorBitDepth(void);
 
 // Exported functions
-extern "C" int InitMouseSettings(void);
-extern "C" int InitVideoSystem(void);
 
 
 
@@ -127,8 +126,6 @@ static const unsigned char g_DefaultPaletteHi_00423e98[708] = {
 
 
 #include "VBuffer.h"
-extern "C" int* GetScreenWidth();
-extern "C" int* GetScreenHeight();
 
 /* Function start: 0x425F10 */
 void BlankScreen() {
@@ -143,7 +140,7 @@ void BlankScreen() {
 }
 
 /* Function start: 0x425F60 */
-extern "C" void FlipScreen() {
+void FlipScreen() {
     if (g_BackBuffer_0046aa14 == 0) {
         return;
     }
@@ -153,21 +150,21 @@ extern "C" void FlipScreen() {
 }
 
 /* Function start: 0x452C91 */
-extern "C" int InvalidateVideoMode() {
+int InvalidateVideoMode() {
     g_CurrentVideoBuffer_0046db3c = (char)0xff;
     g_CurrentVideoBuffer_0046db3c = (char)0xff;
     return 0;
 }
 
 /* Function start: 0x452C9B */
-extern "C" int GetCurrentVideoMode() {
+int GetCurrentVideoMode() {
     return (signed char)g_CurrentVideoBuffer_0046db3c;
 }
 
 #pragma optimize("y", off)
 
 /* Function start: 0x453DFE */
-extern "C" int ScaleClientToBufferX(int x)
+int ScaleClientToBufferX(int x)
 {
     RECT rect;
     HWND hWnd = GetActiveWindow();
@@ -176,7 +173,7 @@ extern "C" int ScaleClientToBufferX(int x)
 }
 
 /* Function start: 0x453E25 */
-extern "C" int ScaleClientToBufferY(int y)
+int ScaleClientToBufferY(int y)
 {
     RECT rect;
     HWND hWnd = GetActiveWindow();
@@ -185,7 +182,7 @@ extern "C" int ScaleClientToBufferY(int y)
 }
 
 /* Function start: 0x453C17 */ /* ~95% match */
-extern "C" int GetMousePosition(int* out_x, int* out_y)
+int GetMousePosition(int* out_x, int* out_y)
 {
     POINT pt;
     int x;
@@ -358,7 +355,7 @@ int GetColorBitDepth(void)
 }
 
 /* Function start: 0x453746 */
-extern "C" int CleanupVideoSystem() {
+int CleanupVideoSystem() {
     int iVar1;
     int iVar2;
     int* piVar3;
@@ -493,7 +490,7 @@ int InitStockFont(int param_1)
 
 // DrawLine - Complex Bresenham line drawing algorithm with segment manipulation
 /* Function start: 0x45261A */
-extern "C" int __cdecl DrawLine(int param_1, int param_2) {
+int __cdecl DrawLine(int param_1, int param_2) {
     int x0 = g_DrawPosX_0046d0aa;
     int y0 = g_DrawPosY_0046d0b6;
     int x1 = param_1;
@@ -634,7 +631,7 @@ static void DrawEllipseScanline(int y, int left_x, int right_x) {
 #pragma optimize("y", off)
 
 /* Function start: 0x453E4C */
-extern "C" int __cdecl DrawEllipse(int param_1, int param_2) {
+int __cdecl DrawEllipse(int param_1, int param_2) {
     if ((signed char)g_CurrentVideoBuffer_0046db3c < 0) return 0;
     if (param_1 <= 0 || param_2 <= 0) return 0;
 
@@ -713,15 +710,14 @@ extern "C" int __cdecl DrawEllipse(int param_1, int param_2) {
 // g_Palette_0046d074 = g_Palette_0046d074 in globals.h (same address 0x43748c)
 
 // Dead duplicate of SetDrawPosition.
-extern "C" void SetFontPosition(int x, int y) {
+void SetFontPosition(int x, int y) {
     g_DrawPosX_0046d0aa = x;
     g_DrawPosY_0046d0b6 = y;
 }
 
-extern "C" int __cdecl SetFillColor(unsigned char);
 
 // Dead duplicate of SetFillColor.
-extern "C" void SetFontColor(int index) {
+void SetFontColor(int index) {
     unsigned char color = (unsigned char)index;
     unsigned char mapped = (unsigned char)g_PaletteMap_0046d108[color];
     unsigned int word = mapped | (mapped << 8);
@@ -732,7 +728,7 @@ extern "C" void SetFontColor(int index) {
 }
 
 /* Function start: 0x45329B */
-extern "C" int DrawFontText(char* text, int len) {
+int DrawFontText(char* text, int len) {
     SetTextColor(g_SecondaryDC_0046d09c, *(unsigned int*)&g_LogPalette_0046d308[((unsigned char)g_TextColor_0046d078 + 1) * 4] & 0xffffff);
     SetBkMode(g_SecondaryDC_0046d09c, 1);
     SetTextAlign(g_SecondaryDC_0046d09c, 0);
@@ -755,7 +751,7 @@ extern "C" int DrawFontText(char* text, int len) {
 }
 
 /* Function start: 0x453C87 */ /* ~90% match */
-extern "C" int __cdecl DrawCircle(int param_1) {
+int __cdecl DrawCircle(int param_1) {
     DrawEllipse(param_1, param_1);
     return 0;
 }

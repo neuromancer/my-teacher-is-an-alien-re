@@ -6,16 +6,16 @@
 #include "globals.h"
 #include "Message.h"
 
+#include "string.h"
+#include "Memory.h"
+#include "VBuffer.h"
+#include "string.h"
 char s_MustDefine[] = "Parser:: Must define an LBLParse func";
 char s_hIam[] = "hIam %d";
 
-#include "string.h"
 #include <stdlib.h>
-#include "VBuffer.h"
 #include "Animation.h"
-#include "Memory.h"
 #include "Timer.h"
-#include "string.h"
 
 // ZBQueue is defined in ZBufferManager.h
 #include "ZBufferManager.h"

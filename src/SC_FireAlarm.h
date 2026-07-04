@@ -8,6 +8,7 @@
 class Sprite;
 class Palette;
 class SlimeTable;
+class Projectile;
 
 // Destructor-less coordinate/rect pairs: the original SC_FireAlarm uses these
 // (NOT SlimeDim/Rect) for counters and the unused teacher slot — proven by the
@@ -32,7 +33,7 @@ public:
     void ShutDown(SC_MessageParser* msg);
     virtual void Update(int p1, int p2);           // [7]  0x4078A0
     int Exit(SC_MessageParser* msg);
-    virtual int HandleClick(int* param);           // [11] 0x407C20
+    virtual int HandleClick(Projectile* proj);     // [11] 0x407C20
     virtual void ProcessClick();                   // [12] 0x407C10
 
     void SendResultMessage();       // 0x4079E0
@@ -45,7 +46,7 @@ public:
     int gamePhase;                    // 0xB0 - 0=idle, 1=playing, 2=alarm_win, 3=caught_lose, 4=escape
     SlimeDim screenSize;              // 0xB4-0xBB - screen dimensions (320x240)
     Sprite* consoleSprite;            // 0xBC - CONSOLE_SPRITE
-    Palette* paletteDummy;            // 0xC0 - allocated as Palette in LBLParse, cleaned in ShutDown
+    Palette* palette;                 // 0xC0 - allocated in LBLParse, cleaned in ShutDown
     Sprite* bgSprite;                 // 0xC4 - BACKGROUND_SPRITE
     Sprite* alarmSprite;              // 0xC8 - ALARM_SPRITE
     Rect alarmSlotRect;               // 0xCC-0xDB - alarm pull area rectangle

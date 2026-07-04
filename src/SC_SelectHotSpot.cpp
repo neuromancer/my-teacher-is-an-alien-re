@@ -1,4 +1,5 @@
 #include "SC_SelectHotSpot.h"
+#include "mss.h"
 #include "SpriteAction.h"
 #include "LinkedList.h"
 #include "Memory.h"
@@ -14,13 +15,12 @@
 #include <string.h>
 #include <new.h>
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-extern "C" char* GetSoundFilename(int handle);
-extern "C" __declspec(dllimport) int __stdcall AIL_sample_status(void*);
+#include "string.h"
+#include "VBuffer.h"
+#include "MouseControl.h"
+#include "InputManager.h"
 
 #include "globals.h"
-#include "InputManager.h"
 
 
 
@@ -36,13 +36,11 @@ extern char* __cdecl ResolveAssetPath(char* name, ...);
 // Message operations
 
 // Engine/Misc
-extern "C" void SetVideoRes(int, int);
-extern "C" void WriteToLog(const char* format, ...);
-#include "MouseControl.h"
 
 // FUN_004061e0 = RenderEntry::~RenderEntry — callers updated
 #include "RenderEntry.h"
 #include "AILSample.h"
+
 
 // Queue operations (thiscall via fastcall + dummy EDX)
 // FUN_00406cc0 = Queue::Add in LinkedList.h

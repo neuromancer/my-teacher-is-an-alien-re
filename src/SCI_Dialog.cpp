@@ -101,7 +101,7 @@ not_found:
 static char g_SpriteString[] = "SPRITE0";
 
 /* Function start: 0x417FE0 */
-void ResetSpriteStates()
+void SCI_Dialog::ResetSpriteStates()
 {
     char name[8];
     int digit;

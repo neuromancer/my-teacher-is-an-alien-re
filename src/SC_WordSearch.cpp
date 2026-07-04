@@ -15,18 +15,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern "C" void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
 // FUN_00413e10 = ParseFile in Parser.h
 
 
 
-extern "C" void ShowError(const char* format, ...);
-extern "C" char* MakeAudioName(char*);
-extern Palette* __fastcall InitPalette(Palette*);
-extern "C" void WriteToLog(const char* format, ...);
-
-#include "Memory.h"
+#include "string.h"
+#include "VBuffer.h"
 #include "AnimatedAsset.h"
+#include "Memory.h"
+extern Palette* __fastcall InitPalette(Palette*);
+
 
 #include "MouseControl.h"
 
@@ -60,7 +58,6 @@ struct WordSearchRuntimeState {
 
     Rect* exitRect() { return (Rect*)&cellSprites[7]; }
 };
-#include "VBuffer.h"
 
 /* Function start: 0x42E4B0 */
 void __fastcall UpdateWordSearchCursor(int* self) {
@@ -98,7 +95,7 @@ void __fastcall UpdateWordSearchCursor(int* self) {
 }
 
 // CRT array constructor helper (0x454AD0) — constructs 'count' objects of 'elemSize'
-extern "C" void __cdecl ArrayConstruct(void* arr, int elemSize, int count, void* ctor, void* dtor) {}
+void __cdecl ArrayConstruct(void* arr, int elemSize, int count, void* ctor, void* dtor) {}
 
 /* Function start: 0x435800 */
 SC_WordSearch::SC_WordSearch() {

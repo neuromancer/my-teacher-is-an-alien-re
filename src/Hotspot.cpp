@@ -14,7 +14,6 @@
 
 // Helper for Miles Sound System
 typedef void* HSAMPLE;
-extern "C" int __stdcall AIL_sample_status(HSAMPLE);
 
 extern void FreeMemory(void*);
 
@@ -24,8 +23,6 @@ extern void FreeMemory(void*);
 /* Function start: 0x445830 */
 T_Hotspot::T_Hotspot(int param_1) : Parser()
 {
-    hotspotPos.x = 0;
-    hotspotPos.y = 0;
     hotspotRight = 0;
     hotspotBottom = 0;
     memset(&parentHandlerId, 0, 0x12 * 4);
@@ -151,6 +148,8 @@ int T_Hotspot::HandleClick(int* msg) {
 
     /* Teacher test path — check AWARE_TEACHER */
     {
+        GameState* gs;
+        int awareIdx;
         int teacherCharIdx = 0;
         if (flags & 8) {
             teacherCharIdx = 1;
@@ -161,16 +160,17 @@ int T_Hotspot::HandleClick(int* msg) {
         }
 
         if (teacherCharIdx == 0) {
-            return 1;
+            goto ret_one;
         }
 
-        GameState* gs = g_GameState_0046aa30;
-        int awareIdx = gs->FindState("AWARE_TEACHER");
+        gs = g_GameState_0046aa30;
+        awareIdx = gs->FindState("AWARE_TEACHER");
         if (awareIdx < 0 || gs->maxStates - 1 < awareIdx) {
             ShowError("Invalid gamestate %d", awareIdx);
         }
         if (gs->stateValues[awareIdx] != 0) {
             SendGameMessage(4, 0x1e50, 0, 0, 2, 0, 0, 0, 0, 0);
+ret_one:
             return 1;
         }
 
@@ -253,7 +253,6 @@ int T_Hotspot::HandleClick(int* msg) {
             if (gs->stateValues[na3] != 0) count++;
 
             if (count == 2) {
-                loungeFlag = 1;
                 gs = g_GameState_0046aa30;
                 awareIdx = gs->FindState("AWARE_TEACHER");
                 if (awareIdx < 0 || gs->maxStates - 1 < awareIdx) ShowError("Invalid gamestate %d", awareIdx);
@@ -262,22 +261,28 @@ int T_Hotspot::HandleClick(int* msg) {
                 gs = g_GameState_0046aa30;
                 int loungeIdx = gs->FindState("LOUNGE_ALIEN_CINEMATIC");
                 if (loungeIdx < 0 || gs->maxStates - 1 < loungeIdx) ShowError("Invalid gamestate %d", loungeIdx);
+                loungeFlag = 1;
                 gs->stateValues[loungeIdx] = 1;
             }
         }
 
         if (teacherType == 0) {
-            returnHandler = 0x2C;
-            returnParam = isAlienFound ? 1 : 0;
+            if (isAlienFound != 0) {
+                returnHandler = 0x2C;
+                returnParam = 1;
+            } else {
+                returnHandler = 0x2C;
+                returnParam = 0;
+            }
         } else if (teacherType == 1) {
-            if (isAlienFound == 0) {
+            if (isAlienFound != 0) {
+                returnParam = 1;
+                returnHandler = 0x2C;
+                SendGameMessage(0x1E, action->extra2, 0, 0, 0x18, 0, 0, 0, 0, 0);
+            } else {
                 returnHandler = parentHandlerId;
                 returnParam = parentModuleParam;
                 SendGameMessage(0x1E, action->extra2, 0, 0, 0x17, 0, 0, 0, 0, 0);
-            } else {
-                returnHandler = 0x2C;
-                returnParam = 1;
-                SendGameMessage(0x1E, action->extra2, 0, 0, 0x18, 0, 0, 0, 0, 0);
             }
         } else if (teacherType == 2) {
             if (isAlienFound != 0) {
@@ -289,23 +294,29 @@ int T_Hotspot::HandleClick(int* msg) {
             }
             SendGameMessage(0x1E, action->extra2, 0, 0, 0x18, 0, 0, 0, 0, 0);
         } else {
-            returnHandler = 0x2C;
-            returnParam = isAlienFound ? 1 : 0;
+            if (isAlienFound != 0) {
+                returnHandler = 0x2C;
+                returnParam = 1;
+            } else {
+                returnHandler = 0x2C;
+                returnParam = 0;
+            }
             SendGameMessage(0x1E, action->extra2, 0, 0, 0x18, 0, 0, 0, 0, 0);
             SendGameMessage(0x1E, 10, 0, 0, 0x17, 0, 0, 0, 0, 0);
         }
 
         {
             int idx1 = (isLevel4 << 2 | teacherType) << 4 | teacherCharIdx;
-            SpriteAction* a1 = new SpriteAction(3, idx1 * 4 + 400, 0, 0, 4, 0, 0, 0, 0, 0);
+            int arg1 = idx1 * 4 + 400;
+            SpriteAction* a1 = new SpriteAction(3, arg1, 0, 0, 4, 0, 0, 0, 0, 0);
 
             int idx2;
             if (teacherType == 0) {
                 idx2 = charVal * 16 + 1000;
-            } else if (isLevel4 == 0) {
-                idx2 = (charVal << 2 | teacherCharIdx) * 4 + 1000;
-            } else {
+            } else if (isLevel4 != 0) {
                 idx2 = (isLevel4 << 4 | charVal) * 16 + 1000;
+            } else {
+                idx2 = (charVal << 2 | teacherCharIdx) * 4 + 1000;
             }
             SpriteAction* a2 = new SpriteAction(3, idx2, 0, 0, 4, 0, 0, 0, 0, 0);
             a1->childAction = a2;
@@ -320,13 +331,15 @@ int T_Hotspot::HandleClick(int* msg) {
             } else {
                 idx4 = (charVal << 2 | teacherCharIdx) << 2 | isCorrect;
             }
-            SpriteAction* a4 = new SpriteAction(3, idx4 + 0x898, returnHandler, returnParam, 4, 0, 0, 0, 0, 0);
+            idx4 += 0x898;
+            SpriteAction* a4 = new SpriteAction(3, idx4, returnHandler, returnParam, 4, 0, 0, 0, 0, 0);
             a3->childAction = a4;
 
             EnqueueSpriteAction((void*)a1);
-            if (a1 != 0) {
-                delete a1;
+            if (a1 == 0) {
+                goto ret_one;
             }
+            delete a1;
         }
 
         return 1;

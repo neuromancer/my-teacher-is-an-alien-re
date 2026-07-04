@@ -1,7 +1,7 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
-extern "C" void ShowError(const char* format, ...);
+void ShowError(const char* format, ...);
 extern void FreeMemory(void* ptr);
 
 // Unified doubly-linked list node

@@ -58,7 +58,7 @@ public:
 
     mCNavNode_TypeA(char* line) { animHandle = 0; reservedA4 = 0; }
     virtual int LBLParse(char* line);
-    virtual int virtual4();
+    virtual void virtual4();
     virtual int Activate();
 };
 
@@ -80,7 +80,7 @@ public:
         reservedB4 = 0;
     }
     virtual int LBLParse(char* line);
-    virtual int virtual4();
+    virtual void virtual4();
     virtual int Activate();
 };
 
@@ -89,7 +89,7 @@ public:
 class mCNavNode_TypeC : public NavSubNode {
 public:
     mCNavNode_TypeC(char* line) {}
-    virtual int virtual4();
+    virtual void virtual4();
     virtual int Activate();
 };
 
@@ -102,7 +102,7 @@ public:
 
     mCNavNode_TypeD(char* line) { action = 0; reservedA4 = 0; }
     virtual int LBLParse(char* line);
-    virtual int virtual4();
+    virtual void virtual4();
     virtual int Activate();
 };
 
@@ -116,7 +116,7 @@ public:
     mCNavNode_TypeLogic(char* line) { action = 0; reservedA4 = 0; }
     virtual ~mCNavNode_TypeLogic();
     virtual int LBLParse(char* line);
-    virtual int virtual4();
+    virtual void virtual4();
     virtual int Activate();
 };
 
@@ -129,7 +129,7 @@ public:
 
     mCNavNode_TypeE(char* line) { stateValue = 0; reservedA4 = 0; }
     virtual int LBLParse(char* line);
-    virtual int virtual4();
+    virtual void virtual4();
     virtual int Activate();
 };
 

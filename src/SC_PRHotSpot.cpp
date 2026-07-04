@@ -10,12 +10,12 @@
 #include <stdio.h>
 
 #include "InputManager.h"
-extern "C" void ShowError(const char* format, ...);
-extern "C" char* GetSoundFilename(int handle);
+#include "string.h"
 extern void __fastcall PracticeRoomNotify(void*);
 extern void ParseSpriteAction(void* param_1, void* param_2);
 #include "globals.h"
 #include "AILSample.h"
+
 
 
 /* Function start: 0x429B60 */

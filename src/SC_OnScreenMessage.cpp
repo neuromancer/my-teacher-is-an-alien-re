@@ -14,10 +14,11 @@
 #include "mss.h"
 #include "AILSample.h"
 
-extern "C" {
+
+
     void ShowError(const char*, ...);
     void SendGameMessage(int, int, int, int, int, int, int, int, int, int);
-}
+
 
 // FUN_00448140 = SoundEntry::SoundUpdate — implemented below
 
@@ -189,7 +190,7 @@ int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
     Sample* snd;
 
     action = (SpriteAction*)msg;
-    if (action->addressType != handlerId) {
+    if (handlerId != action->addressType) {
         return 0;
     }
 
@@ -237,8 +238,7 @@ int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
         item = FindOrCreateSoundEntry(action->addressValue);
         snd = item->sample;
         if (snd == 0) break;
-        int vol = AIL_sample_volume(snd->m_sample);
-        snd->Fade(vol + 10, 0);
+        snd->Fade(AIL_sample_volume(snd->m_sample) + 10, 0);
         break;
     }
 
@@ -247,8 +247,7 @@ int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
         item = FindOrCreateSoundEntry(action->addressValue);
         snd = item->sample;
         if (snd == 0) break;
-        int vol = AIL_sample_volume(snd->m_sample);
-        snd->Fade(vol - 10, 0);
+        snd->Fade(AIL_sample_volume(snd->m_sample) - 10, 0);
         break;
     }
 
@@ -272,15 +271,16 @@ int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
                 {
                     MessageNode* nd;
                     SoundEntry* ent;
+                    ListNode** curp;
                     pList = m_messageList;
-                    nd = (MessageNode*)pList->current;
-                    if (nd == 0) {
-                        // Original quirk at 0x448830: null current reads the fixed address 0x24.
-                        ent = (SoundEntry*)*(int*)0x24;
-                        if (action->addressValue != (int)ent) goto no_match;
-                    } else {
+                    curp = &pList->current;
+                    nd = (MessageNode*)*curp;
+                    if (nd != 0) {
                         ent = (SoundEntry*)nd->data;
                         if (ent->soundId != action->addressValue) goto no_match;
+                    } else {
+                        // Original quirk at 0x448830: null current reads the fixed address 0x24.
+                        if (action->addressValue != *(int*)0x24) goto no_match;
                     }
 
                     // match found
@@ -290,26 +290,25 @@ int SC_OnScreenMessage::Exit(SC_MessageParser* msg) {
                         if (pList->head == nd) {
                             pList->head = nd->next;
                         }
-                        if (pList->tail == pList->current) {
-                            pList->tail = ((MessageNode*)pList->current)->prev;
+                        if (pList->tail == *curp) {
+                            pList->tail = (*curp)->prev;
                         }
-                        nd = (MessageNode*)pList->current;
+                        nd = (MessageNode*)*curp;
                         if (nd->prev != 0) {
                             nd->prev->next = nd->next;
                         }
-                        nd = (MessageNode*)pList->current;
+                        nd = (MessageNode*)*curp;
                         if (nd->next != 0) {
                             nd->next->prev = nd->prev;
                         }
 
                         data = (SoundEntry*)pList->GetCurrentData();
 
-                        nd = (MessageNode*)pList->current;
-                        if (nd != 0) {
-                            delete nd;
-                            pList->current = 0;
+                        if (*curp != 0) {
+                            delete *curp;
+                            *curp = 0;
                         }
-                        pList->current = pList->head;
+                        *curp = pList->head;
                     }
 
                     if (data != 0) {
@@ -371,9 +370,7 @@ void* MessageList::GetCurrentData() {
 
 // FUN_00449050 = MessageList::PopCurrent — COMDAT of 0x431B60, defined in MessageList.cpp
 
-extern "C" char* GetSoundFilename(int handle);
 
-/* Function start: 0x448120 */ /* SoundEntry sdtor (COMDAT, compiler-generated) */
 /* Function start: 0x447FF0 */
 SoundEntry::SoundEntry(int id) {
     memset(this, 0, sizeof(SoundEntry));
@@ -393,6 +390,11 @@ SoundEntry::SoundEntry(int id) {
         ShowError("Invalid gamestate %d", gsIdx);
     }
     gameStateVal = gs->stateValues[gsIdx];
+}
+
+/* Function start: 0x448120 */
+void SoundEntry::LogId() {
+    WriteToMessageLog("hIam %d", soundId);
 }
 
 /* Function start: 0x4481A0 */
@@ -457,7 +459,6 @@ int SoundEntry::SoundUpdate() {
     return 1;
 }
 
-extern "C" __declspec(dllimport) int __stdcall AIL_sample_volume(void*);
 
 /* Function start: 0x448220 */
 void SoundEntry::FadeVolume(int volume, unsigned int duration) {
@@ -486,11 +487,11 @@ void SoundEntry::FadeVolume(int volume, unsigned int duration) {
     volumeStep = delta / (int)numFrames;
 
     if (volumeStep == 0) {
-        if (volume >= currentVolume) {
-            volumeStep = 1;
-        } else {
-            volumeStep = -1;
+        int step = 1;
+        if (volume < currentVolume) {
+            step = -1;
         }
+        volumeStep = step;
     }
 
     activeFlags |= 1;
@@ -506,35 +507,34 @@ SoundEntry* SC_OnScreenMessage::FindOrCreateSoundEntry(int soundId) {
         m_messageList->current = m_messageList->head;
         while (m_messageList->head != 0) {
             MessageNode* node = (MessageNode*)m_messageList->current;
-            int entrySoundId;
             if (node != 0) {
-                entrySoundId = ((SoundEntry*)node->data)->soundId;
+                if (((SoundEntry*)node->data)->soundId != soundId) goto advance;
             } else {
                 // Original bug at 0x448C60: null current reads fixed address 0x24.
-                entrySoundId = *(int*)0x24;
+                if (soundId != *(int*)0x24) goto advance;
             }
-            if (soundId == entrySoundId) {
-                GameState* gs = g_GameState_0046aa30;
+            {
                 int idx = g_PeriodStateIdx_0046cb90;
+                GameState* gs = g_GameState_0046aa30;
                 if (idx < 0 || gs->maxStates - 1 < idx) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 MessageNode* curNode = (MessageNode*)m_messageList->current;
-                int entryGS;
                 if (curNode != 0) {
-                    entryGS = ((SoundEntry*)curNode->data)->gameStateVal;
+                    if (gs->stateValues[idx] == ((SoundEntry*)curNode->data)->gameStateVal) {
+                    found:
+                        curNode = (MessageNode*)m_messageList->current;
+                        if (curNode != 0) {
+                            return (SoundEntry*)curNode->data;
+                        }
+                        return 0;
+                    }
                 } else {
                     // Original bug at 0x448C60: null current reads fixed address 0x2c.
-                    entryGS = *(int*)0x2C;
-                }
-                if (gs->stateValues[idx] == entryGS) {
-                    MessageNode* found = (MessageNode*)m_messageList->current;
-                    if (found != 0) {
-                        return (SoundEntry*)found->data;
-                    }
-                    return 0;
+                    if (gs->stateValues[idx] == *(int*)0x2C) goto found;
                 }
             }
+        advance:
             if (m_messageList->tail == m_messageList->current) break;
             if (m_messageList->current != 0) {
                 m_messageList->current = ((MessageNode*)m_messageList->current)->next;
@@ -549,9 +549,10 @@ SoundEntry* SC_OnScreenMessage::FindOrCreateSoundEntry(int soundId) {
         ShowError("queue fault 0101");
     }
 
-    list->current = list->head;
+    ListNode* h = list->head;
+    list->current = h;
     if (list->type == 1 || list->type == 2) {
-        if (list->head == 0) {
+        if (h == 0) {
             list->InsertBeforeCurrent(newEntry);
         } else {
             while (1) {

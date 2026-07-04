@@ -5,6 +5,6 @@ void* AllocateMemory(unsigned int size);
 void FreeMemory(void* ptr);
 void FreeFromGlobalHeap(void* ptr);
 
-extern "C" void* AllocateMemory_Wrapper(int size);
+void* AllocateMemory_Wrapper(int size);
 
 #endif // MEMORY_H
