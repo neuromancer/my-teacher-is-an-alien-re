@@ -26,13 +26,13 @@ int __cdecl CompareNodePriority(void* a, void* b) {
 
 /* Function start: 0x41A6F0 */
 void __cdecl FreeNodeData(void* ptr, int count) {
+    AnimData** slot = (AnimData**)ptr;
     while (count-- != 0) {
-        AnimData** data = (AnimData**)ptr;
-        if (*data != 0) {
-            FreeMemory(*data);
-            *data = 0;
+        if (*slot != 0) {
+            FreeMemory(*slot);
+            *slot = 0;
         }
-        ptr = (char*)ptr + 4;
+        slot++;
     }
 }
 

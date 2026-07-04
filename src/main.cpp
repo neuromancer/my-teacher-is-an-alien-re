@@ -61,9 +61,6 @@ void InitGameConfig();
 int IsAppReady();
 
 // Full-game-only functions (not in demo)
-const char* __cdecl CDData_ResolvePath(const char *format, ...);
-int __cdecl GetFreeDiskSpaceMB(int drive);
-void __cdecl InitMemoryCache(int param_1, int param_2, float param_3);
 void CleanupMemoryCache();
 
 #include "MemoryCache.h"
@@ -72,8 +69,6 @@ void CleanupMemoryCache();
 #include "GameLoopHelper.h"
 #include "MsgList.h"
 
-extern void __cdecl FileCacheCleanup();
-extern void __cdecl FileCacheEntryCleanup(void*, int);
 
 #include "GameEngine.h"
 // g_GameEngine_0046a6ec, g_GameState_0046aa30 etc. — declared in globals.h

@@ -1,4 +1,5 @@
 #include "SC_Fan.h"
+#include "AILSample.h"
 #include "stubs.h"
 #include "Sprite.h"
 #include "Projectile.h"
@@ -23,11 +24,11 @@
 #include "main.h"
 #include "string.h"
 
-extern char* __cdecl ResolveAssetPath(char* name, ...);
 // FUN_00427880 = Weapon::UpdateProjectiles — callers updated
 
 #include "globals.h"
 
+#include "CDData.h"
 /* Function start: 0x40EFF0 */
 SC_Fan::SC_Fan()
 {
@@ -472,7 +473,7 @@ void SC_Fan::State0Handler() {
         sample = samples[1];
         if (sample != 0) {
             if ((int)sample->m_sample != 0) {
-                if (sample->m_size == *(int*)((int)sample->m_sample + 0xC)) {
+                if (sample->m_size == ((AILSampleData*)sample->m_sample)->len) {
                     if (AIL_sample_status(sample->m_sample) == 4) {
                         return;
                     }
@@ -498,7 +499,7 @@ void SC_Fan::State2Handler() {
     sample = samples[8];
     if (sample != 0) {
         if ((int)sample->m_sample != 0) {
-            if (sample->m_size == *(int*)((int)sample->m_sample + 0xC)) {
+            if (sample->m_size == ((AILSampleData*)sample->m_sample)->len) {
                 if (AIL_sample_status(sample->m_sample) == 4) {
                     return;
                 }
@@ -538,7 +539,7 @@ void SC_Fan::State4Handler() {
         sample = samples[10];
         if (sample != 0) {
             if ((int)sample->m_sample != 0) {
-                if (sample->m_size == *(int*)((int)sample->m_sample + 0xC)) {
+                if (sample->m_size == ((AILSampleData*)sample->m_sample)->len) {
                     if (AIL_sample_status(sample->m_sample) == 4) {
                         goto end;
                     }

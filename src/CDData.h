@@ -28,4 +28,10 @@ void LogCacheEntries();
 void LogCacheStats();
 FILE* __cdecl OpenSaveFile(char* path, char* mode);
 
+char* __cdecl ResolveAssetPath(char* name, ...);
+const char* __cdecl CDData_ResolvePath(const char* format, ...);
+int __cdecl GetFreeDiskSpaceMB(int drive);
+void __cdecl InitMemoryCache(int param_1, int param_2, float param_3);
+void __cdecl FileCacheCleanup();
+void __cdecl FileCacheEntryCleanup(void*, int);
 #endif

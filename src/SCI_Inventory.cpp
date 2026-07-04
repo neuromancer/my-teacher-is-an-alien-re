@@ -144,10 +144,12 @@ void SCI_Inventory::Init(SC_MessageParser* msg) {
 
     IconBar::InitIconBar(msg);
 
+    // Original quirk: walks entry.field_14 through all six IconBarEntry slots
+    // (stride 0x24) relying on g_InventoryState living right after the array.
     ptr = &g_IconBarState_00473334;
     do {
         *ptr = 0;
-        ptr = (int*)((char*)ptr + 0x24);
+        ptr += sizeof(IconBarEntry) / sizeof(int);
     } while ((unsigned int)ptr < (unsigned int)&g_InventoryState_004733e8);
     g_InventoryState_004733e8 = 0;
 

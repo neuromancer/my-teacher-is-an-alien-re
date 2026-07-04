@@ -967,62 +967,66 @@ check_go:
         T_MenuHotspot* goSpr = okayButton;
         int gy = goCoords.y;
         int gx = goCoords.x;
-        if (goSpr->sprite != 0 &&
-            goSpr->bounds.HitTest(gx, gy) != 0) {
+        if (goSpr->sprite == 0) goto go_miss;
+        if (goSpr->bounds.HitTest(gx, gy)) {
             hitResult = 1;
-        } else {
-            hitResult = 0;
+            goto go_done;
         }
+go_miss:
+        hitResult = 0;
+go_done:
+        ;
     }
     goto go_eval;
 
 opt_click:
-    // Option was clicked - reset all
-    {
-        T_MenuHotspot** baseOpts = optBase;
-        int count = 9;
-        do {
-            T_MenuHotspot* opt = *baseOpts;
-            if (opt != 0) {
-                opt->state = 0;
-                Sprite* animCtrl = opt->cursor;
-                if (animCtrl != 0) {
-                    animCtrl->ResetAnimation(0, 0);
+        // Option was clicked - reset all
+        {
+            T_MenuHotspot** baseOpts = optBase;
+            int count = 9;
+            do {
+                T_MenuHotspot* opt = *baseOpts;
+                if (opt != 0) {
+                    opt->state = 0;
+                    Sprite* animCtrl = opt->cursor;
+                    if (animCtrl != 0) {
+                        animCtrl->ResetAnimation(0, 0);
+                    }
                 }
-            }
-            baseOpts++;
-            count--;
-        } while (count != 0);
-    }
-
-    selPtr = &options[i];
-    {
-        T_MenuHotspot* selOpt = *selPtr;
-        selOpt->state = 1;
-        Sprite* animCtrl = selOpt->cursor;
-        if (animCtrl != 0) {
-            animCtrl->ResetAnimation(1, 0);
+                baseOpts++;
+                count--;
+            } while (count != 0);
         }
-    }
 
-    // Load option sound
-    {
-        T_MenuHotspot* selOpt2 = *selPtr;
-        gs = g_GameState_0046aa30;
-        int charStateIdx = g_PeriodStateIdx_0046cb90;
-        hitOpt = gs->FindState("PERIOD");
-        gs->ValidateIndex(hitOpt);
-        stateVals = gs->stateValues;
-        int fullIdx = stateVals[hitOpt] * 3 + (g_GameState_0046aa30)->GetStateValue(charStateIdx);
-        char* sndFile = GetSoundFilename(selOpt2->soundEntries[fullIdx - 3]);
-        menuSound->Load(sndFile);
-        menuSound->Play(100, 1);
-    }
-    selectedOption = i;
+        selPtr = &options[i];
+        {
+            T_MenuHotspot* selOpt = *selPtr;
+            selOpt->state = 1;
+            Sprite* animCtrl = selOpt->cursor;
+            if (animCtrl != 0) {
+                animCtrl->ResetAnimation(1, 0);
+            }
+        }
+
+        // Load option sound
+        {
+            T_MenuHotspot* selOpt2 = *selPtr;
+            gs = g_GameState_0046aa30;
+            int charStateIdx = g_PeriodStateIdx_0046cb90;
+            hitOpt = gs->FindState("PERIOD");
+            gs->ValidateIndex(hitOpt);
+            stateVals = gs->stateValues;
+            int fullIdx = stateVals[hitOpt] * 3 + (g_GameState_0046aa30)->GetStateValue(charStateIdx);
+            char* sndFile = GetSoundFilename(selOpt2->soundEntries[fullIdx - 3]);
+            menuSound->Load(sndFile);
+            menuSound->Play(100, 1);
+        }
+        selectedOption = i;
     goto check_go;
 
 go_eval:
-    if (hitResult != 0) {
+    if (hitResult != 0)
+    {
         // Go button clicked - increment NUM_ACTIONS
         gs = g_GameState_0046aa30;
         i = gs->FindState("NUM_ACTIONS");

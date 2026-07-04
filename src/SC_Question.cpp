@@ -58,7 +58,6 @@ SC_Question::~SC_Question()
 {
     MMPlayer* mc;
     Queue* queue;
-    QueueNode* current;
     void* msgData;
 
     mc = mouseControl;
@@ -72,34 +71,27 @@ SC_Question::~SC_Question()
         if (queue->head != 0) {
             queue->current = queue->head;
             while (queue->head != 0) {
-                current = (QueueNode*)queue->current;
-                if (current != 0) {
-                    if (queue->head == current) {
-                        queue->head = current->next;
-                    }
-                    if (queue->tail == current) {
-                        queue->tail = current->prev;
-                    }
-                    if (current->next != 0) {
-                        current->next->prev = current->prev;
-                    }
-                    if (current->prev != 0) {
-                        current->prev->next = current->next;
-                    }
+                if (queue->current == 0) {
                     msgData = 0;
-                    if (current != 0) {
-                        msgData = current->data;
+                } else {
+                    if (queue->head == queue->current) {
+                        queue->head = queue->current->next;
                     }
-                    if (current != 0) {
-                        current->data = 0;
-                        current->prev = 0;
-                        current->next = 0;
-                        operator delete(current);
+                    if (queue->tail == queue->current) {
+                        queue->tail = queue->current->prev;
+                    }
+                    if (queue->current->prev != 0) {
+                        queue->current->prev->next = queue->current->next;
+                    }
+                    if (queue->current->next != 0) {
+                        queue->current->next->prev = queue->current->prev;
+                    }
+                    msgData = (queue->current != 0) ? queue->current->data : 0;
+                    if (queue->current != 0) {
+                        delete queue->current;
                         queue->current = 0;
                     }
                     queue->current = queue->head;
-                } else {
-                    msgData = 0;
                 }
                 if (msgData != 0) {
                     delete (SpriteAction*)msgData;

@@ -92,10 +92,6 @@ void BlitTransparentRows(int x1, int x2, int y1, int y2, int destX, int destY, V
 void CopyRowReversedTransparent(char* dest, char* src, int count);
 void CopyRowReversed(char* dest, char* src, int count);
 void BlitRowsReversed(int srcX1, int srcX2, int srcY1, int srcY2, int destX, int destY, VBuffer* srcBuffer, VBuffer* destBuffer, int transparentFlag);
-int __cdecl IntersectClipRect(int* clipRect, int* srcRect, int* destRect);
-void __cdecl OffsetRect(int* rect, int offsetX, int offsetY);
-int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* destY);
-int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4);
 
 
 

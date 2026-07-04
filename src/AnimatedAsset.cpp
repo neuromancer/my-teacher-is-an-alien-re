@@ -7,8 +7,8 @@
 #include <string.h>
 #include <windows.h>
 
-extern char* __cdecl ResolveAssetPath(char* name, ...);
 
+#include "CDData.h"
 /* Function start: 0x43A6E0 */
 AnimatedAsset::AnimatedAsset()
 {

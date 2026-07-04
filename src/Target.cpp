@@ -14,7 +14,6 @@
 #include <stdio.h>
 
 #include "VideoTable.h"
-extern char* __cdecl ResolveAssetPath(char*, ...);
 
 // ============================================================================
 // Target implementation

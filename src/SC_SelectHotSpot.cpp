@@ -28,7 +28,6 @@
 #include "Palette.h"
 
 // Sound table
-extern char* __cdecl ResolveAssetPath(char* name, ...);
 
 // Parser operations
 // FUN_00413e70 = Parser::ProcessFile in Parser.cpp
@@ -48,6 +47,7 @@ extern char* __cdecl ResolveAssetPath(char* name, ...);
 // Parser fallback
 // FUN_00412a50 = Parser::LBLParse in Parser.h
 
+#include "CDData.h"
 /* Function start: 0x404FB0 */
 SelectHotspot::SelectHotspot(int key) {
     memset(&state, 0, 14 * 4);

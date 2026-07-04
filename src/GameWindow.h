@@ -30,5 +30,4 @@ public:
 int* GetScreenHeight();
 int* GetScreenWidth();
 int* GetWindowWidth();
-
-
+void __stdcall ParseCommandLine(char* param_1);

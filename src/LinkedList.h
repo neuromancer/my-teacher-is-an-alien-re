@@ -14,7 +14,7 @@ struct ListNode {
 
     ListNode() : prev(0), next(0), data(0) {}
     ListNode(void* d) { data = d; prev = 0; next = 0; }
-    ~ListNode() { data = 0; prev = 0; next = 0; }
+    ~ListNode() { next = prev = (ListNode*)(data = 0); }
 
     ListNode* Init(void* nodeData);   // 0x40C5B0
 };
@@ -94,39 +94,36 @@ struct LinkedList {
 
         node = current;
         if (node == 0) {
-            data = 0;
-        } else {
-            // Unlink from head
-            if (head == node) {
-                head = node->next;
-            }
-            // Unlink from tail
-            if (tail == current) {
-                tail = current->prev;
-            }
-            // Update next node's prev pointer
-            node = current;
-            if (node->prev != 0) {
-                node->prev->next = node->next;
-            }
-            // Update prev node's next pointer
-            node = current;
-            if (node->next != 0) {
-                node->next->prev = node->prev;
-            }
-            // Get data
-            node = current;
-            data = 0;
-            if (node != 0) {
-                data = node->data;
-            }
-            // Free node
-            if (node != 0) {
-                delete node;
-                current = 0;
-            }
-            current = head;
+            return 0;
         }
+        // Unlink from head
+        if (head == node) {
+            head = node->next;
+        }
+        // Unlink from tail
+        if (tail == node) {
+            tail = node->prev;
+        }
+        // Update next node's prev pointer
+        if (node->prev != 0) {
+            node->prev->next = node->next;
+        }
+        // Update prev node's next pointer
+        if (current->next != 0) {
+            current->next->prev = current->prev;
+        }
+        // Get data
+        node = current;
+        data = 0;
+        if (node != 0) {
+            data = node->data;
+        }
+        // Free node
+        if (node != 0) {
+            delete node;
+            current = 0;
+        }
+        current = head;
         return data;
     }
 

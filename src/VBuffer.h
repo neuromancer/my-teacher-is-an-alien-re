@@ -58,4 +58,8 @@ void SetVideoRes(int width, int height);
 
 char* GetVideoBufferNameSlot(int handle);
 
+int __cdecl IntersectClipRect(int* clipRect, int* srcRect, int* destRect);
+void __cdecl OffsetRect(int* rect, int offsetX, int offsetY);
+int __cdecl ClipRectAndAdjust(int* clipRect, int* srcRect, int* destX, int* destY);
+int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4);
 #endif // VBUFFER_H

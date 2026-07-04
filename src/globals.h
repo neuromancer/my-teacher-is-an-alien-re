@@ -41,7 +41,6 @@ struct MessageQueue;
 struct HotspotListData;
 struct SoundPool;
 struct HitBounds { int minVal; int maxVal; };
-struct BombData { int data[6]; };
 
 
 // extern IMAGE_DOS_HEADER IMAGE_DOS_HEADER_00400000; // { /* 128 bytes */ }
@@ -6046,7 +6045,6 @@ extern int g_FanField4_00472bec;                                   // SC_DodgeOr
 #define g_InventoryState_004733e8 (g_IconBarEntries_00473320[5].field_14)
 extern int g_ProjectileHits_0047325c;                        // Projectile hit counter (full game)
 extern HitBounds g_HitBounds_00473260[3];                  // SC_DodgeOrville
-extern BombData g_BombData_00473278[6];                    // SC_DodgeOrville
 extern POINT g_CursorPos_00473308;                         // SC_DodgeOrville
 
 // Cache globals (moved from main.cpp)
@@ -6118,10 +6116,6 @@ extern char* PTR_DAT_0046c510;
 
 // IconBar globals
 #include "IconBar.h"
-extern int g_IconBarLeft_00473310;
-extern int g_IconBarTop_00473314;
-extern int g_IconBarRight_00473318;
-extern int g_IconBarBottom_0047331c;
 extern IconBarEntry g_IconBarEntries_00473320[6];
 extern int g_IconBarRefCount_0046af0c;
 

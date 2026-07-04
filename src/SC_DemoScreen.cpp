@@ -42,11 +42,11 @@ void SC_DemoScreen::Init(SC_MessageParser* msg) {
     CopyCommandData(msg);
     Palette* pal = (Palette*)field_A8;
     if (pal != 0) {
-        int* palSlot = (int*)((char*)g_ZBufferManager_0046aa24 + 0xa8);
+        Palette** palSlot = &g_ZBufferManager_0046aa24->m_palette;
         if (*palSlot != 0) {
             WriteToLog("ddouble palette");
         }
-        *palSlot = (int)pal;
+        *palSlot = pal;
     }
 }
 

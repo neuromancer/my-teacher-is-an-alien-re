@@ -307,28 +307,31 @@ done:
 void StringTable::TestStrings(void* textMgr, int maxWidth)
 {
     int overflow = 0;
-    HashNode* iter = (HashNode*)(hashTable->count == 0 ? 0 : -1);
+    HashNode* volatile iter;
+    HashNode* h = (HashNode*)(hashTable->count == 0 ? 0 : -1);
+    iter = h;
 
-    if (iter != 0) {
+    if (h != 0) {
         HashNode* nextIter;
         do {
             HashTable* table = hashTable;
-            if (iter == (HashNode*)-1) {
+            HashNode* cur = iter;
+            if (cur == (HashNode*)-1) {
                 unsigned int idx = 0;
-                if (table->numBuckets != 0) {
+                if ((unsigned int)table->numBuckets != idx) {
                     HashNode** bucket = table->buckets;
                     do {
-                        iter = bucket[idx];
-                        if (iter != 0) break;
+                        cur = bucket[idx];
+                        if (cur != 0) break;
                         idx++;
                     } while (idx < (unsigned int)table->numBuckets);
                 }
             }
 
             // Original bug at 0x44C4D2: the bucket scan result is dereferenced without rechecking the sentinel/null case.
-            nextIter = iter->next;
+            nextIter = cur->next;
             if (nextIter == 0) {
-                unsigned int idx = iter->bucketIndex + 1;
+                unsigned int idx = cur->bucketIndex + 1;
                 if (idx < (unsigned int)table->numBuckets) {
                     HashNode** bucket = &table->buckets[idx];
                     do {
@@ -342,7 +345,7 @@ void StringTable::TestStrings(void* textMgr, int maxWidth)
 
             {
                 char text[256];
-                unsigned int stringId = iter->key;
+                unsigned int volatile stringId = cur->key;
                 iter = nextIter;
                 GetString(stringId, text);
                 int width = ((AnimatedAsset*)textMgr)->GetTextWidth(text);

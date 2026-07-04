@@ -67,9 +67,10 @@ TargetList::~TargetList() {
 /* Function start: 0x443540 */
 int TargetList::LBLParse(char* line) {
   char type[32];
-  int id = 0;
+  int id;
 
-  type[0] = 0;
+  id = 0;
+  type[0] = (char)id;
   sscanf(line, " %s ", type);
 
   if (type[0] == 'F') {
@@ -107,6 +108,7 @@ Target* TargetList::ProcessTargets() {
   Target* fallbackTarget;
   Target* target;
   HashNode* volatile entry;
+  HashNode* e;
   HashNode* nextEntry;
   unsigned int bucketIdx;
   HashNode** bucketPtr;
@@ -118,25 +120,28 @@ Target* TargetList::ProcessTargets() {
   if (ht == 0) {
     return 0;
   }
-  entry = (HashNode*)((unsigned int)ht->count < 1 ? 0 : -1);
-  if (entry != 0) {
+  e = (HashNode*)((unsigned int)ht->count < 1 ? 0 : -1);
+  entry = e;
+  if (e != 0) {
     do {
-      if (entry == (HashNode*)-1) {
+      e = entry;
+      if (e == (HashNode*)-1) {
         bucketIdx = 0;
-        if ((unsigned int)ht->numBuckets != 0) {
+        unsigned int n1 = (unsigned int)ht->numBuckets;
+        if (n1 != bucketIdx) {
           bucketPtr = ht->buckets;
           do {
-            entry = *bucketPtr;
-            if (entry != 0) break;
+            e = *bucketPtr;
+            if (e != 0) break;
             bucketPtr = bucketPtr + 1;
             bucketIdx = bucketIdx + 1;
-          } while (bucketIdx < (unsigned int)ht->numBuckets);
+          } while (bucketIdx < n1);
         }
       }
       // Original bug at 0x4436C4: the bucket scan result is dereferenced without rechecking the sentinel/null case.
-      nextEntry = entry->next;
+      nextEntry = e->next;
       if (nextEntry == 0) {
-        bucketIdx = entry->bucketIndex + 1;
+        bucketIdx = e->bucketIndex + 1;
         if (bucketIdx < (unsigned int)ht->numBuckets) {
           bucketPtr = &ht->buckets[bucketIdx];
           do {
@@ -147,7 +152,7 @@ Target* TargetList::ProcessTargets() {
           } while (bucketIdx < (unsigned int)ht->numBuckets);
         }
       }
-      target = (Target*)entry->reserved;
+      target = (Target*)e->reserved;
       entry = nextEntry;
       if (target != 0 && target->Update() == 0) {
         if (target->AdvanceHotspot() != 0) {
@@ -205,23 +210,23 @@ HotspotNode* HotspotListData::AllocateNode()
         if (n >= 0) {
             do {
                 node->next = freeList;
+                n--;
                 freeList = node;
                 node = (HotspotNode*)((char*)node - 16);
-            } while (--n >= 0);
+            } while (n >= 0);
         }
     }
 
     HotspotNode* node = freeList;
+    int i = 0;
     freeList = node->next;
     count++;
-    node->id = 0;
 
-    int i = 0;
+    node->id = i;
     do {} while (i-- != 0);
 
-    node->reserved = 0;
-
     i = 0;
+    node->reserved = i;
     do {} while (i-- != 0);
 
     return node;

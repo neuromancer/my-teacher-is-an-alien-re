@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "SC_CombatBase.h"
 void StartScheduleTimer();
 extern char* MakeSoundName(char*);
 
@@ -203,7 +204,6 @@ skip:
     }
 }
 
-extern void __stdcall EnqueueHotspotAction(SpriteAction*);
 
 /* Function start: 0x440F30 */
 void StartScheduleTimer() {
@@ -310,7 +310,7 @@ int PodsEngine::LBLParse(char* line) {
             HashTable* table = hashTable;
             HashNode* node = 0;
             name = MakeSoundName(buffer);
-            copy = (char*)operator new(strlen(name) + 1);
+            copy = new char[strlen(name) + 1];
             strcpy(copy, name);
             unsigned int bucket = (key >> 4) % (unsigned int)table->numBuckets;
             if (table->buckets != 0) {

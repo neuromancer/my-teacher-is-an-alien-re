@@ -11,8 +11,8 @@
 #include "Graphics.h"
 #include "main.h"
 
-extern char* __cdecl ResolveAssetPath(char* name, ...);
 
+#include "CDData.h"
 /* Function start: 0x41DBE0 */
 Palette* __fastcall InitPalette(Palette* buffer)
 {
@@ -59,9 +59,9 @@ Palette::Palette()
 /* Function start: 0x41DCA0 */
 void Palette::CopyData(void* source)
 {
+    int i = 0;
     char* dst = m_data;
     char* src = (char*)source;
-    int i = 0;
     while (i < m_size) {
         *dst = *src;
         src++;

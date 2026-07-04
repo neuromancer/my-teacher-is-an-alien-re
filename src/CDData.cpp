@@ -16,10 +16,8 @@
 
 #include "main.h"
 #include "Memory.h"
+#include <mmsystem.h>
 void ParsePath(const char *, char *, char *, char *, char *);
-int __cdecl FileExists(const char* path);           // 0x4195A0
-int __cdecl CopyFileContent(const char* src, const char* dest); // 0x419660
-__declspec(dllimport) unsigned long __stdcall timeGetTime(void);
 
 void ShowError(const char* format, ...);
 
@@ -85,7 +83,6 @@ void CDData::Setup(char *param_1, const char *param_2, const char *param_3) {
   ShowError(param_3);
 }
 
-extern int __cdecl GetFileSize(char*);
 
 // FileCache globals
 #include "MemoryCache.h"
@@ -372,7 +369,7 @@ char* FormatAssetPath(char* format, ...)
 {
     char localPath[260];
 
-    vsprintf(localPath, format, (char*)&format + 4);
+    vsprintf(localPath, format, (char*)(&format + 1));
 
     if (FileExists(localPath) != 0) {
         strcpy(g_PathResolver_0046aa1c->cdPath + 5, localPath);
@@ -385,7 +382,7 @@ char* FormatAssetPath(char* format, ...)
 /* Function start: 0x426190 */
 char* __cdecl ResolveAssetPath(char* name, ...) {
     char* basePath = g_PathResolver_0046aa1c->cdPath + 0x8a;
-    vsprintf(basePath, name, (char*)&name + 4);
+    vsprintf(basePath, name, (char*)(&name + 1));
 
     if (FileCacheLookup(basePath) == 0 && FileExists(basePath) == 0) {
         char* resolved = (char*)FormatAssetPath(basePath);

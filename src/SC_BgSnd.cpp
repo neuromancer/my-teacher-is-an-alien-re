@@ -9,6 +9,7 @@
 #include "Memory.h"
 #include <mss.h>
 #include "string.h"
+#include "AILSample.h"
 
 
 
@@ -56,7 +57,7 @@ void SC_BgSnd::Update(int p1, int p2) {
     if (s != 0) {
         HSAMPLE hsamp = s->m_sample;
         if (hsamp != 0) {
-            if (s->m_size == *(int*)((char*)hsamp + 0x0C)) {
+            if (s->m_size == ((AILSampleData*)hsamp)->len) {
                 if (AIL_sample_status(hsamp) == 4) {
                     if (flags & 1) {
                         SC_BgSnd::OnProcessEnd();
@@ -126,7 +127,7 @@ void SC_BgSnd::OnProcessEnd() {
     if (s == 0) return;
     HSAMPLE hsamp = s->m_sample;
     if (hsamp == 0) return;
-    if (s->m_size != *(int *)((char *)hsamp + 0xc)) return;
+    if (s->m_size != ((AILSampleData*)hsamp)->len) return;
     if (AIL_sample_status(hsamp) != 4) return;
     if ((flags & 1) == 0) return;
 
@@ -219,7 +220,7 @@ void SC_BgSnd::SetVolume(int volume, int duration) {
     if (s != 0) {
         HSAMPLE hsamp = s->m_sample;
         if (hsamp != 0) {
-            if (s->m_size == *(int*)((char*)hsamp + 0x0C)) {
+            if (s->m_size == ((AILSampleData*)hsamp)->len) {
                 if (AIL_sample_status(hsamp) == 4) {
                     if ((flags & 1) == 0) {
                         int currentVol = AIL_sample_volume(snd->m_sample);

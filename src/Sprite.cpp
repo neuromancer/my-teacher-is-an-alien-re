@@ -18,6 +18,7 @@
 // MSVC 4.20 register allocation stable.
 void WriteToLog(const char* format, ...);
 char* FormatAssetPath(char*, ...);
+char* __cdecl ResolveAssetPath(char*, ...);
 
 // Video buffer name table: 32 entries × 64 bytes at 0x4734B0
 static char g_VideoBufferNameTable[32][64];
@@ -86,7 +87,6 @@ void Sprite::StopAnimationSound()
     flags |= 0x20;
 }
 
-extern char* __cdecl ResolveAssetPath(char*, ...);
 
 /* Function start: 0x44C880 */
 void Sprite::InitAnimation()
@@ -320,7 +320,6 @@ void Sprite::InitLogic(int param_1)
 
 extern char* MakeAnimName(int);
 extern char* MakeSoundName(char*);
-extern char* __cdecl ResolveAssetPath(char*, ...);
 
 /* Function start: 0x44D6E0 */
 void Sprite::OnProcessEnd() {

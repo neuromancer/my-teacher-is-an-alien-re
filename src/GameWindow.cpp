@@ -19,7 +19,6 @@ int CleanupVideoSystem();
 
 LRESULT CALLBACK GameWindowProc(HWND, UINT, WPARAM, unsigned int);
 
-void __stdcall ParseCommandLine(char *);
 int ParseCommandLineArgs(char *, char **, int);
 
 /* Function start: 0x420110 */

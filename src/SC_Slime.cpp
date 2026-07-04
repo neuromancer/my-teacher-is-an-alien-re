@@ -1,4 +1,5 @@
 #include "SC_Slime.h"
+#include "AILSample.h"
 #include "stubs.h"
 #include "globals.h"
 #include "InputManager.h"
@@ -29,12 +30,6 @@
 
 /* Function start: 0x40CF60 */
 SC_Slime::SC_Slime() {
-    int* p = &hitCount;
-    p[0] = 0;
-    p[1] = 0;
-    p = &slimeRound;
-    p[0] = 0;
-    p[1] = 0;
     memset(&spriteAction, 0, 0xD8);
     handlerId = 0x3F;
 }
@@ -206,10 +201,10 @@ void SC_Slime::ProcessSprite(Sprite* spr) {
 
     switch (spr->handle) {
     case 0:
-        hitCount++;
+        studentHits.count++;
         {
             int done;
-            if (maxHits != 0 && hitCount >= maxHits) {
+            if (studentHits.max != 0 && studentHits.count >= studentHits.max) {
                 done = 1;
             } else {
                 done = 0;
@@ -227,8 +222,8 @@ void SC_Slime::ProcessSprite(Sprite* spr) {
 
     update_progress:
         {
-            // Original bug at 0x40DF30: zero maxHits falls through to this divide.
-            int progress = (hitCount * 8) / maxHits;
+            // Original bug at 0x40DF30: zero max hits falls through to this divide.
+            int progress = (studentHits.count * 8) / studentHits.max;
             if (progress >= 7) {
                 progress = 7;
             }
@@ -386,7 +381,7 @@ int SC_Slime::LBLParse(char* line) {
         slimeMeterSprite = new Sprite(0);
         Parser::ProcessFile(slimeMeterSprite, this, 0);
     } else if (strcmp(token, "STUDENT_HITS_ALLOWED") == 0) {
-        sscanf(line, " %s %d", token, &maxHits);
+        sscanf(line, " %s %d", token, &studentHits.max);
     } else if (strcmp(token, "CLOSED_SHOTS_NEEDED") == 0) {
         sscanf(line, " %s %d", token, &index);
         closedShots[1].max = index;
@@ -396,7 +391,7 @@ int SC_Slime::LBLParse(char* line) {
         openedShots[1].max = index;
         openedShots[0].max = index;
     } else if (strcmp(token, "TENTACLE_SHOTS_NEEDED") == 0) {
-        sscanf(line, " %s %d", token, &tentacleShotsNeeded);
+        sscanf(line, " %s %d", token, &tentacleShots.max);
     } else if (strcmp(token, "SOUND") == 0) {
         int fields = sscanf(line, " %s %d %s %d ", token, &index, buffer, &value);
         if (fields != 4) {
@@ -657,7 +652,7 @@ void SC_Slime::SendResultMessage() {
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         spriteAction = action;
-        SC_MessageParser temp;
+        SC_MessageParser temp((int)action);
         ParseFile(&temp, "mis\\cb_slime.mis", "[WIN_LBL_PR]");
         goto enqueue;
     }
@@ -670,7 +665,7 @@ void SC_Slime::SendResultMessage() {
         }
         SpriteAction* action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         spriteAction = action;
-        SC_MessageParser temp;
+        SC_MessageParser temp((int)action);
         ParseFile(&temp, "mis\\cb_slime.mis", "[LOSE_LBL_PR]");
         goto enqueue;
     }
@@ -697,9 +692,9 @@ int SC_Slime::HandleInput(Sprite* spr) {
             Sprite* arm = (&leftArmSprite)[i - 1];
             if (arm->handle == 0 &&
                 armMaskSprite->animation_data->targetBuffer->CheckHit(pos[0], pos[1] - 0x4f) == i) {
-                slimeRound++;
+                tentacleShots.count++;
                 {
-                    int done = tentacleShotsNeeded != 0 && slimeRound >= tentacleShotsNeeded;
+                    int done = tentacleShots.max != 0 && tentacleShots.count >= tentacleShots.max;
                     if (done != 0) {
                         int offset = arm->ranges[arm->handle].dim.y - arm->animation_data->smk->FrameNum;
                         arm->ResetAnimation(2, offset);
@@ -778,12 +773,7 @@ int SC_Slime::HandleInput(Sprite* spr) {
                         case 2:
                             openedShots[i].count++;
                             {
-                                int done;
-                                if (openedShots[i].max != 0 && openedShots[i].count >= openedShots[i].max) {
-                                    done = 1;
-                                } else {
-                                    done = 0;
-                                }
+                                int done = openedShots[i].max != 0 && openedShots[i].max <= openedShots[i].count;
                                 if (done != 0) {
                                     sw->ResetAnimation(4, 0);
                                     Sprite* other = (&rightSwitchSprite)[-i];
@@ -925,13 +915,13 @@ void SlimeTable::StopPlaying()
         do {
             Sample* smp = ((Sample**)fields[1])[i];
             if (smp != 0 && smp->m_sample != 0 &&
-                smp->m_size == *(int*)((char*)smp->m_sample + 0xc)) {
+                smp->m_size == ((AILSampleData*)smp->m_sample)->len) {
                 if (AIL_sample_status(smp->m_sample) == 4) {
                     smp->Stop();
                 }
             }
             i++;
-        } while (i < fields[0]);
+        } while (fields[0] > i);
     }
 }
 
@@ -942,9 +932,8 @@ void SlimeTable::LoadEntry(int index, char* filename, int value)
         return;
     }
 
-    Sample* sample = new Sample();
-    ((void**)fields[1])[index] = sample;
-    sample->Load(MakeAudioName(filename));
+    ((Sample**)fields[1])[index] = new Sample();
+    ((Sample**)fields[1])[index]->Load(MakeAudioName(filename));
     ((int*)fields[2])[index] = value;
 }
 
@@ -957,7 +946,7 @@ int SlimeTable::IsSamplePlaying(int index)
     entry = ((Sample**)fields[1])[index];
     if (entry == 0) goto fail;
     if (entry->m_sample == 0) goto fail;
-    if (entry->m_size != *(int*)((char*)entry->m_sample + 0xc)) goto fail;
+    if (entry->m_size != ((AILSampleData*)entry->m_sample)->len) goto fail;
     if (AIL_sample_status(entry->m_sample) == 4) return 1;
 
 fail:

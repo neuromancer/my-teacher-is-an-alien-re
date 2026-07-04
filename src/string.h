@@ -18,6 +18,7 @@
     void WriteToLog(const char *param_1, ...);
     FILE* fsopen(const char* filename, const char* mode);
     char* internal_ReadLine(char* buffer, int size, FILE* stream);
+    int GetFileSize(char* path);
 
 char* GetSoundFilename(int handle);
 

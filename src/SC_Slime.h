@@ -20,6 +20,15 @@ struct SlotPair {
     SlotPair();
 };
 
+// 8-byte counter pair with INLINE ctor and no dtor (same pattern as FA_Dim
+// in SC_FireAlarm.h) — the SC_Slime constructor at 0x40CF60 zeroes these
+// pairs inline (lea + two stores) with no EH state bump.
+struct SlimeCounter {
+    int count;
+    int max;
+    SlimeCounter() { memset(this, 0, 8); }
+};
+
 
 // SC_Slime - Slime puzzle handler (case 63/0x3F)
 // Constructor: 0x40CF60
@@ -67,10 +76,8 @@ public:
     Sprite* rightArmActive;  // 0x124 - right arm active (alias from RIGHT_ARM_SPRITE)
     Sprite* armMaskSprite;   // 0x128 - ARM_MASK_SPRITE
     Sprite* slimeMeterSprite;// 0x12C - SLIME_METER_SPRITE
-    int hitCount;            // 0x130 - current hit count
-    int maxHits;             // 0x134 - STUDENT_HITS_ALLOWED
-    int slimeRound;          // 0x138
-    int tentacleShotsNeeded; // 0x13C - TENTACLE_SHOTS_NEEDED
+    SlimeCounter studentHits;   // 0x130 - hit count (count) / STUDENT_HITS_ALLOWED (max)
+    SlimeCounter tentacleShots; // 0x138 - round count (count) / TENTACLE_SHOTS_NEEDED (max)
     Rect targetRect;         // 0x140-0x14F (16 bytes)
     SoundList* soundList;    // 0x150 - sound list object
     int field_154;           // 0x154

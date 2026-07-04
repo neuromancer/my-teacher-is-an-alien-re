@@ -133,7 +133,7 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
                             ProcessGrid(row, col);
                         }
                     }
-                    gep = (int*)((char*)gep + 0x1C);
+                    gep = gep + 7;  // next GauntletEntry (0x1C bytes = 7 ints)
                     col++;
                 } while (col < 6);
                 row++;

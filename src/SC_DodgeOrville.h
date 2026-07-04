@@ -11,6 +11,20 @@ struct DodgeDim {
     DodgeDim() { x = 0; y = 0; }
 };
 
+// Bomb trajectory table entry: three SlimeDim ranges per direction.
+// The original constructs g_BombData_00473278[] at startup through the CRT
+// initializer table (dynamic initializer 0x428110; ctor COMDAT 0x428620),
+// building each element from three by-reference SlimeDim temporaries.
+struct BombData {
+    SlimeDim data[3];
+    BombData(SlimeDim& a, SlimeDim& b, SlimeDim& c) {
+        data[0] = a;
+        data[1] = b;
+        data[2] = c;
+    }
+};
+extern BombData g_BombData_00473278[6];
+
 // SC_DodgeOrville - Dodge Orville stink bomb mini-game (case 67/0x43)
 // Constructor: 0x428840
 // Size: 0x168

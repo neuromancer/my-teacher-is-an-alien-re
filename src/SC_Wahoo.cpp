@@ -35,7 +35,6 @@
 
 // FUN_00412a50 = Parser::LBLParse in Parser.h
 #include "string.h"
-extern char* __cdecl ResolveAssetPath(char* name, ...);
 
 // FUN_00410fb0 = VBuffer ctor — callers updated to use new
 #include "RockThrower.h"
@@ -52,6 +51,7 @@ extern char* __cdecl ResolveAssetPath(char* name, ...);
 #include "MouseControl.h"
 #include "AILSample.h"
 
+#include "CDData.h"
 class DetectionObj {
 public:
     void Render();            // 0x427880

@@ -260,15 +260,21 @@ void SC_CombatBase::CleanupAll()
         scoreDisplay = 0;
     }
     if (targetList != 0) {
-        delete targetList;
+        TargetList* t = targetList;
+        t->TargetList::~TargetList();
+        FreeMemory(t);
         targetList = 0;
     }
     if (weaponParser != 0) {
-        delete weaponParser;
+        EngineInfoParser* w = weaponParser;
+        w->EngineInfoParser::~EngineInfoParser();
+        FreeMemory(w);
         weaponParser = 0;
     }
     if (combatSprite != 0) {
-        delete combatSprite;
+        CombatSprite* c = combatSprite;
+        c->CombatSprite::~CombatSprite();
+        FreeMemory(c);
         combatSprite = 0;
     }
     if (viewport != 0) {

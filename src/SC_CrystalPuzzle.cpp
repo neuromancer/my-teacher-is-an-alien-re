@@ -312,11 +312,15 @@ void SC_CrystalPuzzle::Init(SC_MessageParser* msg) {
         zbm->m_palette = 0;
     }
 
-    if (palette != 0) {
-        if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+    {
+        Palette* pal = palette;
+        if (pal != 0) {
+            Palette** pp = &g_ZBufferManager_0046aa24->m_palette;
+            if (*pp != 0) {
+                WriteToLog("ddouble palette");
+            }
+            *pp = pal;
         }
-        g_ZBufferManager_0046aa24->m_palette = palette;
     }
 
     puzzleFlags = 0;
@@ -384,6 +388,8 @@ void SC_CrystalPuzzle::ShutDown(SC_MessageParser* msg) {
 /* Function start: 0x44FAE0 */
 int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
     int* pmsg = (int*)msg;
+    int mouseY;
+    int mouseX;
 
     if (WriteMessageAddress(msg) != 0) {
         return 1;
@@ -391,13 +397,11 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
 
     if (pmsg[0xb] == 0x1b) {
         puzzleFlags |= 1;
-        SC_CrystalPuzzle::FinalizeExit(msg);
+        SC_CrystalPuzzle::FinalizeExit();
         return 1;
     }
 
     if (pmsg[9] >= 2) {
-        int mouseY;
-        int mouseX;
         if (g_InputManager_0046aa08->pMouse != 0) {
             mouseY = g_InputManager_0046aa08->pMouse->y;
         } else {
@@ -412,13 +416,12 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
         OnClick(mouseX, mouseY);
 
         int clickX = pmsg[7];
-        int clickY = pmsg[8];
         if ((rect6.left <= clickX && clickX <= rect6.right &&
-             rect6.top <= clickY && clickY <= rect6.bottom) ||
+             rect6.top <= pmsg[8] && pmsg[8] <= rect6.bottom) ||
             (rect7.left <= clickX && clickX <= rect7.right &&
-             rect7.top <= clickY && clickY <= rect7.bottom)) {
+             rect7.top <= pmsg[8] && pmsg[8] <= rect7.bottom)) {
             puzzleFlags |= 1;
-            SC_CrystalPuzzle::FinalizeExit(msg);
+            SC_CrystalPuzzle::FinalizeExit();
             return 1;
         }
 
@@ -434,8 +437,10 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
                 mouseX = 0;
             }
 
-            if (g_DoorRects_00473dc8[0].left <= mouseX && mouseX <= g_DoorRects_00473dc8[0].right &&
-                mouseY >= g_DoorRects_00473dc8[0].top && mouseY <= g_DoorRects_00473dc8[0].bottom) {
+            if (g_DoorRects_00473dc8[0].left > mouseX || g_DoorRects_00473dc8[0].right < mouseX ||
+                mouseY < g_DoorRects_00473dc8[0].top || mouseY > g_DoorRects_00473dc8[0].bottom)
+                goto skip_floor0;
+            {
 
                 GameState* gs = g_GameState_0046aa30;
                 int idx = gs->FindLabel("LINSEY_ALIEN");
@@ -454,10 +459,11 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 gs->stateValues[idx] = 0;
-                SC_CrystalPuzzle::FinalizeExit(msg);
+                SC_CrystalPuzzle::FinalizeExit();
                 return 1;
             }
         }
+skip_floor0:
 
         if (floorStates[1] != 0) {
             if (g_InputManager_0046aa08->pMouse != 0) {
@@ -471,8 +477,10 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
                 mouseX = 0;
             }
 
-            if (g_DoorRects_00473dc8[1].left <= mouseX && mouseX <= g_DoorRects_00473dc8[1].right &&
-                g_DoorRects_00473dc8[1].top <= mouseY && mouseY <= g_DoorRects_00473dc8[1].bottom) {
+            if (g_DoorRects_00473dc8[1].left > mouseX || g_DoorRects_00473dc8[1].right < mouseX ||
+                g_DoorRects_00473dc8[1].top > mouseY || g_DoorRects_00473dc8[1].bottom < mouseY)
+                goto skip_floor1;
+            {
 
                 GameState* gs = g_GameState_0046aa30;
                 int idx = gs->FindLabel("STACY_ALIEN");
@@ -491,10 +499,11 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
                     ShowError("Invalid gamestate %d", idx);
                 }
                 gs->stateValues[idx] = 0;
-                SC_CrystalPuzzle::FinalizeExit(msg);
+                SC_CrystalPuzzle::FinalizeExit();
                 return 1;
             }
         }
+skip_floor1:
 
         if (floorStates[2] != 0) {
             if (g_InputManager_0046aa08->pMouse != 0) {
@@ -508,13 +517,14 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
                 mouseX = 0;
             }
 
-            if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
-                g_DoorRects_00473dc8[2].top <= mouseY && mouseY <= g_DoorRects_00473dc8[2].bottom) {
-                puzzleFlags |= 2;
-                SC_CrystalPuzzle::FinalizeExit(msg);
-            }
+            if (g_DoorRects_00473dc8[2].left > mouseX || g_DoorRects_00473dc8[2].right < mouseX ||
+                mouseY < g_DoorRects_00473dc8[2].top || mouseY > g_DoorRects_00473dc8[2].bottom)
+                goto skip_floor2;
+            puzzleFlags |= 2;
+            SC_CrystalPuzzle::FinalizeExit();
         }
     }
+skip_floor2:
 
     return 1;
 }
@@ -589,8 +599,8 @@ sound_done:
         mouseX = 0;
     }
 
-    if (rect6.left <= mouseX && mouseX <= rect6.right &&
-        rect6.top <= mouseY && mouseY <= rect6.bottom) {
+    if (rect6.left <= mouseX && rect6.right >= mouseX &&
+        rect6.top <= mouseY && rect6.bottom >= mouseY) {
         goto set_cursor_10;
     }
 
@@ -605,11 +615,21 @@ sound_done:
         mouseX = 0;
     }
 
-    if (rect7.left <= mouseX && mouseX <= rect7.right &&
-        rect7.top <= mouseY && mouseY <= rect7.bottom) {
-        goto set_cursor_10;
+    if (rect7.left > mouseX || rect7.right < mouseX ||
+        rect7.top > mouseY || rect7.bottom < mouseY) {
+        goto floor_checks;
     }
 
+set_cursor_10:
+    {
+        Sprite* spr = g_Mouse_0046aa18->m_sprite;
+        if (spr != 0) {
+            spr->ResetAnimation(0xa, 0);
+        }
+    }
+    goto draw_cursor;
+
+floor_checks:
     if (floorStates[0] != 0) {
         if (g_InputManager_0046aa08->pMouse != 0) {
             mouseY = g_InputManager_0046aa08->pMouse->y;
@@ -622,8 +642,8 @@ sound_done:
             mouseX = 0;
         }
 
-        if (g_DoorRects_00473dc8[0].left <= mouseX && mouseX <= g_DoorRects_00473dc8[0].right &&
-            g_DoorRects_00473dc8[0].top <= mouseY && mouseY <= g_DoorRects_00473dc8[0].bottom) {
+        if (g_DoorRects_00473dc8[0].left <= mouseX && g_DoorRects_00473dc8[0].right >= mouseX &&
+            g_DoorRects_00473dc8[0].top <= mouseY && g_DoorRects_00473dc8[0].bottom >= mouseY) {
             goto set_cursor_20;
         }
     }
@@ -640,70 +660,28 @@ sound_done:
             mouseX = 0;
         }
 
-        if (g_DoorRects_00473dc8[1].left <= mouseX && mouseX <= g_DoorRects_00473dc8[1].right &&
-            g_DoorRects_00473dc8[1].top <= mouseY && mouseY <= g_DoorRects_00473dc8[1].bottom) {
+        if (g_DoorRects_00473dc8[1].left <= mouseX && g_DoorRects_00473dc8[1].right >= mouseX &&
+            g_DoorRects_00473dc8[1].top <= mouseY && g_DoorRects_00473dc8[1].bottom >= mouseY) {
             goto set_cursor_20;
         }
     }
 
-    if (floorStates[2] != 0) {
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseY = g_InputManager_0046aa08->pMouse->y;
-        } else {
-            mouseY = 0;
-        }
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseX = g_InputManager_0046aa08->pMouse->x;
-        } else {
-            mouseX = 0;
-        }
-
-        if (g_DoorRects_00473dc8[2].left <= mouseX && mouseX <= g_DoorRects_00473dc8[2].right &&
-            g_DoorRects_00473dc8[2].top <= mouseY && mouseY <= g_DoorRects_00473dc8[2].bottom) {
-            goto set_cursor_20;
-        }
+    if (floorStates[2] == 0) goto rect3_check;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
+    } else {
+        mouseY = 0;
+    }
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseX = g_InputManager_0046aa08->pMouse->x;
+    } else {
+        mouseX = 0;
     }
 
-    if (field_144 != 0) {
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseY = g_InputManager_0046aa08->pMouse->y;
-        } else {
-            mouseY = 0;
-        }
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseX = g_InputManager_0046aa08->pMouse->x;
-        } else {
-            mouseX = 0;
-        }
-
-        if (rect2.left <= mouseX && mouseX <= rect2.right &&
-            rect2.top <= mouseY && mouseY <= rect2.bottom) {
-            {
-                Sprite* spr = g_Mouse_0046aa18->m_sprite;
-                if (spr != 0) {
-                    spr->ResetAnimation(0, 0);
-                }
-            }
-            goto draw_cursor;
-        }
+    if (g_DoorRects_00473dc8[2].left > mouseX || g_DoorRects_00473dc8[2].right < mouseX ||
+        g_DoorRects_00473dc8[2].top > mouseY || g_DoorRects_00473dc8[2].bottom < mouseY) {
+        goto rect3_check;
     }
-
-    {
-        Sprite* spr = g_Mouse_0046aa18->m_sprite;
-        if (spr != 0) {
-            spr->ResetAnimation(0x15, 0);
-        }
-    }
-    goto draw_cursor;
-
-set_cursor_10:
-    {
-        Sprite* spr = g_Mouse_0046aa18->m_sprite;
-        if (spr != 0) {
-            spr->ResetAnimation(0xa, 0);
-        }
-    }
-    goto draw_cursor;
 
 set_cursor_20:
     {
@@ -712,13 +690,48 @@ set_cursor_20:
             spr->ResetAnimation(0x14, 0);
         }
     }
+    goto draw_cursor;
+
+rect3_check:
+    if (field_144 == 0) goto set_cursor_15;
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseY = g_InputManager_0046aa08->pMouse->y;
+    } else {
+        mouseY = 0;
+    }
+    if (g_InputManager_0046aa08->pMouse != 0) {
+        mouseX = g_InputManager_0046aa08->pMouse->x;
+    } else {
+        mouseX = 0;
+    }
+
+    if (rect3.left <= mouseX && rect3.right >= mouseX &&
+        rect3.top <= mouseY && rect3.bottom >= mouseY) {
+        goto set_cursor_15;
+    }
+
+    {
+        Sprite* spr = g_Mouse_0046aa18->m_sprite;
+        if (spr != 0) {
+            spr->ResetAnimation(0, 0);
+        }
+    }
+    goto draw_cursor;
+
+set_cursor_15:
+    {
+        Sprite* spr = g_Mouse_0046aa18->m_sprite;
+        if (spr != 0) {
+            spr->ResetAnimation(0x15, 0);
+        }
+    }
 
 draw_cursor:
     g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x450110 */
-int SC_CrystalPuzzle::FinalizeExit(SC_MessageParser* msg) {
+int SC_CrystalPuzzle::FinalizeExit() {
     SpriteAction* act;
     int idx;
     void* mem;
@@ -904,10 +917,10 @@ int SC_CrystalPuzzle::CheckSolution() {
 
     int* floorStatesBase = &floorStates[0];
     solutionIdx = 0;
-    solutionPtr = g_PuzzleSolutions_0046cc98;
     floorStatesBase[0] = 0;
     floorStatesBase[1] = 0;
     floorStatesBase[2] = 0;
+    solutionPtr = g_PuzzleSolutions_0046cc98;
 
     while (1) {
         for (i = 0; i < 9; i++) {
@@ -929,7 +942,7 @@ int SC_CrystalPuzzle::CheckSolution() {
 
         solutionPtr += 4;
         solutionIdx++;
-        if (solutionPtr >= (int*)0x46cd28) {
+        if (solutionPtr >= g_PuzzleSolutions_0046cc98 + 36) {
             return -1;
         }
     }
@@ -945,12 +958,7 @@ int SC_CrystalPuzzle::CheckSolution() {
 
     floorStates[floorIdx] = 1;
 
-    int resetIdx = 2;
-    if (solutionIdx < 2) {
-        resetIdx = 5;
-    }
-
-    ResetPuzzle(resetIdx, 1);
+    ResetPuzzle(solutionIdx >= 2 ? 2 : 5, 1);
     return g_PuzzleResultIdx_0046cca4[solutionIdx * 4];
 }
 
@@ -1030,23 +1038,17 @@ void SC_CrystalPuzzle::DisplayLitDoors() {
         if (floorStates[i] != 0) {
             litdoors->ResetAnimation(i, 0);
 
-            locX = 0;
             if (i != 0) {
                 if ((unsigned)(i - 1) < 1) {
                     locX = 0x92;
                 } else {
                     locX = 0x138;
                 }
-            }
-
-            int locY;
-            if ((unsigned)(i - 1) < 1) {
-                locY = 0x6e;
             } else {
-                locY = 0x60;
+                locX = 0;
             }
 
-            litdoors->Do(locX, locY, 1.0);
+            litdoors->Do(locX, ((unsigned)(i - 1) < 1) ? 0x6e : 0x60, 1.0);
         }
     }
 }

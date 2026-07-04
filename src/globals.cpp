@@ -733,13 +733,8 @@ int g_StartBlock_00472e2c = 0;                               // 0x00472e2c
 char g_StringTable_00472e30[640] = {0};                      // 0x00472e30 — 20 command-line string slots
 int g_ProjectileHits_0047325c = 0;                           // 0x0047325c
 HitBounds g_HitBounds_00473260[3] = {{0, 0}, {0, 0}, {0, 0}}; // 0x00473260
-BombData g_BombData_00473278[6];                             // 0x00473278 (BSS, initialized by CRT startup)
 POINT g_CursorPos_00473308;                                  // 0x00473308
 // IconBar globals
-int g_IconBarLeft_00473310 = 0;                              // 0x00473310
-int g_IconBarTop_00473314 = 0;                               // 0x00473314 (set by CRT init via SetIconBarRect)
-int g_IconBarRight_00473318 = 0;                             // 0x00473318 (set by CRT init via SetIconBarRect)
-int g_IconBarBottom_0047331c = 0;                            // 0x0047331C (set by CRT init via SetIconBarRect)
 IconBarEntry g_IconBarEntries_00473320[6];                   // 0x00473320-0x4733F8
 int g_IconBarRefCount_0046af0c = 0;                          // 0x0046af0c
 GlyphRect g_PuzzleButtonRects_00473d30[9];                   // 0x00473d30

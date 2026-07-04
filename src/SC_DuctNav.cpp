@@ -26,6 +26,10 @@
 #include "string.h"
 #include "CDData.h"
 #include "AnimatedAsset.h"
+
+#include "TextInput.h"
+#include "FileArchive.h"
+
 struct SaveFilePool {
     int* head;     // 0x00
     int* tail;     // 0x04
@@ -45,56 +49,27 @@ struct SaveFilePool {
     int* AllocNode(int prev, int next);
 };
 
-/* Function start: 0x43E2A0 */
-int* SaveFilePool::AllocNode(int prev, int next) {
-    if (freeList == 0) {
-        int* block = (int*)operator new(growBy * 0x120 + 4);
-        *block = (int)blocks;
-        blocks = block;
-        int cnt = growBy;
-        int* entry = (int*)((char*)block + cnt * 0x120 - 0x11c);
-        cnt--;
-        while (cnt >= 0) {
-            *entry = (int)freeList;
-            cnt--;
-            freeList = entry;
-            entry = (int*)((char*)entry - 0x120);
-        }
-    }
-    int* node = freeList;
-    freeList = (int*)*node;
-    node[1] = prev;
-    *node = next;
-    count++;
-    int* payload = node + 2;
-    int i;
-    for (i = 0x46; i != 0; i--) {
-        *payload = 0;
-        payload++;
-    }
-    { int n = 0; while (n-- != 0); }
-    return node;
-}
-
-/* Function start: 0x43E320 */
-void __cdecl ClearSaveEntries(void* buf, int count) {
-    memset(buf, 0, (unsigned int)(count * 0x118));
-    int tmp = count;
-    count--;
-    if (tmp != 0) {
-        do {
-            tmp = count;
-            count--;
-        } while (tmp != 0);
-    }
-}
-
-#include "TextInput.h"
-#include "FileArchive.h"
+void __cdecl ClearSaveEntries(void* buf, int count);
 
 // Forward declarations
 char* MakeSavePath(char* param);
 int ReadConfigFile();
+void InitNewGame();
+int GetRandomTeacher();
+
+// AnimatedAsset::LoadFont now in AnimatedAsset.cpp
+extern void ShowError(const char* format, ...);
+
+#define CREATE_BUTTON(slot, _name, _params) \
+    { \
+        T_MenuButton* _obj = new T_MenuButton(_name, _params); \
+        (slot) = _obj; \
+        ((Sprite*)_obj->sprite)->ConfigRange(1, 2, 10, 1); \
+    }
+
+#define HOTSPOT_HIT(btn, mx, my) \
+    ((btn)->bounds.left <= (mx) && (btn)->bounds.right >= (mx) && \
+     (btn)->bounds.top <= (my) && (btn)->bounds.bottom >= (my))
 
 /* Function start: 0x43AF10 */
 SC_DuctNav::SC_DuctNav()
@@ -105,248 +80,9 @@ SC_DuctNav::SC_DuctNav()
     strcpy(searchPattern, "SaveGame\\*.sav");
 }
 
-#define CREATE_BUTTON(slot, _name, _params) \
-    { \
-        T_MenuButton* _obj = new T_MenuButton(_name, _params); \
-        (slot) = _obj; \
-        ((Sprite*)_obj->sprite)->ConfigRange(1, 2, 10, 1); \
-    }
-
-/* Function start: 0x43D5B0 */
-int SC_DuctNav::LBLParse(char* line)
-{
-    char label[32];
-    char name[128];
-    int slotIdx = 0;
-    GlyphRect params;
-
-    sscanf(line, "%s", label);
-
-    if (strcmp(label, "PALE") == 0) {
-        sscanf(line, "%s %s", label, name);
-        if (fontPalette != 0) {
-            delete fontPalette;
-            fontPalette = 0;
-        }
-        fontPalette = new Palette(name);
-    } else if (strcmp(label, "SPRITE") == 0) {
-        if (menuSprite != 0) {
-            delete (Sprite*)menuSprite;
-            menuSprite = 0;
-        }
-        menuSprite = new Sprite((char*)0);
-        Parser::ProcessFile(menuSprite, this, (char*)0);
-    } else if (strcmp(label, "CANCEL") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
-        if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
-        CREATE_BUTTON(cancelBtn, name, (int*)&params)
-    } else if (strcmp(label, "SAVE") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
-        if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
-        CREATE_BUTTON(saveBtn, name, (int*)&params)
-    } else if (strcmp(label, "LOAD") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
-        if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
-        CREATE_BUTTON(loadBtn, name, (int*)&params)
-    } else if (strcmp(label, "EDITBOX") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
-        if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
-        CREATE_BUTTON(overwriteBtn, name, (int*)&params)
-    } else if (strcmp(label, "DELETE") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
-        if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
-        CREATE_BUTTON(deleteBtn, name, (int*)&params)
-    } else if (strcmp(label, "SCROLLUP") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
-        if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
-        CREATE_BUTTON(scrollUpBtn, name, (int*)&params)
-    } else if (strcmp(label, "SCROLLDOWN") == 0) {
-        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
-        if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
-        CREATE_BUTTON(scrollDownBtn, name, (int*)&params)
-    } else if (strcmp(label, "EDIT_FOCUS_SPRITE") == 0) {
-        editFocusSprite = new Sprite((char*)0);
-        Parser::ProcessFile(editFocusSprite, this, (char*)0);
-    } else if (strcmp(label, "CHOICE_FOCUS_SPRITE") == 0) {
-        choiceFocusSprite = new Sprite((char*)0);
-        Parser::ProcessFile(choiceFocusSprite, this, (char*)0);
-    } else if (strcmp(label, "SLOT") == 0) {
-        sscanf(line, "%s %d %d %d %d %d", label, &slotIdx, &params.left, &params.top, &params.right, &params.bottom);
-        slotRects[slotIdx].left = params.left;
-        slotRects[slotIdx].top = params.top;
-        slotRects[slotIdx].right = params.right;
-        slotRects[slotIdx].bottom = params.bottom;
-    } else if (strcmp(label, "END") == 0) {
-        return 1;
-    } else {
-        Parser::ReportUnknownLabel("SC_DuctNav");
-    }
-
-    return 0;
-}
-
-// AnimatedAsset::LoadFont now in AnimatedAsset.cpp
-extern void ShowError(const char* format, ...);
-
-/* Function start: 0x43D170 */
-int GetRandomTeacher() {
-    int teacher = 0;
-    int counter = 3;
-
-    FILE* fp = OpenSaveFile("cfg\\031568.dat", "r");
-    if (fp != 0) {
-        fscanf(fp, "%d %d", &teacher, &counter);
-        fclose(fp);
-    }
-
-    if (counter == 3) {
-        int count = rand() % 10 + 1;
-        if (count > 0) {
-            do {
-                teacher = rand() % 3 + 1;
-                count--;
-            } while (count != 0);
-        }
-    } else {
-        teacher = teacher % 3 + 1;
-    }
-
-    fp = OpenSaveFile("cfg\\031568.dat", "w");
-    if (fp != 0) {
-        fprintf(fp, "%d %d", teacher, counter % 3 + 1);
-        fclose(fp);
-    }
-
-    return teacher;
-}
-
-/* Function start: 0x43CD50 */
-void InitNewGame() {
-    SpriteAction* action;
-
-    action = new SpriteAction(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
-    if (action != 0) {
-        action->~SpriteAction();
-        operator delete(action);
-    }
-
-    action = new SpriteAction(1, 0x1e, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
-    if (action != 0) {
-        action->~SpriteAction();
-        operator delete(action);
-    }
-
-    action = new SpriteAction(1, 0x2c, 0, 0, 0x18, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
-    if (action != 0) {
-        action->~SpriteAction();
-        operator delete(action);
-    }
-
-    if (g_GameState_0046aa30 != 0) {
-        g_GameState_0046aa30->~GameState();
-        operator delete(g_GameState_0046aa30);
-        g_GameState_0046aa30 = 0;
-    }
-
-    g_GameState_0046aa30 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
-
-    if (g_FlagManager_0046a6e8 != 0) {
-        g_FlagManager_0046a6e8->~FlagArray();
-        operator delete(g_FlagManager_0046a6e8);
-        g_FlagManager_0046a6e8 = 0;
-    }
-
-    g_FlagManager_0046a6e8 = new FlagArray("cfg\\question.dat", 10000);
-    g_FlagManager_0046a6e8->ClearAllFlags();
-
-    {
-        QuestionInit qi("mis\\INIT_Q.mis");
-    }
-
-    g_PendingAction_00472d58.addressType = 0x25;
-    g_PendingAction_00472d58.addressValue = 1;
-
-    int teacherVal = GetRandomTeacher();
-
-    GameState* gs = g_GameState_0046aa30;
-    int idx = gs->FindLabel("TEACHER_ALIEN");
-    if (idx < 0 || gs->maxStates - 1 < idx) {
-        ShowError("Invalid gamestate %d", idx);
-    }
-    gs->stateValues[idx] = teacherVal;
-
-    gs = g_GameState_0046aa30;
-    idx = gs->FindLabel("NO_RESUME_NO_SAVE");
-    if (idx < 0 || gs->maxStates - 1 < idx) {
-        ShowError("Invalid gamestate %d", idx);
-    }
-    gs->stateValues[idx] = 0;
-
-    gs = g_GameState_0046aa30;
-    idx = gs->FindLabel("MUST_SAVEGAME");
-    if (idx < 0 || gs->maxStates - 1 < idx) {
-        ShowError("Invalid gamestate %d", idx);
-    }
-    gs->stateValues[idx] = 1;
-
-    action = new SpriteAction(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
-    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
-    if (action != 0) {
-        action->~SpriteAction();
-        operator delete(action);
-    }
-}
 SC_DuctNav::~SC_DuctNav()
 {
     ShutDown(0);
-}
-
-/* Function start: 0x43B2C0 */
-void SC_DuctNav::ShutDown(SC_MessageParser* msg)
-{
-    {
-        void* list = saveFileList;
-        if (list != 0) {
-            ((SpriteHashTable*)list)->Clear();
-            FreeMemory(list);
-            saveFileList = 0;
-        }
-    }
-    {
-        TextInput* t = field_0x24C;
-        if (t != 0) {
-            t->~TextInput();
-            FreeMemory(t);
-            field_0x24C = 0;
-        }
-    }
-    if (menuSprite != 0) {
-        delete menuSprite;
-        menuSprite = 0;
-    }
-    if (fontPalette != 0) {
-        delete fontPalette;
-        fontPalette = 0;
-    }
-    if (editFocusSprite != 0) {
-        delete editFocusSprite;
-        editFocusSprite = 0;
-    }
-    if (choiceFocusSprite != 0) {
-        delete choiceFocusSprite;
-        choiceFocusSprite = 0;
-    }
-    if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
-    if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
-    if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
-    if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
-    if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
-    if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
-    if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
-    return;
 }
 
 /* Function start: 0x43B0F0 */
@@ -404,11 +140,185 @@ void SC_DuctNav::Init(SC_MessageParser* msg) {
     field_0x24C = new TextInput(saveFilename, 0x36, g_GlyphFont_0046aa28, g_FontFilename_0046bd78);
 }
 
-// TextInput::ProcessKey is thiscall (declared in TextInput class above)
+/* Function start: 0x43B2C0 */
+void SC_DuctNav::ShutDown(SC_MessageParser* msg)
+{
+    {
+        void* list = saveFileList;
+        if (list != 0) {
+            ((SpriteHashTable*)list)->Clear();
+            FreeMemory(list);
+            saveFileList = 0;
+        }
+    }
+    {
+        TextInput* t = field_0x24C;
+        if (t != 0) {
+            t->~TextInput();
+            FreeMemory(t);
+            field_0x24C = 0;
+        }
+    }
+    if (menuSprite != 0) {
+        delete menuSprite;
+        menuSprite = 0;
+    }
+    if (fontPalette != 0) {
+        delete fontPalette;
+        fontPalette = 0;
+    }
+    if (editFocusSprite != 0) {
+        delete editFocusSprite;
+        editFocusSprite = 0;
+    }
+    if (choiceFocusSprite != 0) {
+        delete choiceFocusSprite;
+        choiceFocusSprite = 0;
+    }
+    if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
+    if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
+    if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
+    if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
+    {
+        T_MenuButton* d = deleteBtn;
+        if (d != 0) { delete d; deleteBtn = 0; }
+    }
+    if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
+    {
+        T_MenuButton* d2 = scrollDownBtn;
+        if (d2 != 0) { delete d2; scrollDownBtn = 0; }
+    }
+    return;
+}
 
-#define HOTSPOT_HIT(btn, mx, my) \
-    ((btn)->bounds.left <= (mx) && (btn)->bounds.right >= (mx) && \
-     (btn)->bounds.top <= (my) && (btn)->bounds.bottom >= (my))
+/* Function start: 0x43B7E0 */
+void SC_DuctNav::Update(int p1, int p2) {
+    int* volatile node;
+    int* walk;
+    unsigned int elapsed = timer.Update();
+    if (elapsed > 60000) {
+        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
+    }
+    if (handlerId != p2) {
+        return;
+    }
+    timer.Reset();
+
+    if (menuSprite != 0) {
+        menuSprite->Do(menuSprite->loc.x, menuSprite->loc.y, 1.0);
+    }
+
+    int* list = (int*)saveFileList;
+    int idx = scrollOffset;
+    int listCount = list[2];
+    if (listCount > idx) {
+        if (idx >= 0) {
+            if (idx >= listCount) {
+                node = 0;
+            } else {
+                walk = (int*)*list;
+                while (idx-- != 0) {
+                    walk = (int*)*walk;
+                }
+                node = walk;
+            }
+
+            {
+                int slotIdx = 0;
+                int* slotBottom = &slotRects[0].bottom;
+                do {
+                    if (node == 0) break;
+                    int y = *slotBottom;
+                    char* name = (char*)((int*)node + 7);
+                    slotBottom += 4;
+                    node = *(int**)(name - 0x1c);
+                    slotIdx++;
+                    g_ZBufferManager_0046aa24->ShowText(name, slotBottom[-7], y, 10000, -1);
+                } while (slotIdx <= 9);
+            }
+        }
+    }
+
+    if (selectedRow != -1) {
+        int* list2 = (int*)saveFileList;
+        int absIdx = scrollOffset + selectedRow;
+        int count = list2[2];
+        if (absIdx < count && absIdx >= 0) {
+            if (count <= absIdx) {
+                node = 0;
+            } else {
+                walk = (int*)*list2;
+                int rem = absIdx - 1;
+                if (absIdx != 0) {
+                    do {
+                        walk = (int*)*walk;
+                    } while (rem-- != 0);
+                }
+                node = walk;
+            }
+            strcpy(saveFilename, (char*)(node + 7));
+        } else {
+            saveFilename[0] = 0;
+        }
+    }
+
+    if (field_0x24C != 0) {
+        if (moduleParam == 0 && editFocusSprite != 0) {
+            editFocusSprite->Do(editFocusSprite->loc.x, editFocusSprite->loc.y, 1.0);
+        }
+    } else {
+        int row = selectedRow;
+        if (row != -1) {
+            Sprite* cs = choiceFocusSprite;
+            if (cs != 0) {
+                int cy = slotRects[row].top - 6;
+                int cx = slotRects[row].left - 7;
+                cs->loc.x = cx;
+                cs->loc.y = cy;
+                choiceFocusSprite->Do(choiceFocusSprite->loc.x, choiceFocusSprite->loc.y, 1.0);
+            }
+        }
+    }
+
+    cancelBtn->SimpleUpdate();
+    if (moduleParam == 0) {
+        saveBtn->SimpleUpdate();
+        overwriteBtn->SimpleUpdate();
+    }
+    if (moduleParam == 1) {
+        loadBtn->SimpleUpdate();
+    }
+    deleteBtn->SimpleUpdate();
+    scrollUpBtn->SimpleUpdate();
+    scrollDownBtn->SimpleUpdate();
+
+    sprintf(g_Buffer_0046aa00, "%s", saveFilename);
+
+    if (field_0x24C != 0) {
+        if (g_GlyphFont_0046aa28->GetTextWidth(g_Buffer_0046aa00) <= (int)g_FontFilename_0046bd78) {
+            int blink = g_FontField_0046bd7c;
+            g_FontField_0046bd7c++;
+            int val = blink % 8;
+            if (val < 4) {
+                if (moduleParam == 0) {
+                    g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x13a, 0x64, 10000, -1);
+                } else {
+                    g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x15c, 0x64, 10000, -1);
+                }
+                goto done_text;
+            }
+        }
+    }
+    if (moduleParam == 0) {
+        g_ZBufferManager_0046aa24->ShowText(saveFilename, 0x13a, 0x64, 10000, -1);
+    } else {
+        g_ZBufferManager_0046aa24->ShowText(saveFilename, 0x15c, 0x64, 10000, -1);
+    }
+done_text:
+    g_Mouse_0046aa18->DrawCursor();
+}
+
+// TextInput::ProcessKey is thiscall (declared in TextInput class above)
 
 /* Function start: 0x43BB10 */
 int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
@@ -576,126 +486,6 @@ int SC_DuctNav::AddMessage(SC_MessageParser* msg) {
         return 1;
     }
 
-}
-
-
-/* Function start: 0x43B7E0 */
-void SC_DuctNav::Update(int p1, int p2) {
-    int* node;
-    unsigned int elapsed = timer.Update();
-    if (elapsed > 60000) {
-        SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
-    }
-    if (handlerId != p2) {
-        return;
-    }
-    timer.Reset();
-
-    if (menuSprite != 0) {
-        menuSprite->Do(menuSprite->loc.x, menuSprite->loc.y, 1.0);
-    }
-
-    int* list = (int*)saveFileList;
-    int idx = scrollOffset;
-    int listCount = list[2];
-    if (listCount > idx) {
-        if (idx >= 0) {
-            if (idx >= listCount) {
-                node = 0;
-            } else {
-                node = (int*)*list;
-                while (idx-- != 0) {
-                    node = (int*)*node;
-                }
-            }
-
-            {
-                int slotIdx = 0;
-                int* slotBottom = &slotRects[0].bottom;
-                do {
-                    if (node == 0) break;
-                    char* name = (char*)(node + 7);
-                    int y = *slotBottom;
-                    node = (int*)*node;
-                    slotIdx++;
-                    slotBottom += 4;
-                    g_ZBufferManager_0046aa24->ShowText(name, slotBottom[-7], y, 10000, -1);
-                } while (slotIdx <= 9);
-            }
-        }
-    }
-
-    if (selectedRow != -1) {
-        int absIdx = scrollOffset + selectedRow;
-        int count = ((int*)saveFileList)[2];
-        if (absIdx < count && absIdx >= 0) {
-            if (absIdx >= count) {
-                node = 0;
-            } else {
-                node = (int*)*(int*)saveFileList;
-                if (absIdx != 0) {
-                    int rem = absIdx - 1;
-                    do {
-                        node = (int*)*node;
-                    } while (rem-- != 0);
-                }
-            }
-            strcpy(saveFilename, (char*)(node + 7));
-        } else {
-            saveFilename[0] = 0;
-        }
-    }
-
-    if (field_0x24C != 0) {
-        if (moduleParam == 0 && editFocusSprite != 0) {
-            editFocusSprite->Do(editFocusSprite->loc.x, editFocusSprite->loc.y, 1.0);
-        }
-    } else {
-        if (selectedRow != -1 && choiceFocusSprite != 0) {
-            int row = selectedRow;
-            choiceFocusSprite->loc.x = slotRects[row].left - 7;
-            choiceFocusSprite->loc.y = slotRects[row].top - 6;
-            choiceFocusSprite->Do(choiceFocusSprite->loc.x, choiceFocusSprite->loc.y, 1.0);
-        }
-    }
-
-    cancelBtn->SimpleUpdate();
-    if (moduleParam == 0) {
-        saveBtn->SimpleUpdate();
-        overwriteBtn->SimpleUpdate();
-    }
-    if (moduleParam == 1) {
-        loadBtn->SimpleUpdate();
-    }
-    deleteBtn->SimpleUpdate();
-    scrollUpBtn->SimpleUpdate();
-    scrollDownBtn->SimpleUpdate();
-
-    sprintf(g_Buffer_0046aa00, "%s", saveFilename);
-
-    if (field_0x24C != 0) {
-        int textWidth = g_GlyphFont_0046aa28->GetTextWidth(g_Buffer_0046aa00);
-        if (textWidth <= (int)g_FontFilename_0046bd78) {
-            int blink = g_FontField_0046bd7c;
-            g_FontField_0046bd7c++;
-            int val = blink % 8;
-            if (val < 4) {
-                if (moduleParam == 0) {
-                    g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x13a, 0x64, 10000, -1);
-                } else {
-                    g_ZBufferManager_0046aa24->ShowText(g_Buffer_0046aa00, 0x15c, 0x64, 10000, -1);
-                }
-                goto done_text;
-            }
-        }
-    }
-    if (moduleParam == 0) {
-        g_ZBufferManager_0046aa24->ShowText(saveFilename, 0x13a, 0x64, 10000, -1);
-    } else {
-        g_ZBufferManager_0046aa24->ShowText(saveFilename, 0x15c, 0x64, 10000, -1);
-    }
-done_text:
-    g_Mouse_0046aa18->DrawCursor();
 }
 
 /* Function start: 0x43C100 */
@@ -1155,6 +945,118 @@ void SC_DuctNav::LoadSaveFile()
     }
 }
 
+/* Function start: 0x43CD50 */
+void InitNewGame() {
+    SpriteAction* action;
+
+    action = new SpriteAction(1, 0x20, 0, 0, 0x18, 0, 0, 0, 0, 0);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
+    if (action != 0) {
+        action->~SpriteAction();
+        operator delete(action);
+    }
+
+    action = new SpriteAction(1, 0x1e, 0, 0, 0x18, 0, 0, 0, 0, 0);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
+    if (action != 0) {
+        action->~SpriteAction();
+        operator delete(action);
+    }
+
+    action = new SpriteAction(1, 0x2c, 0, 0, 0x18, 0, 0, 0, 0, 0);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
+    if (action != 0) {
+        action->~SpriteAction();
+        operator delete(action);
+    }
+
+    if (g_GameState_0046aa30 != 0) {
+        g_GameState_0046aa30->~GameState();
+        operator delete(g_GameState_0046aa30);
+        g_GameState_0046aa30 = 0;
+    }
+
+    g_GameState_0046aa30 = new GameState("mis\\gamestat.mis", "[GAMESTATE%4.4d]", 1);
+
+    if (g_FlagManager_0046a6e8 != 0) {
+        g_FlagManager_0046a6e8->~FlagArray();
+        operator delete(g_FlagManager_0046a6e8);
+        g_FlagManager_0046a6e8 = 0;
+    }
+
+    g_FlagManager_0046a6e8 = new FlagArray("cfg\\question.dat", 10000);
+    g_FlagManager_0046a6e8->ClearAllFlags();
+
+    {
+        QuestionInit qi("mis\\INIT_Q.mis");
+    }
+
+    g_PendingAction_00472d58.addressType = 0x25;
+    g_PendingAction_00472d58.addressValue = 1;
+
+    int teacherVal = GetRandomTeacher();
+
+    GameState* gs = g_GameState_0046aa30;
+    int idx = gs->FindLabel("TEACHER_ALIEN");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    gs->stateValues[idx] = teacherVal;
+
+    gs = g_GameState_0046aa30;
+    idx = gs->FindLabel("NO_RESUME_NO_SAVE");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    gs->stateValues[idx] = 0;
+
+    gs = g_GameState_0046aa30;
+    idx = gs->FindLabel("MUST_SAVEGAME");
+    if (idx < 0 || gs->maxStates - 1 < idx) {
+        ShowError("Invalid gamestate %d", idx);
+    }
+    gs->stateValues[idx] = 1;
+
+    action = new SpriteAction(1, 0x2c, 0, 0, 0x17, 0, 0, 0, 0, 0);
+    g_GameEngine_0046a6ec->ProcessMessage((SC_MessageParser*)action);
+    if (action != 0) {
+        action->~SpriteAction();
+        operator delete(action);
+    }
+}
+
+/* Function start: 0x43D170 */
+int GetRandomTeacher() {
+    int teacher = 0;
+    int counter = 3;
+
+    FILE* fp = OpenSaveFile("cfg\\031568.dat", "r");
+    if (fp != 0) {
+        fscanf(fp, "%d %d", &teacher, &counter);
+        fclose(fp);
+    }
+
+    if (counter == 3) {
+        int count = rand() % 10 + 1;
+        if (count > 0) {
+            do {
+                teacher = rand() % 3 + 1;
+                count--;
+            } while (count != 0);
+        }
+    } else {
+        teacher = teacher % 3 + 1;
+    }
+
+    fp = OpenSaveFile("cfg\\031568.dat", "w");
+    if (fp != 0) {
+        fprintf(fp, "%d %d", teacher, counter % 3 + 1);
+        fclose(fp);
+    }
+
+    return teacher;
+}
+
 // Old InitGameState (0x43CD50) and ReadConfigFile (0x43D170) removed —
 // superseded by InitNewGame and GetRandomTeacher above
 
@@ -1170,4 +1072,121 @@ void SC_DuctNav::OnProcessStart()
     if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
     if (scrollUpBtn != 0) { scrollUpBtn->~T_MenuButton(); FreeMemory(scrollUpBtn); scrollUpBtn = 0; }
     if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
+}
+
+/* Function start: 0x43D5B0 */
+int SC_DuctNav::LBLParse(char* line)
+{
+    char label[32];
+    char name[128];
+    int slotIdx = 0;
+    GlyphRect params;
+
+    sscanf(line, "%s", label);
+
+    if (strcmp(label, "PALE") == 0) {
+        sscanf(line, "%s %s", label, name);
+        if (fontPalette != 0) {
+            delete fontPalette;
+            fontPalette = 0;
+        }
+        fontPalette = new Palette(name);
+    } else if (strcmp(label, "SPRITE") == 0) {
+        if (menuSprite != 0) {
+            delete (Sprite*)menuSprite;
+            menuSprite = 0;
+        }
+        menuSprite = new Sprite((char*)0);
+        Parser::ProcessFile(menuSprite, this, (char*)0);
+    } else if (strcmp(label, "CANCEL") == 0) {
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
+        if (cancelBtn != 0) { delete cancelBtn; cancelBtn = 0; }
+        CREATE_BUTTON(cancelBtn, name, (int*)&params)
+    } else if (strcmp(label, "SAVE") == 0) {
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
+        if (saveBtn != 0) { delete saveBtn; saveBtn = 0; }
+        CREATE_BUTTON(saveBtn, name, (int*)&params)
+    } else if (strcmp(label, "LOAD") == 0) {
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
+        if (loadBtn != 0) { delete loadBtn; loadBtn = 0; }
+        CREATE_BUTTON(loadBtn, name, (int*)&params)
+    } else if (strcmp(label, "EDITBOX") == 0) {
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
+        if (overwriteBtn != 0) { delete overwriteBtn; overwriteBtn = 0; }
+        CREATE_BUTTON(overwriteBtn, name, (int*)&params)
+    } else if (strcmp(label, "DELETE") == 0) {
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
+        if (deleteBtn != 0) { delete deleteBtn; deleteBtn = 0; }
+        CREATE_BUTTON(deleteBtn, name, (int*)&params)
+    } else if (strcmp(label, "SCROLLUP") == 0) {
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
+        if (scrollUpBtn != 0) { delete scrollUpBtn; scrollUpBtn = 0; }
+        CREATE_BUTTON(scrollUpBtn, name, (int*)&params)
+    } else if (strcmp(label, "SCROLLDOWN") == 0) {
+        sscanf(line, "%s %s %d %d %d %d", label, name, &params.left, &params.top, &params.right, &params.bottom);
+        if (scrollDownBtn != 0) { delete scrollDownBtn; scrollDownBtn = 0; }
+        CREATE_BUTTON(scrollDownBtn, name, (int*)&params)
+    } else if (strcmp(label, "EDIT_FOCUS_SPRITE") == 0) {
+        editFocusSprite = new Sprite((char*)0);
+        Parser::ProcessFile(editFocusSprite, this, (char*)0);
+    } else if (strcmp(label, "CHOICE_FOCUS_SPRITE") == 0) {
+        choiceFocusSprite = new Sprite((char*)0);
+        Parser::ProcessFile(choiceFocusSprite, this, (char*)0);
+    } else if (strcmp(label, "SLOT") == 0) {
+        sscanf(line, "%s %d %d %d %d %d", label, &slotIdx, &params.left, &params.top, &params.right, &params.bottom);
+        slotRects[slotIdx].left = params.left;
+        slotRects[slotIdx].top = params.top;
+        slotRects[slotIdx].right = params.right;
+        slotRects[slotIdx].bottom = params.bottom;
+    } else if (strcmp(label, "END") == 0) {
+        return 1;
+    } else {
+        Parser::ReportUnknownLabel("SC_DuctNav");
+    }
+
+    return 0;
+}
+
+/* Function start: 0x43E2A0 */
+int* SaveFilePool::AllocNode(int prev, int next) {
+    if (freeList == 0) {
+        int* block = (int*)operator new(growBy * 0x120 + 4);
+        *block = (int)blocks;
+        blocks = block;
+        int cnt = growBy;
+        int* entry = (int*)((char*)block + cnt * 0x120 - 0x11c);
+        cnt--;
+        while (cnt >= 0) {
+            *entry = (int)freeList;
+            cnt--;
+            freeList = entry;
+            entry = (int*)((char*)entry - 0x120);
+        }
+    }
+    int* node = freeList;
+    freeList = (int*)*node;
+    node[1] = prev;
+    *node = next;
+    count++;
+    int* payload = node + 2;
+    int i;
+    for (i = 0x46; i != 0; i--) {
+        *payload = 0;
+        payload++;
+    }
+    { int n = 0; while (n-- != 0); }
+    return node;
+}
+
+/* Function start: 0x43E320 */
+void __cdecl ClearSaveEntries(void* buf, int count) {
+    memset(buf, 0, (unsigned int)(count * 0x118));
+    int tmp = count;
+    count--;
+    if (tmp != 0) {
+        do {
+            tmp = count;
+            count--;
+        } while (tmp != 0);
+    }
 }

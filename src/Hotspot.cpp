@@ -63,15 +63,13 @@ void T_Hotspot::SelectItem()
     int i;
     HotspotAction** p;
 
-    p = &items[0];
     for (i = 0; i < 8; i++) {
-        if (*p != 0) {
-            int status = (*p)->state;
+        if (items[i] != 0) {
+            int status = items[i]->state;
             if (status != 0 && status != 1) {
                 goto done;
             }
         }
-        p++;
     }
 
     p = &items[0];
@@ -85,7 +83,7 @@ void T_Hotspot::SelectItem()
     }
 
     T_Hotspot::currentIndex = i;
-    if (i > 7) {
+    if ((unsigned int)i > 7) {
         T_Hotspot::currentIndex = 7;
     }
 

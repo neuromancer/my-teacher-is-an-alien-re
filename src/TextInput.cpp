@@ -11,7 +11,7 @@ TextInput::TextInput(char* str, int len, void* fnt, void* wid) {
     maxWidth = 0;
     editBuf = str;
     maxLen = len;
-    origBuf = (char*)operator new(len + 1);
+    origBuf = new char[len + 1];
     strcpy(origBuf, editBuf);
     font = (AnimatedAsset*)fnt;
     maxWidth = (int)wid;

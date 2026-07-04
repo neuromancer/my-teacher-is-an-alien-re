@@ -2,6 +2,7 @@
 #define SC_COMBATBASE_H
 
 #include "Parser.h"
+#include <string.h>
 
 class TargetList;
 class Viewport;
@@ -17,6 +18,14 @@ class Weapon;
 class TimedEventPool;
 
 // Combat globals — declared in globals.h
+
+// CB_Dim - ctor-only 8-byte pair, no destructor.
+// Same pattern as EC_Dim in EngineC.h / FA_Dim in SC_FireAlarm.h: the
+// SC_CombatBase constructor at 0x42BCD0 zero-constructs four of these via
+// lea+paired stores BEFORE the vtable store, proving they are members with
+// inline default constructors (MSVC 4.20 emits the vfptr store after the
+// member initializers).
+struct CB_Dim { int x; int y; CB_Dim() { memset(this, 0, 8); } };
 
 // SC_CombatBase - Base class for combat/exploration engines
 // Constructor: 0x42BCD0, Destructor: 0x42BDA0
@@ -60,15 +69,11 @@ public:
     mCNavigator* navigator;          // 0xB4 (0xA8 bytes)
     TimedEventPool* hotspotPool;     // 0xB8 (0x18 bytes)
 
-    // State fields (zeroed in pairs in constructor)
-    int hotspotX;         // 0xBC — x coordinate for hotspot creation
-    int hotspotY;         // 0xC0 — y coordinate for hotspot creation
-    int combatBonus;      // 0xC4 — accumulated from Target::combatBonus2
-    Sprite* field_0xC8;   // 0xC8 — PodsEngine overlay sprite
-    Sprite* field_0xCC;   // 0xCC — PodsEngine effect sprite 1
-    Sprite* field_0xD0;   // 0xD0 — PodsEngine effect sprite 2
-    Sprite* field_0xD4;   // 0xD4 — PodsEngine effect sprite 3
-    int reserved_0xD8;    // 0xD8 — zeroed in constructor, no clear purpose yet
+    // State fields (zero-constructed CB_Dim pair members, see CB_Dim above)
+    CB_Dim hotspotPos;    // 0xBC x — hotspot creation x / 0xC0 y — hotspot creation y
+    CB_Dim bonusOverlay;  // 0xC4 x — combat bonus (from Target::combatBonus2) / 0xC8 y — PodsEngine overlay sprite
+    CB_Dim effectPair1;   // 0xCC x — PodsEngine effect sprite 1 / 0xD0 y — effect sprite 2
+    CB_Dim effectPair2;   // 0xD4 x — PodsEngine effect sprite 3 / 0xD8 y — zeroed in ctor, purpose unknown
 
     // Runtime state
     int combatFlags;      // 0xDC — combat state flags (bitwise OR'd)
@@ -100,4 +105,6 @@ public:
     int ProcessEvents();                    // 0x42C9D0
 };
 
+class SpriteAction;
+void __stdcall EnqueueHotspotAction(SpriteAction* param);
 #endif // SC_COMBATBASE_H

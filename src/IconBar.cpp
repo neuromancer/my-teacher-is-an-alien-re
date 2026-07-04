@@ -1,4 +1,5 @@
 #include "IconBar.h"
+#include "GlyphRect.h"
 #include "MouseControl.h"
 #include "InputManager.h"
 #include "InvSlotItem.h"
@@ -19,25 +20,15 @@
 #include "SoundCommand.h"
 #include "ZBuffer.h"
 
-// CRT init: original binary calls SetIconBarRect via _initterm table (0x468030)
-static void __cdecl _iconbar_crt_init(void) { IconBar::SetIconBarRect(); }
-typedef void (__cdecl *_PVFV)(void);
-#pragma data_seg(".CRT$XCU")
-static _PVFV _init_iconbar = _iconbar_crt_init;
-#pragma data_seg()
+// Global icon-bar bounds. The original binary constructs this at startup via
+// the CRT initializer table (slot 0x468030 -> dynamic initializer 0x42D340),
+// i.e. this was a namespace-scope GlyphRect with a runtime constructor.
+GlyphRect g_IconBarRect_00473310(0, 0x1AB, 0x27F, 0x1E0);
 
 // External functions
 
 // FUN_0044ccf0 is a thiscall Sprite method (4 stack params)
 
-
-/* Function start: 0x42D340 */
-void IconBar::SetIconBarRect() {
-    g_IconBarLeft_00473310 = 0;
-    g_IconBarTop_00473314 = 0x1AB;
-    g_IconBarRight_00473318 = 0x27F;
-    g_IconBarBottom_0047331c = 0x1E0;
-}
 
 /* Function start: 0x42D460 */
 IconBar::IconBar() {
@@ -245,8 +236,8 @@ int IconBar::AddMessage(SC_MessageParser* msg) {
             return 1;
         }
     } else {
-        if (g_IconBarLeft_00473310 <= act->mousePos.x && g_IconBarRight_00473318 >= act->mousePos.x &&
-            g_IconBarTop_00473314 <= act->mousePos.y && g_IconBarBottom_0047331c >= act->mousePos.y) {
+        if (g_IconBarRect_00473310.left <= act->mousePos.x && g_IconBarRect_00473310.right >= act->mousePos.x &&
+            g_IconBarRect_00473310.top <= act->mousePos.y && g_IconBarRect_00473310.bottom >= act->mousePos.y) {
             inBounds = 1;
         } else {
             inBounds = 0;

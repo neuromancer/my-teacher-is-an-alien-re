@@ -83,7 +83,7 @@ void *SoundList::Register(char *filename) {
                     m_fieldc);
         }
 
-        m_sounds[m_fieldc] = (char*)operator new(strlen(local_54) + 1);
+        m_sounds[m_fieldc] = new char[strlen(local_54) + 1];
         strcpy(m_sounds[m_fieldc], local_54);
 
         Sample *sound = new Sample();

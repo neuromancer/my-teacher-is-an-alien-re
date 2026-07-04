@@ -82,12 +82,14 @@ int Sound::OpenDigitalDriver(int rate, unsigned short bits,
   HDIGDRIVER driver;
 
   g_PcmWaveFormat_00472dc8.wf.nChannels = channels;
-  g_PcmWaveFormat_00472dc8.wf.wFormatTag = 1;
-  g_PcmWaveFormat_00472dc8.wf.nBlockAlign = channels * (bits >> 3);
-  int avgBytesPerSec = (unsigned int)channels * (unsigned int)(unsigned short)(bits >> 3);
-  g_PcmWaveFormat_00472dc8.wBitsPerSample = bits;
+  unsigned short shifted = bits >> 3;
   g_PcmWaveFormat_00472dc8.wf.nSamplesPerSec = rate;
-  g_PcmWaveFormat_00472dc8.wf.nAvgBytesPerSec = avgBytesPerSec * rate;
+  int avgBytesPerSec = (unsigned int)channels * (unsigned int)shifted * rate;
+  g_PcmWaveFormat_00472dc8.wf.wFormatTag = 1;
+  channels *= shifted;
+  g_PcmWaveFormat_00472dc8.wf.nBlockAlign = channels;
+  g_PcmWaveFormat_00472dc8.wBitsPerSample = bits;
+  g_PcmWaveFormat_00472dc8.wf.nAvgBytesPerSec = avgBytesPerSec;
 
   if (AIL_waveOutOpen(&driver, 0, -1, &g_PcmWaveFormat_00472dc8)) {
     return 0;

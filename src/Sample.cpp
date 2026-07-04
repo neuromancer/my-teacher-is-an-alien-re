@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "AILSample.h"
 
+#include "CDData.h"
 /* Function start: 0x424ED0 */
 Sample::Sample() {
   m_data = 0;
@@ -28,8 +29,6 @@ void Sample::Unload() {
   }
 }
 
-extern char* __cdecl ResolveAssetPath(char*, ...);
-extern int __cdecl GetFileSize(char*);
 
 /* Function start: 0x424F00 */
 int Sample::Load(char *filename) {

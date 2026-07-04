@@ -37,7 +37,9 @@ public:
     virtual void Init(SC_MessageParser* msg);
     virtual int AddMessage(SC_MessageParser* msg);
     virtual void ShutDown(SC_MessageParser* msg);
-    virtual void Update(int param1, int param2);
+    // Pure virtual: the original vtable slot (0x454950) is the CRT _purecall
+    // stub (push 0x19 / call _amsg_exit), i.e. R6025 "pure virtual call".
+    virtual void Update(int param1, int param2) = 0;
     virtual int Exit(SC_MessageParser* msg);
     virtual void Serialize(void* param);
     virtual void OnInput(void* param);

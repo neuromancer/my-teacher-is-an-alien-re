@@ -293,7 +293,8 @@ int __cdecl ReleaseBufferEntry(unsigned int param_1)
     return result;
 }
 
-// Forward declaration
+// Forward declaration (also in VideoTable.h; this TU deliberately does not
+// include its own header — see the note at the top of the file).
 int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4);
 
 /* Function start: 0x4531D8 */
@@ -362,7 +363,7 @@ int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4)
     return 0;
 }
 
-// Forward declaration for ClipAndVideoFillRect
+// Forward declaration (also in VideoTable.h; header not included by design).
 int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4);
 
 /* Function start: 0x452556 */

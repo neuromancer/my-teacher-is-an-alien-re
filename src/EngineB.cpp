@@ -20,7 +20,7 @@
 
 
 #include "string.h"
-extern void __stdcall EnqueueHotspotAction(SpriteAction*);
+#include "SC_CombatBase.h"
 static char* FormatSoundPath(char* path);
 void StartScheduleTimer2();
 

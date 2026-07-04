@@ -21,12 +21,12 @@
 #include "PaletteUtils.h"
 
 
-void __stdcall DrawScaledSprite(int x, int y, void* data, double scale);
 
 // g_BackBuffer_0046aa14 now in globals.h
 
 
 
+#include "DrawScaledSprite.h"
 struct CommandType1 : public SoundCommand {
     unsigned int parameter1; // 0x04 - Priority
     void* data;              // 0x08
@@ -70,7 +70,6 @@ struct CommandType2 : public SoundCommand {
 
 
 
-int __cdecl ClipRectBottomUp(int* param_1, int* param_2, int* param_3, int* param_4);
 
 // Functions for rectangle drawing
 
@@ -631,6 +630,9 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
             } else {
                 do {
                     node = (ZBQueueNode*)queue->current;
+                    // Polymorphic sort-key convention: every queued command type keeps an
+                    // unsigned sort key in the dword after the vptr (+4); kept as a raw read
+                    // because the queue mixes unrelated types.
                     if (*(unsigned int*)((char*)node->data + 4) < *(unsigned int*)((char*)cmd + 4)) {
                         queue->InsertBeforeCurrent(cmd);
                         break;
@@ -679,6 +681,9 @@ void ZBufferManager::QueueCommand(SoundCommand* cmd)
             } else {
                 do {
                     node = (ZBQueueNode*)queue->current;
+                    // Polymorphic sort-key convention: every queued command type keeps an
+                    // unsigned sort key in the dword after the vptr (+4); kept as a raw read
+                    // because the queue mixes unrelated types.
                     if (*(unsigned int*)((char*)node->data + 4) < *(unsigned int*)((char*)cmd + 4)) {
                         queue->InsertBeforeCurrent(cmd);
                         break;
