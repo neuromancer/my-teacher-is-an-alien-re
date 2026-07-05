@@ -1146,10 +1146,13 @@ void* SCI_Inventory::FindItem(int itemID) {
         if (node != 0) {
             if (((T_Object*)node->data)->itemId == itemID) {
 found:
-                if (g_MsgList_0046a6dc->current == 0) {
+                {
+                    ListNode* cur = g_MsgList_0046a6dc->current;
+                    if (cur != 0) {
+                        return cur->data;
+                    }
                     return 0;
                 }
-                return g_MsgList_0046a6dc->current->data;
             }
         } else {
             if (itemID == *(int*)0x94) {

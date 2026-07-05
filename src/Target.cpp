@@ -142,9 +142,9 @@ void Target::Deactivate()
                     *pNext = node->next;
 
                     int i = 0;
-                    while (!i--) ;
+                    do { int tmp = i; i--; if (tmp == 0) break; } while (1);
                     i = 0;
-                    while (!i--) ;
+                    do { int tmp = i; i--; if (tmp == 0) break; } while (1);
 
                     node->next = hashTable->freeList;
                     hashTable->freeList = node;

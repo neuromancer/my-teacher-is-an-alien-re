@@ -284,7 +284,7 @@ void SC_Rats::State0Handler() {
 
 done:
     if (g_State0Phase_00473e14 == 2) {
-        g_State0Phase_00473e14 = 3;
+        g_State0Phase_00473e14++;
         g_RatsState_00473e18 = 1;
         g_Navigator_0046ae70->SetNavParams(1, 0);
     }
@@ -301,7 +301,7 @@ void SC_Rats::State2Handler() {
     Sample* snd = engine->m_ambientSound2;
 
     if (g_State2Phase_00473e20 == 0) {
-        g_State2Phase_00473e20 = 1;
+        g_State2Phase_00473e20++;
         if (engine->m_localSoundList != 0) {
             engine->m_localSoundList->StopAll();
         }
@@ -319,7 +319,7 @@ void SC_Rats::State2Handler() {
 
 done:
     if (g_State2Phase_00473e20 == 2) {
-        g_State2Phase_00473e20 = 3;
+        g_State2Phase_00473e20++;
         ProcessState();
     }
     State1Handler();
@@ -331,7 +331,7 @@ void SC_Rats::State3Handler() {
     Sample* snd = (Sample*)engine->reserved_0x10C;
 
     if (g_State3Phase_00473e1c == 0) {
-        g_State3Phase_00473e1c = 1;
+        g_State3Phase_00473e1c++;
         if (engine->m_localSoundList != 0) {
             engine->m_localSoundList->StopAll();
         }
@@ -349,7 +349,7 @@ void SC_Rats::State3Handler() {
 
 done:
     if (g_State3Phase_00473e1c == 2) {
-        g_State3Phase_00473e1c = 3;
+        g_State3Phase_00473e1c++;
         ProcessState();
     }
     State1Handler();
@@ -361,7 +361,7 @@ void SC_Rats::State4Handler() {
     Sample* snd = engine->m_completionSound;
 
     if (g_State4Phase_00473df8 == 0) {
-        g_State4Phase_00473df8 = 1;
+        g_State4Phase_00473df8++;
         if (engine->m_localSoundList != 0) {
             engine->m_localSoundList->StopAll();
         }
@@ -379,7 +379,7 @@ void SC_Rats::State4Handler() {
 
 done:
     if (g_State4Phase_00473df8 == 2) {
-        g_State4Phase_00473df8 = 3;
+        g_State4Phase_00473df8++;
         ProcessState();
     }
     State1Handler();

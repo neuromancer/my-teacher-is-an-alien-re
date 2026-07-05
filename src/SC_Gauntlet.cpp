@@ -259,19 +259,14 @@ void SC_Gauntlet::RenderGrid() {
     }
 
     /* Check exit button hover */
+    sprIdx = 0;
     {
-        int mouseY;
-        int mouseX;
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseY = g_InputManager_0046aa08->pMouse->y;
-        } else {
-            mouseY = 0;
+        int mouseY = 0;
+        InputState* mouse = g_InputManager_0046aa08->pMouse;
+        if (mouse != 0) {
+            mouseY = mouse->y;
         }
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseX = g_InputManager_0046aa08->pMouse->x;
-        } else {
-            mouseX = 0;
-        }
+        int mouseX = (mouse != 0) ? mouse->x : 0;
         if (exitBounds.left <= mouseX && exitBounds.right >= mouseX &&
             exitBounds.top <= mouseY && exitBounds.bottom >= mouseY) {
             if (g_Mouse_0046aa18->m_sprite != 0) {
@@ -281,47 +276,40 @@ void SC_Gauntlet::RenderGrid() {
     }
 
     /* Render grid entries */
-    sprIdx = 0;
     cellY = 0x82;
     GauntletEntry* ge = entries;
     do {
         int cellX = 0x2F;
         Sprite** sprPtr = &cellSprites[sprIdx];
         do {
-            int mouseY;
-            int mouseX;
-            if (g_InputManager_0046aa08->pMouse != 0) {
-                mouseY = g_InputManager_0046aa08->pMouse->y;
-            } else {
-                mouseY = 0;
+            int mouseY = 0;
+            InputState* mouse = g_InputManager_0046aa08->pMouse;
+            if (mouse != 0) {
+                mouseY = mouse->y;
             }
-            if (g_InputManager_0046aa08->pMouse != 0) {
-                mouseX = g_InputManager_0046aa08->pMouse->x;
-            } else {
-                mouseX = 0;
-            }
+            int mouseX = (mouse != 0) ? mouse->x : 0;
             if (ge->fields[3] <= mouseX && ge->fields[5] >= mouseX &&
                 ge->fields[4] <= mouseY && ge->fields[6] >= mouseY) {
                 if (ge->fields[1] == 0) {
                     Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
-                    if (board.crystalState[1] == 0) {
+                    if (board.crystalState[1] != 0) {
                         if (mouseSpr != 0) {
-                            mouseSpr->ResetAnimation(0, 0);
+                            mouseSpr->ResetAnimation(0xC, 0);
                         }
                     } else {
                         if (mouseSpr != 0) {
-                            mouseSpr->ResetAnimation(0xC, 0);
+                            mouseSpr->ResetAnimation(0, 0);
                         }
                     }
                 } else {
                     Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
-                    if (board.crystalState[1] == 0) {
+                    if (board.crystalState[1] != 0) {
                         if (mouseSpr != 0) {
-                            mouseSpr->ResetAnimation(0, 0);
+                            mouseSpr->ResetAnimation(0xD, 0);
                         }
                     } else {
                         if (mouseSpr != 0) {
-                            mouseSpr->ResetAnimation(0xD, 0);
+                            mouseSpr->ResetAnimation(0, 0);
                         }
                     }
                 }
@@ -560,7 +548,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     /* Store result and update state */
     entries[index].fields[0] = total;
     if (board.crystalState[0] == 1) {
-        board.crystalState[0] = 0;
+        board.crystalState[0]--;
     }
     board.crystalState[1] = 0;
 }
@@ -632,14 +620,14 @@ void SC_Gauntlet::ProcessAction(int action, int* data) {
     }
     case 5:
         if (data[0] == 1) {
-            data[0] = 2;
+            data[0]++;
             statusPtr[6] = 0;
         }
         RenderGrid();
         break;
     case 6:
         if (data[0] == 1) {
-            data[0] = 2;
+            data[0]++;
             if (g_Mouse_0046aa18->m_sprite != 0) {
                 g_Mouse_0046aa18->m_sprite->ResetAnimation(0x13, 0);
             }

@@ -459,7 +459,7 @@ void SC_Fan::State0Handler() {
     RenderFan();
 
     if (introPhase == 0) {
-        introPhase = 1;
+        introPhase++;
         SendGameMessage(4, bgSoundId, handlerId, moduleParam, 0x13, 0x32, 0x3E8, 0, 0, 0);
 
         sample = samples[1];
