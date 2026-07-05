@@ -5919,7 +5919,7 @@ extern int g_DetentionKeyState_00468a18;                                   // SC
 extern int g_FireAlarmTimerTarget_0046859c;                               // SC_FireAlarm timer target
 extern int g_FireAlarmTimer_004685a0;                                   // SC_FireAlarm / SC_Pods
 extern int g_FireAlarmFlag_004685a8;                                    // SC_FireAlarm
-extern int g_FireAlarmEngine_004685ac;                                   // SC_FireAlarm / SC_Pods
+extern Weapon* g_FireAlarmEngine_004685ac;                              // SC_FireAlarm / SC_Pods
 extern char g_QuestFormatStr_004690e4[4];                               // SC_Question buffer
 extern Weapon* g_ActiveWeapon_00468ef0;                               // SC_Wahoo / SC_WordSearch
 extern int g_SoundTrackerField1_00469128;                                   // SoundTracker

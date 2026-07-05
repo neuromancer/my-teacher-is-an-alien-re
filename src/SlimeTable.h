@@ -1,9 +1,13 @@
 #ifndef SLIMETABLE_H
 #define SLIMETABLE_H
 
+class Sample;
+
 class SlimeTable {
 public:
-    int fields[3];
+    int numEntries;    // 0x0 - entry count
+    Sample** samples;  // 0x4 - Sample* array (numEntries slots)
+    int* soundIds;     // 0x8 - per-entry sound id (numEntries slots)
     SlimeTable();
     ~SlimeTable();
     int Play(int);      // 0x425550

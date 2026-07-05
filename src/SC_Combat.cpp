@@ -55,7 +55,7 @@ int SC_Combat::LBLParse(char* line) {
         bgSound->Allocate(local_14);
     } else if (strcmp(local_3c, "SOUND") == 0) {
         sscanf(line, " %s %d %s %d ", local_3c, &local_14, local_bc, &local_1c);
-        if (local_14 < 0 || bgSound->fields[0] - 1 < local_14) {
+        if (local_14 < 0 || bgSound->numEntries - 1 < local_14) {
             ReportUnknownLabel("SC_Combat");
         } else {
             bgSound->LoadEntry(local_14, local_bc, local_1c);

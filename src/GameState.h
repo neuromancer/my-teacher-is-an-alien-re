@@ -3,6 +3,8 @@
 
 #include "Parser.h"
 
+class SpriteAction;
+
 class GameState : public Parser {
 public:
     GameState() {
@@ -26,10 +28,10 @@ public:
     void Serialize(void* param);
     void SetMaxStates(int count);
     void ValidateIndex(int idx);      // 0x409F20
-    void SetFromAction(int* action);  // 0x433CB0
+    void SetFromAction(SpriteAction* action);  // 0x433CB0
     int GetStateValue(int);           // get state value by index
     int FindLabel(char* name);        // find label index (0x433AE0)
-    int CheckCondition(int*);         // state check (0x433BB0)
+    int CheckCondition(SpriteAction*);// state check (0x433BB0)
     int* stateValues;      // 0x90 - array of state values (saved/loaded in Serialize)
     char** stateLabels;    // 0x94 - array of pointers to label strings
     int maxStates;         // 0x98 - maximum number of states

@@ -185,8 +185,8 @@ void SC_ExtBridge::ShutDown(SC_MessageParser* msg)
         if (g_Navigator_0046ae70 != 0 && g_Navigator_0046ae70->sprite != 0) {
             g_Navigator_0046ae70->sprite->StopAnimationSound();
         }
-        int* vtbl = *(int**)g_CombatEngine_0046ae78;
-        ((void (__fastcall*)(int*, int))vtbl[16])((int*)g_CombatEngine_0046ae78, 0);
+        SC_CombatBase* eng = g_CombatEngine_0046ae78;
+        eng->RenderState();
         g_CombatEngine_0046ae78 = 0;
     }
     return;

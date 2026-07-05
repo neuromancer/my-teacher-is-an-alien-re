@@ -39,9 +39,7 @@ mCNavNode::~mCNavNode()
     int i;
     for (i = 0; i < 6; i++) {
         if (neighborNodes[i] != 0) {
-            int* obj = (int*)neighborNodes[i];
-            int* vtbl = (int*)*obj;
-            ((void (__fastcall *)(int*, int, int))vtbl[3])(obj, 0, 1);
+            delete neighborNodes[i];
             neighborNodes[i] = 0;
         }
     }
@@ -51,7 +49,7 @@ mCNavNode::~mCNavNode()
 void mCNavNode::CallActivateNeighbor()
 {
     int dir = g_Navigator_0046ae70->bearing;
-    mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
+    NavSubNode* neighbor = neighborNodes[dir];
     if (neighbor == 0) {
         ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));
     }
@@ -62,7 +60,7 @@ void mCNavNode::CallActivateNeighbor()
 int mCNavNode::CallActivate()
 {
     int dir = g_Navigator_0046ae70->bearing;
-    mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
+    NavSubNode* neighbor = neighborNodes[dir];
     if (neighbor == 0) {
         ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));
     }
@@ -73,7 +71,7 @@ int mCNavNode::CallActivate()
 int mCNavNode::CallGetNextNode()
 {
     int dir = g_Navigator_0046ae70->bearing;
-    mCNavNode* neighbor = (mCNavNode*)neighborNodes[dir];
+    NavSubNode* neighbor = neighborNodes[dir];
     if (neighbor == 0) {
         ShowError("Need Node Info for %s bearing %c", nodeName, (int)(signed char)GetDirectionChar(dir));
     }
@@ -304,7 +302,7 @@ int mCNavNode_TypeB::LBLParse(char* line) {
     }
     if (stricmp(token, "MESSAGE") == 0) {
         SpriteAction* sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        conditionPtr = (int*)sa;
+        conditionPtr = sa;
         ParseSpriteAction(sa, (void*)parentNode);
         return 0;
     }

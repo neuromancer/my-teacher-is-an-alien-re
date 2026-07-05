@@ -3,6 +3,8 @@
 
 #include "SC_Combat.h"
 
+class SpaceShipEngine;
+
 // SC_SpaceShipNav - Spaceship navigation handler (case 70/0x46)
 // Constructor: 0x447520
 // Size: 0x120
@@ -26,7 +28,8 @@ public:
     void UpdateCursor();            // 0x447950
     int LBLParse(char* line);       // 0x447B60
 
-    int field_118[2];   // 0x118-0x11F (0x08 bytes)
+    SpaceShipEngine* engine;  // 0x118
+    int field_0x11C;          // 0x11C
 };
 
 #endif // SC_SPACESHIPNAV_H

@@ -81,12 +81,7 @@ SC_Wahoo::~SC_Wahoo() {
 /* Function start: 0x437A40 */
 void SC_Wahoo::Init(SC_MessageParser* msg) {
     int savedId = handlerId;
-    int* memberPtr = (int*)&spriteAction;
-    int count;
-    for (count = 0x30; count != 0; count--) {
-        *memberPtr = 0;
-        memberPtr++;
-    }
+    memset(&spriteAction, 0, 0x30 * 4);
     handlerId = savedId;
 
     CopyCommandData(msg);
@@ -257,6 +252,8 @@ int SC_Wahoo::AddMessage(SC_MessageParser* msg) {
     if (m->button1 >= 1) {
         if (m->mousePos.x < cursorHitbox.left || cursorHitbox.right < m->mousePos.x ||
             m->mousePos.y < cursorHitbox.top || cursorHitbox.bottom < m->mousePos.y) {
+            // Original quirk: Wahoo mode packs a mouse-over flag into bit 0 of the
+            // hotspotPool slot (0xB8); kept as a raw int access on the pointer field.
             *(int*)&g_WahooEngine_0046bbfc->hotspotPool = *(int*)&g_WahooEngine_0046bbfc->hotspotPool & 0xFFFFFFFE;
         } else {
             *(int*)&g_WahooEngine_0046bbfc->hotspotPool = *(int*)&g_WahooEngine_0046bbfc->hotspotPool | 1;
@@ -637,7 +634,7 @@ void SC_Wahoo::OnCombatResult() {
 
 /* Function start: 0x438F10 */
 int SC_Wahoo::ProcessClick(Projectile* proj) {
-    void* pvVar6;
+    Sample* resultSnd;
     int iVar3;
     int iVar5;
     int iVar7;
@@ -679,19 +676,20 @@ int SC_Wahoo::ProcessClick(Projectile* proj) {
             iVar7 - playAreaHitbox.left,
             proj->nextPos.y - playAreaHitbox.top);
 
+        Sprite* zoneSprite;
         if ((int)hitZone < 1 || 3 < (int)hitZone ||
-            (pvVar6 = (&resetSwitchSprite)[hitZone],
-             ((Sprite*)pvVar6)->handle != 0)) {
+            (zoneSprite = (&resetSwitchSprite)[hitZone],
+             zoneSprite->handle != 0)) {
             if (missSound != 0) {
                 missSound->Play(100, 1);
             }
             return 1;
         }
 
-        if (((Sprite*)pvVar6)->animation_data == 0) {
+        if (zoneSprite->animation_data == 0) {
             iVar7 = 0;
         } else {
-            iVar7 = ((Sprite*)pvVar6)->animation_data->smk->FrameNum;
+            iVar7 = zoneSprite->animation_data->smk->FrameNum;
         }
 
         if (hitZone != 2) {
@@ -708,7 +706,7 @@ int SC_Wahoo::ProcessClick(Projectile* proj) {
             }
         }
 
-        ((Sprite*)pvVar6)->ResetAnimation(iVar3, 0);
+        zoneSprite->ResetAnimation(iVar3, 0);
 
         if (matchSound != 0) {
             matchSound->Play(100, 1);
@@ -716,15 +714,15 @@ int SC_Wahoo::ProcessClick(Projectile* proj) {
 
         iVar3 = 0;
         piVar8 = local_c;
-        piVar4 = (int*)&innerSprite;
+        Sprite** sprSlot = &innerSprite;
         iVar7 = 3;
         do {
-            if (((Sprite*)*piVar4)->handle != 0) {
-                *piVar8 = ((Sprite*)*piVar4)->handle;
+            if ((*sprSlot)->handle != 0) {
+                *piVar8 = (*sprSlot)->handle;
                 piVar8 = piVar8 + 1;
                 iVar3 = iVar3 + 1;
             }
-            piVar4 = piVar4 + 1;
+            sprSlot = sprSlot + 1;
             iVar7 = iVar7 - 1;
         } while (iVar7 != 0);
 
@@ -753,37 +751,37 @@ int SC_Wahoo::ProcessClick(Projectile* proj) {
             if (iVar7 == 3) {
                 gameFlags = gameFlags | 1;
                 bgSprite->ResetAnimation(1, 0);
-                pvVar6 = winSound;
-                if (pvVar6 != 0) {
+                resultSnd = winSound;
+                if (resultSnd != 0) {
                     uVar10 = 1;
                     goto LAB_00439160;
                 }
             }
             else if (iVar7 != iVar3) {
                 resetSwitchSprite->ResetAnimation(1, 0);
-                pvVar6 = startSound;
-                if (pvVar6 != 0) {
+                resultSnd = startSound;
+                if (resultSnd != 0) {
                     uVar10 = 0;
 LAB_00439160:
-                    ((Sample*)pvVar6)->Play(100, uVar10);
+                    resultSnd->Play(100, uVar10);
                 }
             }
         }
 
         local_c[0] = 0xe;
-        piVar4 = (int*)sampleSlots;
+        Sample** smpSlot = sampleSlots;
         do {
-            if (*piVar4 != 0) {
-                ((Sample*)*piVar4)->Stop();
+            if (*smpSlot != 0) {
+                (*smpSlot)->Stop();
             }
-            piVar4 = piVar4 + 1;
+            smpSlot = smpSlot + 1;
             local_c[0] = local_c[0] - 1;
         } while (local_c[0] != 0);
 
         if (iVar7 == iVar3) {
-            pvVar6 = sampleSlots[iVar3 + 10];
-            if (pvVar6 != 0) {
-                ((Sample*)pvVar6)->Play(100, 1);
+            resultSnd = sampleSlots[iVar3 + 10];
+            if (resultSnd != 0) {
+                resultSnd->Play(100, 1);
             }
         }
         else if (sampleSlots[10] != 0) {
@@ -792,13 +790,13 @@ LAB_00439160:
         }
     } else {
         if (resetSwitchSprite->handle == 1) {
-            pvVar6 = g_GameState_0046aa30;
+            GameState* gs = g_GameState_0046aa30;
             {
-            unsigned int stateIdx = ((GameState*)pvVar6)->FindLabel("NUM_ACTIONS");
-            if ((int)stateIdx < 0 || ((GameState*)pvVar6)->maxStates - 1 < (int)stateIdx) {
+            unsigned int stateIdx = gs->FindLabel("NUM_ACTIONS");
+            if ((int)stateIdx < 0 || gs->maxStates - 1 < (int)stateIdx) {
                 ShowError("Invalid gamestate %d", stateIdx);
             }
-            piVar4 = &((GameState*)pvVar6)->stateValues[stateIdx];
+            piVar4 = &gs->stateValues[stateIdx];
             }
             *piVar4 = *piVar4 + 5;
             resetSwitchSprite->ResetAnimation(0, 0);

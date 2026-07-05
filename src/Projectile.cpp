@@ -1,4 +1,5 @@
 #include "Projectile.h"
+#include "RockThrower.h"
 #include "globals.h"
 #include "EngineSubsystems.h"
 #include "InputManager.h"
@@ -87,9 +88,7 @@ void Projectile::Update() {
         Projectile::nextPos.y = Projectile::startPos.y + (int)(*(float*)&Projectile::velocity.y * (float)frameNum);
 
         {
-            int* pObj = (int*)Projectile::owner;
-            int* vtbl = (int*)*pObj;
-            if (((int (__fastcall*)(int*, int, Projectile*))vtbl[6])(pObj, 0, this) != 0) {
+            if (((RockThrower*)Projectile::owner)->CheckTargetHit((int)this) != 0) {
                 Projectile::currentPos.x = Projectile::nextPos.x;
                 Projectile::currentPos.y = Projectile::nextPos.y;
                 Projectile::ResetAnimation(1, 0);

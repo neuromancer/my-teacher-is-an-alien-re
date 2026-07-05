@@ -45,16 +45,16 @@ void GameState::ValidateIndex(int idx) {
 }
 
 /* Function start: 0x433CB0 */
-void GameState::SetFromAction(int* action) {
+void GameState::SetFromAction(SpriteAction* action) {
     int idx;
     int val;
 
-    idx = action[1];
+    idx = action->addressValue;
     if (idx < 0 || maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
 
-    switch (action[4]) {
+    switch (action->instruction) {
     case 0:
         return;
     case 0xE:
@@ -85,21 +85,21 @@ void GameState::SetFromAction(int* action) {
         stateValues[idx] = 0;
         return;
     case 0x11:
-        val = action[5];
+        val = action->extra1;
         if (idx < 0 || maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
         stateValues[idx] += val;
         return;
     case 0x12:
-        val = action[5];
+        val = action->extra1;
         if (idx < 0 || maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
         stateValues[idx] -= val;
         return;
     case 0x13:
-        val = action[5];
+        val = action->extra1;
         if (idx < 0 || maxStates - 1 < idx) {
             ShowError("Invalid gamestate %d", idx);
         }
@@ -111,7 +111,7 @@ void GameState::SetFromAction(int* action) {
         }
         val = stateValues[idx];
         {
-            int mask = action[5];
+            int mask = action->extra1;
             if (idx < 0 || maxStates - 1 < idx) {
                 ShowError("Invalid gamestate %d", idx);
             }
@@ -119,7 +119,7 @@ void GameState::SetFromAction(int* action) {
         }
         return;
     default:
-        ShowError("GameState::SetState() - invalid instruction '%d'", action[4]);
+        ShowError("GameState::SetState() - invalid instruction '%d'", action->instruction);
         return;
     }
 }
@@ -418,38 +418,38 @@ void GameState::ClearStates()
 }
 
 /* Function start: 0x433BB0 */
-int GameState::CheckCondition(int* param_1) {
+int GameState::CheckCondition(SpriteAction* param_1) {
     int idx;
     unsigned int val;
 
     if (param_1 == 0) {
         ShowError("illegal message13");
     }
-    if (param_1[0] != 2) {
-        ((SpriteAction*)param_1)->Print(0);
+    if (param_1->addressType != 2) {
+        param_1->Print(0);
         ShowError("illegal message12");
     }
-    idx = param_1[1];
+    idx = param_1->addressValue;
     if (idx < 0 || maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
     }
     val = (unsigned int)stateValues[idx];
-    switch (param_1[4]) {
+    switch (param_1->instruction) {
     case 8:
         return val != 0;
     case 9:
         return val == 0;
     case 10:
-        if ((unsigned int)param_1[5] <= val) break;
+        if ((unsigned int)param_1->extra1 <= val) break;
         return 1;
     case 11:
-        if ((unsigned int)param_1[5] >= val) break;
+        if ((unsigned int)param_1->extra1 >= val) break;
         return 1;
     case 12:
-        if ((unsigned int)param_1[5] != val) break;
+        if ((unsigned int)param_1->extra1 != val) break;
         return 1;
     case 13:
-        if ((unsigned int)param_1[5] == val) break;
+        if ((unsigned int)param_1->extra1 == val) break;
         return 1;
     default:
         ShowError("illegal message12b");

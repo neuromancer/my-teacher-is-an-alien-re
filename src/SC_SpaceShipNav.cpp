@@ -19,8 +19,8 @@ extern Parser* ParseFile(Parser* parser, char* filename, char* key_format, ...);
 
 /* Function start: 0x447520 */
 SC_SpaceShipNav::SC_SpaceShipNav() {
-    field_118[0] = 0;
-    field_118[1] = 0;
+    engine = 0;
+    field_0x11C = 0;
     handlerId = 0x46;
 }
 
@@ -28,11 +28,9 @@ SC_SpaceShipNav::SC_SpaceShipNav() {
 SC_SpaceShipNav::~SC_SpaceShipNav() {
     ShutDown(0);
 
-    if (field_118[0] != 0) {
-        int* obj = (int*)field_118[0];
-        int* vtbl = (int*)*obj;
-        ((void (__fastcall *)(int*, int, int))vtbl[3])(obj, 0, 1);
-        field_118[0] = 0;
+    if (engine != 0) {
+        delete engine;
+        engine = 0;
     }
 }
 
@@ -43,8 +41,8 @@ void SC_SpaceShipNav::OnProcessStart()
 
 /* Function start: 0x447630 */
 void SC_SpaceShipNav::Init(SC_MessageParser* msg) {
-    field_118[0] = 0;
-    field_118[1] = 0;
+    engine = 0;
+    field_0x11C = 0;
 
     if (FileExists("CB_ShipNav") == 0) {
         ShowLoadingScreen();
@@ -52,16 +50,16 @@ void SC_SpaceShipNav::Init(SC_MessageParser* msg) {
 
     SC_Combat::Init(msg);
 
-    if (field_118[0] == 0) {
-        SpaceShipEngine* engine = new SpaceShipEngine();
-        field_118[0] = (int)engine;
-        g_CombatEngine_0046ae78 = (SC_CombatBase*)engine;
+    if (engine == 0) {
+        SpaceShipEngine* newEngine = new SpaceShipEngine();
+        engine = newEngine;
+        g_CombatEngine_0046ae78 = (SC_CombatBase*)newEngine;
 
         strcpy(missionPath, "mis\\cb_SpaceNav.mis");
         ParseFile((Parser*)this, missionPath, 0);
     }
 
-    g_CombatEngine_0046ae78 = (SC_CombatBase*)field_118[0];
+    g_CombatEngine_0046ae78 = (SC_CombatBase*)engine;
     g_CombatEngine_0046ae78->SetupViewport();
 
     if (msg != 0) {

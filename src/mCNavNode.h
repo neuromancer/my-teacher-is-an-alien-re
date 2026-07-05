@@ -44,7 +44,7 @@ public:
     int CallGetNextNode();          // 0x44B880
 
     // Fields (after Parser 0x90 base)
-    void* neighborNodes[6];         // 0x90 - neighbor node pointers indexed by bearing
+    NavSubNode* neighborNodes[6];   // 0x90 - neighbor sub-nodes indexed by bearing
     int nodeHandle;                 // 0xA8 - this node's handle/ID
     char nodeName[36];              // 0xAC - node name (up to 0xCF)
 };
@@ -66,7 +66,7 @@ public:
 // Vtable: 0x461B80, size 0xB8 = NavSubNode(0xA0) + 6 ints
 class mCNavNode_TypeB : public NavSubNode {
 public:
-    int* conditionPtr;   // 0xA0 - pointer to condition checked by GameState::CheckCondition
+    SpriteAction* conditionPtr; // 0xA0 - condition checked by GameState::CheckCondition
     int destNode[2];     // 0xA4 - destination node IDs [false, true]
     int destBearing[2];  // 0xAC - destination bearings  [false, true]
     int reservedB4;      // 0xB4

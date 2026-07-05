@@ -5,6 +5,7 @@
 #include "GameState.h"
 #include "FileArchive.h"
 #include "GameEngine.h"
+#include "SC_CombatBase.h"
 #include "SpriteAction.h"
 #include "SC_Question.h"
 #include "globals.h"
@@ -790,7 +791,5 @@ void UpdateCombatEngine()
         int key = WaitForInput();
         g_DetentionKeyState_00468a18 = (key != 0x54) ? 1 : 0;
     }
-    int* engine = (int*)g_CombatEngine_0046ae78;
-    int* vtbl = (int*)*engine;
-    ((void (__fastcall *)(int*, int))vtbl[14])(engine, 0);
+    g_CombatEngine_0046ae78->StopAndCleanup();
 }

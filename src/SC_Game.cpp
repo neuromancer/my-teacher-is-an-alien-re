@@ -333,7 +333,7 @@ int SC_Game::Exit(SC_MessageParser* msg) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
         break;
     default:
-        g_GameState_0046aa30->SetFromAction((int*)action);
+        g_GameState_0046aa30->SetFromAction(action);
         return 1;
     }
     return 1;

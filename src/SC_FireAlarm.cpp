@@ -99,11 +99,9 @@ void SC_FireAlarm::ShutDown(SC_MessageParser* msg) {
     }
 
     if (g_FireAlarmEngine_004685ac != 0) {
-        // Virtual scalar-deleting-destructor dispatch (vtable slot 3, flag 1) —
-        // written as `delete (Weapon*)...` this emits an extra implicit null test.
-        int* obj = (int*)g_FireAlarmEngine_004685ac;
-        int* vtbl = (int*)*obj;
-        ((void (__fastcall*)(int*, int, int))vtbl[3])(obj, 0, 1);
+        // The (Weapon*) no-op cast is load-bearing: without it MSVC flips
+        // register allocation in ProcessFrame below (98.07% -> 95.65%).
+        delete (Weapon*)g_FireAlarmEngine_004685ac;
         g_FireAlarmEngine_004685ac = 0;
     }
 
@@ -568,7 +566,7 @@ void SC_FireAlarm::ProcessFrame() {
 
     if ((stateFlags & 0xF) == 0) {
         g_Mouse_0046aa18->DrawCursor();
-        Weapon* engine = (Weapon*)g_FireAlarmEngine_004685ac;
+        Weapon* engine = g_FireAlarmEngine_004685ac;
         engine->UpdateProjectiles();
 
         int bcRender = consoleSprite->Do(consoleSprite->loc.x, consoleSprite->loc.y, 1.0);
@@ -580,7 +578,7 @@ void SC_FireAlarm::ProcessFrame() {
             consoleSprite->ResetAnimation(mouseVal / (screenSize.x / 5), 0);
         }
 
-        if (((Weapon*)g_FireAlarmEngine_004685ac)->m_clicked != 0) {
+        if (g_FireAlarmEngine_004685ac->m_clicked != 0) {
             int mouseVal2 = 0;
             if (g_InputManager_0046aa08->pMouse != 0) {
                 mouseVal2 = g_InputManager_0046aa08->pMouse->x;
@@ -684,7 +682,7 @@ int SC_FireAlarm::LBLParse(char* line) {
         soundList->Allocate(tempInt);
     } else if (strcmp(label, "SOUND") == 0) {
         sscanf(line, " %s %d %s %d ", label, &tempInt, buffer, &tempInt2);
-        if (tempInt < 0 || soundList->fields[0] - 1 < tempInt) {
+        if (tempInt < 0 || soundList->numEntries - 1 < tempInt) {
             ReportUnknownLabel("SC_FireAlarm");
         } else {
             soundList->LoadEntry(tempInt, buffer, tempInt2);
@@ -693,7 +691,7 @@ int SC_FireAlarm::LBLParse(char* line) {
         if (sscanf(line, " %s %s ", label, buffer) == 2) {
             if (strcmp(buffer, "ROCKTHROWER2") == 0) {
                 RockThrower* rt = new FireAlarmRockThrower(this);
-                g_FireAlarmEngine_004685ac = (int)rt;
+                g_FireAlarmEngine_004685ac = rt;
             } else {
                 ReportUnknownLabel("SC_FireAlarm");
             }

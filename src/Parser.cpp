@@ -317,7 +317,7 @@ Parser* Parser::ProcessFile(Parser* self, Parser* dst, char* key_format, ...) {
 
   do {
     do {
-      if (self->pFile == NULL || ((int*)self->pFile)[3] == 0) {
+      if (self->pFile == NULL || self->pFile->_flag == 0) {
         ShowError("Parser::Parser - premature EOF in '%s' - Invalid File Pointer", self->filename);
       }
 
@@ -388,11 +388,11 @@ int Parser::DoCommentsMatch(char* line) {
 /* Function start: 0x4130E0 */
 void Parser::UpdateProcessingState() {
     field_0x08 = 0;
-    volatile int node = ((int*)g_FilePosCache)[0];
+    PooledEvent* volatile node = g_FilePosCache->list.head;
     while (node != 0) {
-        int* pNode = (int*)node;
-        node = pNode[0];
-        if (!(pNode[2] & 1)) {
+        PooledEvent* pNode = node;
+        node = pNode->next;
+        if (!(pNode->field_0x8 & 1)) {
             field_0x08 = 1;
             return;
         }
@@ -463,27 +463,27 @@ int Parser::EndComment() {
         g_FilePosCache = new TimedEventPool(10);
     }
 
-    if (((int*)g_FilePosCache)[2] == 0) {
+    if (g_FilePosCache->m_count == 0) {
         ShowError("Parser::Pop - IF/ELSEIF ordering Error in %s", filename);
     }
 
     // Pop head node
-    int* ecxPool = (int*)g_FilePosCache;
-    int* head = (int*)ecxPool[0];
-    int result = head[2]; // saved value
-    int* next = (int*)head[0];
-    ecxPool[0] = (int)next;
+    TimedEventPool* ecxPool = g_FilePosCache;
+    PooledEvent* head = ecxPool->list.head;
+    int result = head->field_0x8; // saved value
+    PooledEvent* next = head->next;
+    ecxPool->list.head = next;
     if (next != 0) {
-        next[1] = 0;
+        next->prev = 0;
     } else {
-        ecxPool[1] = 0;
+        ecxPool->list.tail = 0;
     }
 
     { int n = 0; do { int tmp = n; n--; if (tmp == 0) break; } while (1); }
 
-    head[0] = ecxPool[3];
-    ecxPool[3] = (int)head;
-    ecxPool[2]--;
+    head->next = ecxPool->m_free_list;
+    ecxPool->m_free_list = head;
+    ecxPool->m_count--;
 
     UpdateProcessingState();
     return result;
@@ -530,7 +530,9 @@ void Parser::HandleToken_IF(char* line, int prevResult) {
         msg.LBLParse(tempBuf);
 
         // Evaluate the condition
-        prevResult = g_GameState_0046aa30->CheckCondition((int*)&action);
+        // No-op cast is load-bearing: without it MSVC flips regalloc in
+        // SubstituteVars below (100% -> 92.73%).
+        prevResult = g_GameState_0046aa30->CheckCondition((SpriteAction*)&action);
     }
 
 push_result:
@@ -608,7 +610,8 @@ void Parser::HandleToken(int tokenType, char* line) {
             action.addressValue = g_GameState_0046aa30->FindState(local_38);
             action.instruction = g_StringState_0046aa38->FindState(local_90);
             action.extra1 = value;
-            g_GameState_0046aa30->SetFromAction((int*)&action);
+            // No-op cast is load-bearing (see CheckCondition call above).
+            g_GameState_0046aa30->SetFromAction((SpriteAction*)&action);
         }
         break;
 

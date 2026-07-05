@@ -872,9 +872,9 @@ SlotPair::SlotPair() { count = 0; max = 0; }
 /* Function start: 0x425480 */
 SlimeTable::SlimeTable()
 {
-    fields[0] = 0;
-    fields[1] = 0;
-    fields[2] = 0;
+    numEntries = 0;
+    samples = 0;
+    soundIds = 0;
 }
 
 /* Function start: 0x425490 */
@@ -886,21 +886,21 @@ SlimeTable::~SlimeTable()
 /* Function start: 0x425550 */
 int SlimeTable::Play(int index)
 {
-    if (index < 0 || fields[0] - 1 < index) {
+    if (index < 0 || numEntries - 1 < index) {
         return 0;
     }
-    if (((int*)fields[2])[index] != 0) {
+    if (soundIds[index] != 0) {
         int i = 0;
-        if (fields[0] > 0) {
+        if (numEntries > 0) {
             do {
-                if (((int*)fields[2])[i] == ((int*)fields[2])[index] && ((Sample**)fields[1])[i] != 0) {
-                    ((Sample**)fields[1])[i]->Stop();
+                if (soundIds[i] == soundIds[index] && samples[i] != 0) {
+                    samples[i]->Stop();
                 }
                 i++;
-            } while (fields[0] > i);
+            } while (numEntries > i);
         }
     }
-    Sample* smp = ((Sample**)fields[1])[index];
+    Sample* smp = samples[index];
     if (smp != 0) {
         smp->Play(100, 1);
     }
@@ -911,9 +911,9 @@ int SlimeTable::Play(int index)
 void SlimeTable::StopPlaying()
 {
     int i = 0;
-    if (fields[0] > 0) {
+    if (numEntries > 0) {
         do {
-            Sample* smp = ((Sample**)fields[1])[i];
+            Sample* smp = samples[i];
             if (smp != 0 && smp->m_sample != 0 &&
                 smp->m_size == ((AILSampleData*)smp->m_sample)->len) {
                 if (AIL_sample_status(smp->m_sample) == 4) {
@@ -921,20 +921,20 @@ void SlimeTable::StopPlaying()
                 }
             }
             i++;
-        } while (fields[0] > i);
+        } while (numEntries > i);
     }
 }
 
 /* Function start: 0x425620 */
 void SlimeTable::LoadEntry(int index, char* filename, int value)
 {
-    if (index < 0 || fields[0] - 1 < index) {
+    if (index < 0 || numEntries - 1 < index) {
         return;
     }
 
-    ((Sample**)fields[1])[index] = new Sample();
-    ((Sample**)fields[1])[index]->Load(MakeAudioName(filename));
-    ((int*)fields[2])[index] = value;
+    samples[index] = new Sample();
+    samples[index]->Load(MakeAudioName(filename));
+    soundIds[index] = value;
 }
 
 /* Function start: 0x4256D0 */
@@ -942,8 +942,8 @@ int SlimeTable::IsSamplePlaying(int index)
 {
     Sample* entry;
 
-    if (index < 0 || fields[0] - 1 < index) goto bounds_fail;
-    entry = ((Sample**)fields[1])[index];
+    if (index < 0 || numEntries - 1 < index) goto bounds_fail;
+    entry = samples[index];
     if (entry == 0) goto fail;
     if (entry->m_sample == 0) goto fail;
     if (entry->m_size != ((AILSampleData*)entry->m_sample)->len) goto fail;
@@ -961,31 +961,31 @@ void SlimeTable::Cleanup()
 {
     int i;
 
-    for (i = 0; i < fields[0]; i++) {
-        void* entry = ((void**)fields[1])[i];
+    for (i = 0; i < numEntries; i++) {
+        Sample* entry = samples[i];
         if (entry != 0) {
-            ((Sample*)entry)->Unload();
+            entry->Unload();
             operator delete(entry);
-            ((void**)fields[1])[i] = 0;
+            samples[i] = 0;
         }
     }
 
-    if ((void*)fields[1] != 0) {
-        operator delete((void*)fields[1]);
-        fields[1] = 0;
+    if (samples != 0) {
+        operator delete(samples);
+        samples = 0;
     }
 
-    fields[0] = 0;
+    numEntries = 0;
 }
 
 /* Function start: 0x4254A0 */
 void SlimeTable::Allocate(int count)
 {
     Cleanup();
-    fields[0] = count;
-    fields[1] = (int)operator new(count * 4);
-    memset((void*)fields[1], 0, fields[0] * 4);
+    numEntries = count;
+    samples = (Sample**)operator new(count * 4);
+    memset(samples, 0, numEntries * 4);
 
-    fields[2] = (int)operator new(fields[0] * 4);
-    memset((void*)fields[2], 0, fields[0] * 4);
+    soundIds = (int*)operator new(numEntries * 4);
+    memset(soundIds, 0, numEntries * 4);
 }
