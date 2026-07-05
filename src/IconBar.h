@@ -54,7 +54,7 @@ public:
     void InitIconBar(SC_MessageParser* msg) { IconBar::Init(msg); }
     void CleanupIconBar(SC_MessageParser* msg) { IconBar::ShutDown(msg); }
     int CheckButtonClick(SC_MessageParser* msg) { return IconBar::AddMessage(msg); }
-    int FindClickedEntry(int* param);              // 0x42DEC0
+    int FindClickedEntry(SpriteAction* param);     // 0x42DEC0
     void PlayButtonSound(int buttonIndex);         // 0x42DF10
     void UpdateAllSlots();                         // 0x42DFA0
 };

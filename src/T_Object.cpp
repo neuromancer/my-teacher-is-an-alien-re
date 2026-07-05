@@ -113,9 +113,9 @@ void T_Object::Reset()
 }
 
 /* Function start: 0x40C9E0 */
-int T_Object::HandleMsg(int* msg)
+int T_Object::HandleMsg(SpriteAction* msg)
 {
-    if (msg[4] != 6) {
+    if (msg->instruction != 6) {
         return 0;
     }
     SendGameMessage(4, soundHandle, 0, 0, 2, 0, 0, 0, 0, 0);

@@ -9,7 +9,13 @@ class Sprite;
 
 // GauntletEntry — 0x1C byte element with ctor/dtor (ctor 0x42E660, dtor 0x42E6D0)
 struct GauntletEntry {
-    int fields[7]; // 0x00-0x1B
+    int value;    // 0x00 - anim state / crystal count
+    int field_4;  // 0x04 - lit/occupied flag
+    int field_8;  // 0x08 - special-cell flag
+    int left;     // 0x0C - hit rect
+    int top;      // 0x10
+    int right;    // 0x14
+    int bottom;   // 0x18
     GauntletEntry();
     ~GauntletEntry();
 };

@@ -387,7 +387,7 @@ void SC_CrystalPuzzle::ShutDown(SC_MessageParser* msg) {
 
 /* Function start: 0x44FAE0 */
 int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* pmsg = (SpriteAction*)msg;
     int mouseY;
     int mouseX;
 
@@ -395,13 +395,13 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
         return 1;
     }
 
-    if (pmsg[0xb] == 0x1b) {
+    if (pmsg->lastKey == 0x1b) {
         puzzleFlags |= 1;
         SC_CrystalPuzzle::FinalizeExit();
         return 1;
     }
 
-    if (pmsg[9] >= 2) {
+    if (pmsg->button1 >= 2) {
         if (g_InputManager_0046aa08->pMouse != 0) {
             mouseY = g_InputManager_0046aa08->pMouse->y;
         } else {
@@ -415,11 +415,11 @@ int SC_CrystalPuzzle::AddMessage(SC_MessageParser* msg) {
 
         OnClick(mouseX, mouseY);
 
-        int clickX = pmsg[7];
+        int clickX = pmsg->mousePos.x;
         if ((rect6.left <= clickX && clickX <= rect6.right &&
-             rect6.top <= pmsg[8] && pmsg[8] <= rect6.bottom) ||
+             rect6.top <= pmsg->mousePos.y && pmsg->mousePos.y <= rect6.bottom) ||
             (rect7.left <= clickX && clickX <= rect7.right &&
-             rect7.top <= pmsg[8] && pmsg[8] <= rect7.bottom)) {
+             rect7.top <= pmsg->mousePos.y && pmsg->mousePos.y <= rect7.bottom)) {
             puzzleFlags |= 1;
             SC_CrystalPuzzle::FinalizeExit();
             return 1;

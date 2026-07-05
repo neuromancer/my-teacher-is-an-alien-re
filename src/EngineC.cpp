@@ -186,9 +186,9 @@ void EngineC::ProcessFrame()
 }
 
 /* Function start: 0x40C1B0 */
-int EngineC::HandleAction(int* param) {
+int EngineC::HandleAction(SpriteAction* param) {
     int result = 0;
-    SpriteAction* action = (SpriteAction*)param;
+    SpriteAction* action = param;
 
     if (action->instruction != 0x37) {
         ShowError("EngineGauntlet::OnLogicMessage - unsupported instruction %d",

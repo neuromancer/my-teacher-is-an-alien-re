@@ -5,6 +5,8 @@
 #include "Sprite.h"
 #include "LinkedList.h"
 
+class SpriteAction;
+
 // T_Object — Inventory item object
 // Size: 0xC8, Constructor: 0x40C630, Destructor: 0x40C6E0
 // Vtable: 0x461200 (LBLParse override at 0x40CA20)
@@ -21,7 +23,7 @@ public:
     void StopSound();                          // 0x40C830
     void Display(int x, int y, int visible);  // 0x40C840
     void Reset();                              // 0x40C890
-    int HandleMsg(int* msg);                   // 0x40C9E0
+    int HandleMsg(SpriteAction* msg);          // 0x40C9E0
 
     // Fields (after Parser 0x90 base, 0x38 bytes = 14 dwords)
     int objectFlags;        // 0x90 — flags

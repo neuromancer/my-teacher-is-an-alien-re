@@ -13,9 +13,9 @@ SpaceShipEngine::~SpaceShipEngine() {
 }
 
 /* Function start: 0x447D00 */
-int SpaceShipEngine::HandleAction(int* param) {
+int SpaceShipEngine::HandleAction(SpriteAction* param) {
     int result = 0;
-    SpriteAction* action = (SpriteAction*)param;
+    SpriteAction* action = param;
 
     if (action->instruction != 0x37) {
         ShowError("EngineSpaceShipNav::OnLogicMessage - unsupported instruction %d",

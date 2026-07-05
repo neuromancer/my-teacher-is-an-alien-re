@@ -106,12 +106,12 @@ void T_Hotspot::StopAll()
 }
 
 /* Function start: 0x446CE0 */
-int T_Hotspot::HandleClick(int* msg) {
+int T_Hotspot::HandleClick(SpriteAction* msg) {
     int teacherType;
-    SpriteAction* action = (SpriteAction*)msg;
+    SpriteAction* action = msg;
     HotspotAction* item;
 
-    if (msg[0] != 0x24) {
+    if (msg->addressType != 0x24) {
         return 0;
     }
 

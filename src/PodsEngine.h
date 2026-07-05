@@ -29,7 +29,7 @@ public:
     virtual void OnProcessEnd();          // [2] 0x441000
     virtual int UpdateSprites();          // [9] 0x440920
     virtual void ProcessFrame();          // [10] 0x440A50
-    virtual int HandleAction(int* param); // [13] 0x440FC0
+    virtual int HandleAction(SpriteAction* param); // [13] 0x440FC0
 
     // Fields from 0xF0 to 0x117 (10 ints)
     Sprite* podsBgSprite; // 0xF0 — background sprite (deleted in dtor)

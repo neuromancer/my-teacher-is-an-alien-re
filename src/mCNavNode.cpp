@@ -184,9 +184,9 @@ void mCNavNode_TypeA::virtual4() {
 
 /* Function start: 0x44A560 */
 int mCNavNode_TypeD::Activate() {
-    int* act = action;
+    SpriteAction* act = action;
     int result = 1;
-    if (act[4] == 4) {
+    if (act->instruction == 4) {
         result = 2;
     }
     EnqueueSpriteAction(act);
@@ -204,7 +204,7 @@ int mCNavNode_TypeD::LBLParse(char* line) {
     }
     if (stricmp(token, "MESSAGE") == 0) {
         SpriteAction* sa = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        action = (int*)sa;
+        action = sa;
         ParseSpriteAction(sa, (void*)parentNode);
         return 0;
     }
@@ -234,7 +234,7 @@ mCNavNode_TypeLogic::~mCNavNode_TypeLogic()
 /* Function start: 0x44A9A0 */
 int mCNavNode_TypeLogic::Activate()
 {
-    int handled = g_CombatEngine_0046ae78->HandleAction((int*)action);
+    int handled = g_CombatEngine_0046ae78->HandleAction(action);
     return handled == 0 ? 1 : 2;
 }
 

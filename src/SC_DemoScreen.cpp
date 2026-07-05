@@ -66,22 +66,22 @@ void SC_DemoScreen::ShutDown(SC_MessageParser* msg) {
 
 /* Function start: 0x44E8B0 */
 int SC_DemoScreen::AddMessage(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* pmsg = (SpriteAction*)msg;
     WriteMessageAddress(msg);
-    if (pmsg[9] >= 2) {
-        pmsg[0] = 0x25;
-        pmsg[1] = 1;
-        pmsg[3] = 1;
-        pmsg[2] = 0x29;
-        pmsg[4] = 4;
+    if (pmsg->button1 >= 2) {
+        pmsg->addressType = 0x25;
+        pmsg->addressValue = 1;
+        pmsg->fromValue = 1;
+        pmsg->fromType = 0x29;
+        pmsg->instruction = 4;
     }
     return 1;
 }
 
 /* Function start: 0x44E8F0 */
 int SC_DemoScreen::Exit(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
-    return (handlerId == pmsg[0]);
+    SpriteAction* pmsg = (SpriteAction*)msg;
+    return (handlerId == pmsg->addressType);
 }
 
 /* Function start: 0x44E910 */

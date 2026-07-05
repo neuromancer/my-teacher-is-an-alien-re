@@ -284,7 +284,7 @@ int SC_Question::LBLParse(char* param_1)
     Sprite* sprite;
     Queue* queue;
     ListNode* cur;
-    int* framePtr;
+    Range* framePtr;
     int frameCount;
 
     sscanf(param_1, "%s", keyword);
@@ -319,10 +319,10 @@ int SC_Question::LBLParse(char* param_1)
         if ((field_94 & 8) != 0) {
             sprite->ConfigStates(2);
             sprite->InitAnimation();
-            framePtr = (int*)((int)sprite->ranges + sprite->handle * 0x10);
-            sprite->ConfigRange(0, 1, (framePtr[1] - framePtr[0]) + 1, 1);
-            framePtr = (int*)((int)sprite->ranges + sprite->handle * 0x10);
-            frameCount = (framePtr[1] - framePtr[0]) + 1;
+            framePtr = &sprite->ranges[sprite->handle];
+            sprite->ConfigRange(0, 1, (framePtr->dim.y - framePtr->dim.x) + 1, 1);
+            framePtr = &sprite->ranges[sprite->handle];
+            frameCount = (framePtr->dim.y - framePtr->dim.x) + 1;
             sprite->ConfigRange(1, frameCount, frameCount, 1);
             sprite->StopAnimationSound();
         }

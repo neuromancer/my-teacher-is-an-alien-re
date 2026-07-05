@@ -1,4 +1,5 @@
 #include "SC_WordSearch.h"
+#include "SC_Gauntlet.h"
 #include "ZBufferManager.h"
 #include "SpriteAction.h"
 #include "Sprite.h"
@@ -60,11 +61,11 @@ struct WordSearchRuntimeState {
 };
 
 /* Function start: 0x42E4B0 */
-void __fastcall UpdateWordSearchCursor(int* self) {
-    int state = self[0];
+void __fastcall UpdateWordSearchCursor(GauntletBoard* self) {
+    int state = self->crystalState[0];
     if (state > 1) {
-        ((Sprite*)self[6])->ResetAnimation(state - 2, 0);
-        ((Sprite*)self[6])->Do(((Sprite*)self[6])->loc.x, ((Sprite*)self[6])->loc.y, 1.0);
+        self->fgSprite->ResetAnimation(state - 2, 0);
+        self->fgSprite->Do(self->fgSprite->loc.x, self->fgSprite->loc.y, 1.0);
     }
 
     int mouseY;
@@ -81,8 +82,8 @@ void __fastcall UpdateWordSearchCursor(int* self) {
     }
 
     int inside;
-    if (self[2] <= mouseX && self[4] >= mouseX &&
-        self[3] <= mouseY && self[5] >= mouseY) {
+    if (self->boardBounds.left <= mouseX && self->boardBounds.right >= mouseX &&
+        self->boardBounds.top <= mouseY && self->boardBounds.bottom >= mouseY) {
         inside = 1;
     } else {
         inside = 0;
@@ -734,7 +735,7 @@ int SC_WordSearch::LBLParse(char* line) {
     return 0;
 }
 
-extern void __fastcall UpdateWordSearchCursor(int*);
+extern void __fastcall UpdateWordSearchCursor(GauntletBoard*);
 #include "SoundList.h"
 
 // Dead duplicate of SC_Gauntlet::RenderGrid.
@@ -746,7 +747,7 @@ void SC_WordSearch::Render() {
     if (state->modeFlag != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0, 0);
     }
-    UpdateWordSearchCursor(&state->cursorState);
+    UpdateWordSearchCursor((GauntletBoard*)&state->cursorState);
     if (state->modeFlag != 0 && g_Mouse_0046aa18->m_sprite != 0) {
         g_Mouse_0046aa18->m_sprite->ResetAnimation(0xC, 0);
     }

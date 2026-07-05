@@ -212,19 +212,19 @@ void SelectHotspot::Update() {
 
 /* Function start: 0x405490 */
 int SelectHotspot::OnClick(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* pmsg = (SpriteAction*)msg;
     int hit;
 
-    if (pmsg[7] < SelectHotspot::bounds.left || SelectHotspot::bounds.right < pmsg[7] ||
-        pmsg[8] < SelectHotspot::bounds.top || SelectHotspot::bounds.bottom < pmsg[8]) {
+    if (pmsg->mousePos.x < SelectHotspot::bounds.left || SelectHotspot::bounds.right < pmsg->mousePos.x ||
+        pmsg->mousePos.y < SelectHotspot::bounds.top || SelectHotspot::bounds.bottom < pmsg->mousePos.y) {
         hit = 0;
     } else {
         hit = 1;
     }
 
     if (hit && SelectHotspot::state != 0) {
-        if (pmsg[9] > 1 ||
-            (SelectHotspot::keyCode != 0 && pmsg[0xB] == SelectHotspot::keyCode)) {
+        if (pmsg->button1 > 1 ||
+            (SelectHotspot::keyCode != 0 && pmsg->lastKey == SelectHotspot::keyCode)) {
             SelectHotspot::state = 3;
             if (SelectHotspot::sprite != 0) {
                 ((Sprite*)SelectHotspot::sprite)->ResetAnimation(3, 0);
@@ -419,7 +419,7 @@ SC_SelectHotSpot::~SC_SelectHotSpot() {
 
 /* Function start: 0x405FB0 */
 void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
+    SpriteAction* pmsg = (SpriteAction*)msg;
 
     InitFromMessage(msg);
     SetVideoRes(0x280, 0x1e0);
@@ -469,7 +469,7 @@ void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
     }
 
     if (pmsg != 0) {
-        SC_SelectHotSpot::moduleParam = pmsg[1];
+        SC_SelectHotSpot::moduleParam = pmsg->addressValue;
         if (SC_SelectHotSpot::ambient != 0) {
             delete (MMPlayer*)SC_SelectHotSpot::ambient;
             SC_SelectHotSpot::ambient = 0;
@@ -607,11 +607,11 @@ int SC_SelectHotSpot::AddMessage(SC_MessageParser* msg) {
 
 /* Function start: 0x4063E0 */
 int SC_SelectHotSpot::Exit(SC_MessageParser* msg) {
-    int* pmsg = (int*)msg;
-    if (pmsg[0] != SC_SelectHotSpot::handlerId) {
+    SpriteAction* pmsg = (SpriteAction*)msg;
+    if (pmsg->addressType != SC_SelectHotSpot::handlerId) {
         return 0;
     }
-    switch (pmsg[4]) {
+    switch (pmsg->instruction) {
     case 2: {
         LinkedList* list = SC_SelectHotSpot::hotspotList;
         if (list != 0) {

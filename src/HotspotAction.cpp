@@ -117,9 +117,9 @@ void HotspotAction::Reset() {
 }
 
 /* Function start: 0x41B5E0 */
-int HotspotAction::HandleMessage(int* msg) {
+int HotspotAction::HandleMessage(SpriteAction* msg) {
     int val;
-    SpriteAction* action = (SpriteAction*)msg;
+    SpriteAction* action = msg;
 
     if (action->addressType != 0x24) {
         return 0;

@@ -34,7 +34,7 @@ public:
     void StopAll();                 // 0x445970
     void SelectItem();              // 0x4459D0
     void DoItem(int param);         // 0x4459A0
-    int HandleClick(int* msg);      // 0x446CE0
+    int HandleClick(SpriteAction* msg); // 0x446CE0
 };
 
 #endif // HOTSPOT_H

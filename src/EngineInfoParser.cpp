@@ -143,19 +143,19 @@ void __fastcall InitCombatGrid(int param_1) {
     do {
         int col = 6;
         do {
-            ge->fields[0] = 0;
+            ge->value = 0;
             ge++;
             col--;
         } while (col != 0);
         row--;
     } while (row != 0);
-    gaunt->entries[5].fields[0] = 1;
-    gaunt->entries[10].fields[0] = 1;
-    gaunt->entries[8].fields[0] = 1;
-    gaunt->entries[20].fields[0] = 1;
-    gaunt->entries[26].fields[0] = 1;
+    gaunt->entries[5].value = 1;
+    gaunt->entries[10].value = 1;
+    gaunt->entries[8].value = 1;
+    gaunt->entries[20].value = 1;
+    gaunt->entries[26].value = 1;
     gaunt->board.crystalState[0] = 5;
-    gaunt->entries[31].fields[0] = 1;
+    gaunt->entries[31].value = 1;
     gaunt->board.crystalState[1] = 0;
     gaunt->cellSprites[6] = 0;
 }

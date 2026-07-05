@@ -15,14 +15,14 @@
 #include "main.h"
 #include "string.h"
 
-extern void __fastcall UpdateWordSearchCursor(int*);
+extern void __fastcall UpdateWordSearchCursor(GauntletBoard*);
 extern char* MakeAnimName(int);
 
 GauntletEntry::GauntletEntry() {
-    fields[3] = 0;
-    fields[4] = 0;
-    fields[5] = 0;
-    fields[6] = 0;
+    left = 0;
+    top = 0;
+    right = 0;
+    bottom = 0;
     memset(this, 0, 7 * 4);
 }
 
@@ -119,7 +119,7 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
         int* actionFlags = statusPtr + 5;
         if (*actionFlags != 0) {
             int row = 0;
-            int* gep = &entries[0].fields[3];
+            int* gep = &entries[0].left;
             do {
                 int col = 0;
                 do {
@@ -250,7 +250,7 @@ void SC_Gauntlet::RenderGrid() {
         }
     }
 
-    UpdateWordSearchCursor(board.crystalState);
+    UpdateWordSearchCursor(&board);
 
     if (board.crystalState[1] != 0) {
         if (g_Mouse_0046aa18->m_sprite != 0) {
@@ -288,9 +288,9 @@ void SC_Gauntlet::RenderGrid() {
                 mouseY = mouse->y;
             }
             int mouseX = (mouse != 0) ? mouse->x : 0;
-            if (ge->fields[3] <= mouseX && ge->fields[5] >= mouseX &&
-                ge->fields[4] <= mouseY && ge->fields[6] >= mouseY) {
-                if (ge->fields[1] == 0) {
+            if (ge->left <= mouseX && ge->right >= mouseX &&
+                ge->top <= mouseY && ge->bottom >= mouseY) {
+                if (ge->field_4 == 0) {
                     Sprite* mouseSpr = g_Mouse_0046aa18->m_sprite;
                     if (board.crystalState[1] != 0) {
                         if (mouseSpr != 0) {
@@ -315,12 +315,12 @@ void SC_Gauntlet::RenderGrid() {
                 }
             }
 
-            if (ge->fields[0] != 0) {
-                (*sprPtr)->ResetAnimation(ge->fields[0] - 1, 0);
+            if (ge->value != 0) {
+                (*sprPtr)->ResetAnimation(ge->value - 1, 0);
                 (*sprPtr)->Do(cellY, cellX, 1.0);
                 sprIdx++;
                 sprPtr++;
-                if (statusPtr[1] == 0 && ge->fields[2] != 0 && ge->fields[0] >= 6) {
+                if (statusPtr[1] == 0 && ge->field_8 != 0 && ge->value >= 6) {
                     statusPtr[1] = 1;
                 }
             }
@@ -406,7 +406,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     {
         int i = col;
         if (i < colMax) {
-            p = &entries[row * 6 + i].fields[1];
+            p = &entries[row * 6 + i].field_4;
             do {
                 if (*p != 0) {
                     colMax = i;
@@ -421,7 +421,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     {
         int i = col;
         if (i > colMin) {
-            p = &entries[row * 6 + i].fields[1];
+            p = &entries[row * 6 + i].field_4;
             do {
                 if (*p != 0) {
                     colMin = i;
@@ -436,7 +436,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     {
         int i = row;
         if (i < rowMax) {
-            p = &entries[i * 6 + col].fields[1];
+            p = &entries[i * 6 + col].field_4;
             do {
                 if (*p != 0) {
                     rowMax = i;
@@ -451,7 +451,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     {
         int i = row;
         if (i > rowMin) {
-            p = &entries[i * 6 + col].fields[1];
+            p = &entries[i * 6 + col].field_4;
             do {
                 if (*p != 0) {
                     rowMin = i;
@@ -465,23 +465,23 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     /* Check diagonal neighbors for obstacles */
     index = row * 6 + col;
 
-    if (entries[index - 7].fields[1] != 0) {
+    if (entries[index - 7].field_4 != 0) {
         canDiagUL = 0;
     }
-    if (entries[index + 5].fields[1] != 0) {
+    if (entries[index + 5].field_4 != 0) {
         canDiagDL = 0;
     }
-    if (entries[index - 5].fields[1] != 0) {
+    if (entries[index - 5].field_4 != 0) {
         canDiagUR = 0;
     }
-    if (entries[index + 7].fields[1] != 0) {
+    if (entries[index + 7].field_4 != 0) {
         canDiagDR = 0;
     }
 
     /* Collect horizontal (same row, colMin to colMax) */
     if (colMax >= colMin) {
         int count = colMax - colMin + 1;
-        p = &entries[row * 6 + colMin].fields[0];
+        p = &entries[row * 6 + colMin].value;
         do {
             total += *p;
             p += 7;
@@ -493,7 +493,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     /* Collect vertical (same col, rowMin to rowMax) */
     if (rowMax >= rowMin) {
         int count = rowMax - rowMin + 1;
-        p = &entries[rowMin * 6 + col].fields[0];
+        p = &entries[rowMin * 6 + col].value;
         do {
             total += *p;
             p += 42;
@@ -504,30 +504,30 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
 
     /* Collect diagonals: UL, DL, UR, DR order matches original */
     if (canDiagUL != 0) {
-        int val = entries[index - 7].fields[0];
+        int val = entries[index - 7].value;
         if (val != 0) {
-            entries[index - 7].fields[0] = 0;
+            entries[index - 7].value = 0;
             total += val;
         }
     }
     if (canDiagDL != 0) {
-        int val = entries[index + 5].fields[0];
+        int val = entries[index + 5].value;
         if (val != 0) {
-            entries[index + 5].fields[0] = 0;
+            entries[index + 5].value = 0;
             total += val;
         }
     }
     if (canDiagUR != 0) {
-        int val = entries[index - 5].fields[0];
+        int val = entries[index - 5].value;
         if (val != 0) {
-            entries[index - 5].fields[0] = 0;
+            entries[index - 5].value = 0;
             total += val;
         }
     }
     if (canDiagDR != 0) {
-        int val = entries[index + 7].fields[0];
+        int val = entries[index + 7].value;
         if (val != 0) {
-            entries[index + 7].fields[0] = 0;
+            entries[index + 7].value = 0;
             total += val;
         }
     }
@@ -546,7 +546,7 @@ void SC_Gauntlet::ProcessGrid(int row, int col) {
     }
 
     /* Store result and update state */
-    entries[index].fields[0] = total;
+    entries[index].value = total;
     if (board.crystalState[0] == 1) {
         board.crystalState[0]--;
     }
@@ -563,19 +563,19 @@ void SC_Gauntlet::ResetGrid() {
     do {
         int j = 6;
         do {
-            ge->fields[0] = 0;
+            ge->value = 0;
             ge++;
             j--;
         } while (j != 0);
         i--;
     } while (i != 0);
 
-    entries[5].fields[0] = 1;
-    entries[10].fields[0] = 1;
-    entries[8].fields[0] = 1;
-    entries[20].fields[0] = 1;
-    entries[26].fields[0] = 1;
-    entries[31].fields[0] = 1;
+    entries[5].value = 1;
+    entries[10].value = 1;
+    entries[8].value = 1;
+    entries[20].value = 1;
+    entries[26].value = 1;
+    entries[31].value = 1;
     board.crystalState[0] = 5;
     board.crystalState[1] = 0;
     cellSprites[6] = 0;
@@ -649,7 +649,7 @@ void SC_Gauntlet::OnProcessEnd() {
     int iCol;
 
     SC_Combat::OnProcessEnd();
-    p = &entries[0].fields[3];
+    p = &entries[0].left;
     iRow = 0x9B;
     do {
         iCol = 0x48;
@@ -664,21 +664,21 @@ void SC_Gauntlet::OnProcessEnd() {
         iRow += 0x46;
     } while (iRow < 0x23F);
 
-    entries[2].fields[1] = 1;
-    entries[13].fields[1] = 1;
-    entries[19].fields[1] = 1;
-    entries[25].fields[1] = 1;
-    entries[27].fields[1] = 1;
-    entries[14].fields[1] = 1;
-    entries[15].fields[1] = 1;
-    entries[23].fields[1] = 1;
+    entries[2].field_4 = 1;
+    entries[13].field_4 = 1;
+    entries[19].field_4 = 1;
+    entries[25].field_4 = 1;
+    entries[27].field_4 = 1;
+    entries[14].field_4 = 1;
+    entries[15].field_4 = 1;
+    entries[23].field_4 = 1;
 
     board.boardBounds.left = 0xA;
     board.boardBounds.top = 0x14;
     board.boardBounds.right = 0x5A;
     board.boardBounds.bottom = 0xDC;
     exitBounds.left = 6;
-    entries[34].fields[2] = 1;
+    entries[34].field_8 = 1;
     exitBounds.top = 0x197;
     exitBounds.right = 0x5F;
     exitBounds.bottom = 0x1D6;

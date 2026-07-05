@@ -627,7 +627,7 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
         if (item == 0) {
             break;
         }
-        ((T_Object*)item)->HandleMsg((int*)action);
+        ((T_Object*)item)->HandleMsg((SpriteAction*)action);
         break;
     }
     case 0x11:
@@ -1074,41 +1074,41 @@ InvPanel::~InvPanel() {}
 /* Function start: 0x43F840 */
 void SCI_Inventory::DisplayPanels(int param) {
     int count = 3;
-    int* panelPtr = (int*)&panels[0];
+    InvPanel* panelPtr = &panels[0];
     do {
-        if (panelPtr[0] == 0) {
+        if (panelPtr->item1 == 0) {
             goto check_items;
         } else {
-            InventoryPoolNode* found = FindItemInList(panelPtr[0]);
+            InventoryPoolNode* found = FindItemInList(panelPtr->item1);
             if (found == 0) goto next_panel;
         }
 check_items:
-        if (panelPtr[1] != 0) {
-            InventoryPoolNode* found = FindItemInList(panelPtr[1]);
+        if (panelPtr->item2 != 0) {
+            InventoryPoolNode* found = FindItemInList(panelPtr->item2);
             if (found == 0) goto next_panel;
         }
-        if (panelPtr[2] != 0) {
-            InventoryPoolNode* found = FindItemInList(panelPtr[2]);
+        if (panelPtr->item3 != 0) {
+            InventoryPoolNode* found = FindItemInList(panelPtr->item3);
             if (found == 0) goto next_panel;
         }
         {
             GameState* gs = g_GameState_0046aa30;
-            int gsIdx = panelPtr[5];
+            int gsIdx = panelPtr->gameStateIdx;
             if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
                 ShowError("Invalid gamestate %d", gsIdx);
             }
             if (gs->stateValues[gsIdx] != 0) {
-                SendGameMessage(0x1e, panelPtr[0], handlerId, 0, 0x18, 0, 0, 0, 0, 0);
-                SendGameMessage(0x1e, panelPtr[1], handlerId, 0, 0x18, 0, 0, 0, 0, 0);
-                SendGameMessage(0x1e, panelPtr[2], handlerId, 0, 0x18, 0, 0, 0, 0, 0);
-                SendGameMessage(0x1e, panelPtr[3], handlerId, 0, 0x17, 0, 0, 0, 0, 0);
-                if (panelPtr[0] == param || panelPtr[1] == param || panelPtr[2] == param) {
-                    SendGameMessage(4, panelPtr[4], handlerId, 0, 2, 0, 0, 0, 0, 0);
+                SendGameMessage(0x1e, panelPtr->item1, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
+                SendGameMessage(0x1e, panelPtr->item2, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
+                SendGameMessage(0x1e, panelPtr->item3, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
+                SendGameMessage(0x1e, panelPtr->resultItem, handlerId, 0, 0x17, 0, 0, 0, 0, 0);
+                if (panelPtr->item1 == param || panelPtr->item2 == param || panelPtr->item3 == param) {
+                    SendGameMessage(4, panelPtr->actionId, handlerId, 0, 2, 0, 0, 0, 0, 0);
                 }
             }
         }
 next_panel:
-        panelPtr += 6;
+        panelPtr += 1;
         count--;
         if (count == 0) {
             return;

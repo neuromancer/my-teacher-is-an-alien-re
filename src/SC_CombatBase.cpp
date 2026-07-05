@@ -353,7 +353,7 @@ int SC_CombatBase::ProcessEvents()
     if (g_HotspotPool_0046ae74->m_count != 0) {
         do {
             localEvent.CopyFrom((SpriteAction*)&((TimedEventPool*)g_HotspotPool_0046ae74)->PopSafe());
-            result |= HandleAction((int*)&localEvent);
+            result |= HandleAction(&localEvent);
         } while (g_HotspotPool_0046ae74->m_count != 0);
     }
 
@@ -401,7 +401,7 @@ void SC_CombatBase::BeginFrame() {
 /* Function start: 0x40BC80 */
 void SC_CombatBase::PostRender() {}
 /* Function start: 0x42BD70 */
-int SC_CombatBase::HandleAction(int*) { return 0; }
+int SC_CombatBase::HandleAction(SpriteAction*) { return 0; }
 /* Function start: 0x42C920 */
 void SC_CombatBase::RenderState() {
     g_BgSprite_0046ae50 = 0;

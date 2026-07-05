@@ -113,14 +113,14 @@ int SC_Timer::Exit(SC_MessageParser* msg) {
     MessageNode* node;
     MessageList* pList;
 
-    int* p = (int*)msg;
-    if (p[0] != handlerId) {
+    SpriteAction* p = (SpriteAction*)msg;
+    if (p->addressType != handlerId) {
         return 0;
     }
 
     timer1.Reset();
 
-    switch (p[4]) {
+    switch (p->instruction) {
     case 7:
         if (list->head == 0) {
             SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
@@ -144,13 +144,13 @@ int SC_Timer::Exit(SC_MessageParser* msg) {
         break;
 
     case 0x17:
-        if (p[13] != 0) {
+        if (p->childAction != 0) {
             pTimedEvent = new TimedEvent();
-            pTimedEvent->m_duration = p[12];
-            pTimedEvent->m_sourceAddress = p[1];
-            pTimedEvent->m_eventData = (SC_MessageParser*)p[13];
-            p[13] = 0;
-            pTimedEvent->SetType(p[5]);
+            pTimedEvent->m_duration = p->time;
+            pTimedEvent->m_sourceAddress = p->addressValue;
+            pTimedEvent->m_eventData = (SC_MessageParser*)p->childAction;
+            p->childAction = 0;
+            pTimedEvent->SetType(p->extra1);
             pList = list;
             if (pTimedEvent == 0) {
                 ShowError("queue fault 0101");
@@ -188,7 +188,7 @@ int SC_Timer::Exit(SC_MessageParser* msg) {
 
     case 0x18:
         pTimedEvent = new TimedEvent();
-        pTimedEvent->m_sourceAddress = p[1];
+        pTimedEvent->m_sourceAddress = p->addressValue;
         pList = list;
         if (pTimedEvent == 0) {
             ShowError("queue fault 0103");

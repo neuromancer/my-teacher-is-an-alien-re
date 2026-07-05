@@ -97,7 +97,7 @@ public:
 // Vtable: 0x461BC0, size 0xA8 = NavSubNode(0xA0) + 2 ints
 class mCNavNode_TypeD : public NavSubNode {
 public:
-    int* action;         // 0xA0 - SpriteAction* to enqueue
+    SpriteAction* action;  // 0xA0 - action to enqueue
     int reservedA4;      // 0xA4
 
     mCNavNode_TypeD(char* line) { action = 0; reservedA4 = 0; }

@@ -252,7 +252,7 @@ int IconBar::AddMessage(SC_MessageParser* msg) {
                              handlerId, moduleParam, 0x17, 0, 0, 0, 0, 0);
             }
 
-            buttonIndex = FindClickedEntry((int*)msg);
+            buttonIndex = FindClickedEntry((SpriteAction*)msg);
 
             if (buttonIndex == -1) {
                 goto ret_one;
@@ -406,7 +406,7 @@ void IconBar::Update(int param1, int param2) {
 }
 
 /* Function start: 0x42DEC0 */
-int IconBar::FindClickedEntry(int* param) {
+int IconBar::FindClickedEntry(SpriteAction* param) {
     int i;
     int x;
     int y;
@@ -419,9 +419,9 @@ int IconBar::FindClickedEntry(int* param) {
     p = &g_IconBarEntries_00473320[0].field_14;
     do {
         if (*p != 0) {
-            x = param[7];
+            x = param->mousePos.x;
             if (p[-4] <= x && p[-2] >= x) {
-                y = param[8];
+                y = param->mousePos.y;
                 if (p[-3] <= y && p[-1] >= y) {
                     found = 1;
                 } else {

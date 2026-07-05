@@ -3,6 +3,8 @@
 
 #include "SC_CombatBase.h"
 
+class SpriteAction;
+
 // SpaceShipEngine - Spaceship combat engine (SC_CombatBase-derived)
 // Constructor: 0x447C30 (SEH)
 // Destructor: 0x447CB0 (SEH)
@@ -20,7 +22,7 @@ class SpaceShipEngine : public SC_CombatBase {
 public:
     SpaceShipEngine();                       // 0x447C30
     virtual ~SpaceShipEngine();              // 0x447CB0
-    virtual int HandleAction(int* param);    // 0x447D00
+    virtual int HandleAction(SpriteAction* param);    // 0x447D00
 };
 
 #endif // SPACESHIPENGINE_H

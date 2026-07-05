@@ -89,14 +89,14 @@ int RockThrower::CheckTargetHit(int param_1) {
         entry = ((unsigned int)ht->count < 1) - 1;
 
         while (entry != 0) {
-            int* edx = (int*)entry;
+            HashNode* edx = (HashNode*)entry;
             if (entry == -1) {
                 unsigned int idx = 0;
                 unsigned int numBuckets = ht->numBuckets;
                 if (numBuckets != 0) {
                     HashNode** buckets = ht->buckets;
                     do {
-                        edx = (int*)buckets[idx];
+                        edx = buckets[idx];
                         if (edx != 0) break;
                         idx++;
                     } while (numBuckets > idx);
@@ -104,14 +104,14 @@ int RockThrower::CheckTargetHit(int param_1) {
             }
 
             // Original bug at 0x427AA0: the bucket scan result is dereferenced without rechecking the sentinel/null case.
-            int* nextEntry = (int*)edx[0];
+            HashNode* nextEntry = edx->next;
             if (nextEntry == 0) {
-                unsigned int idx = edx[1] + 1;
+                unsigned int idx = edx->bucketIndex + 1;
                 unsigned int numBuckets = ht->numBuckets;
                 if (idx < numBuckets) {
                     HashNode** cursor = &ht->buckets[idx];
                     do {
-                        nextEntry = (int*)*cursor;
+                        nextEntry = *cursor;
                         if (nextEntry != 0) break;
                         cursor++;
                         idx++;
@@ -119,7 +119,7 @@ int RockThrower::CheckTargetHit(int param_1) {
                 }
             }
 
-            target = edx[3];
+            target = edx->reserved;
             entry = (int)nextEntry;
 
             if (target != 0) {

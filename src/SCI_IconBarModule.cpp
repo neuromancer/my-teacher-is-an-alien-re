@@ -285,12 +285,12 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
                     if (field_128->current != 0) {
                         nodeData = field_128->current->data;
                     }
-                    int* actionData = (int*)nodeData;
-                    if (actionData[2] == 0 ||
-                        (actionData[2] == action->fromType &&
-                         (actionData[3] == 0 ||
-                          (actionData[2] == action->fromType && action->fromValue == actionData[3])))) {
-                        EnqueueSpriteAction((void*)actionData[0xD]);
+                    SpriteAction* actionData = (SpriteAction*)nodeData;
+                    if (actionData->fromType == 0 ||
+                        (actionData->fromType == action->fromType &&
+                         (actionData->fromValue == 0 ||
+                          (actionData->fromType == action->fromType && action->fromValue == actionData->fromValue)))) {
+                        EnqueueSpriteAction((void*)actionData->childAction);
                     }
                     if (field_128->tail == field_128->current) break;
                     if (field_128->current != 0) {
@@ -571,7 +571,7 @@ int SCI_IconBarModule::Exit(SC_MessageParser* msg) {
         break;
     case 2:
         action->addressType = 0x24;
-        icons[action->extra1]->HandleClick((int*)msg);
+        icons[action->extra1]->HandleClick((SpriteAction*)msg);
         return 1;
     case 0x37:
         currentRoom = action->extra1;

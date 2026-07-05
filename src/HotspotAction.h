@@ -4,6 +4,8 @@
 #include "Parser.h"
 #include "Queue.h"
 
+class SpriteAction;
+
 class MMPlayer;
 
 class HotspotAction : public Parser {
@@ -13,7 +15,7 @@ public:
     int LBLParse(char* line);
 
     void Reset();
-    int HandleMessage(int* msg);
+    int HandleMessage(SpriteAction* msg);
     int Update(int param);
     int CheckConditions();
     void ProcessQueue100();

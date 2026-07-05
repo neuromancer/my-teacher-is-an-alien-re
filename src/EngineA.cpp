@@ -16,18 +16,18 @@ EngineA::~EngineA() {
 }
 
 /* Function start: 0x43A590 */
-int EngineA::HandleAction(int* param) {
+int EngineA::HandleAction(SpriteAction* param) {
     int result;
     int idx;
     GameState* gs;
 
     result = 0;
 
-    if (param[4] != 0x37) {
-        ShowError("EngineNavigateDucts::OnLogicMessage - unsupported instruction %d", param[4]);
+    if (param->instruction != 0x37) {
+        ShowError("EngineNavigateDucts::OnLogicMessage - unsupported instruction %d", param->instruction);
     }
 
-    switch (param[5]) {
+    switch (param->extra1) {
     case 1:
     {
         idx = (g_GameState_0046aa30)->FindState("DUCT_SWITCH");
@@ -54,8 +54,8 @@ int EngineA::HandleAction(int* param) {
         break;
     }
     case 2:
-        SendGameMessage(1, param[7], 0x41, 1, 4, 0, 0, 0, 0, 0);
-        SendGameMessage(0x20, param[8], 0x41, 1, 4, 0, 0, 0, 0, 0);
+        SendGameMessage(1, param->mousePos.x, 0x41, 1, 4, 0, 0, 0, 0, 0);
+        SendGameMessage(0x20, param->mousePos.y, 0x41, 1, 4, 0, 0, 0, 0, 0);
         result = 1;
         break;
     }

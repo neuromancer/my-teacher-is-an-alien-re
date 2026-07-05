@@ -329,15 +329,15 @@ void SC_PRHotSpot::Update()
 /* Function start: 0x42A010 */
 int SC_PRHotSpot::CheckCollision(void* param_1)
 {
-    int* msg = (int*)param_1;
-    int mx = msg[7];
+    SpriteAction* msg = (SpriteAction*)param_1;
+    int mx = msg->mousePos.x;
 
     int inBounds = (bounds.left <= mx && bounds.right >= mx &&
-                    bounds.top <= msg[8] && bounds.bottom >= msg[8]);
+                    bounds.top <= msg->mousePos.y && bounds.bottom >= msg->mousePos.y);
     if (inBounds == 0 || state == 0) {
         return 0;
     }
-    if (msg[9] > 1) {
+    if (msg->button1 > 1) {
         if ((unsigned int)hotspotId >= 0x14 && (unsigned int)hotspotId <= 0x16) {
             PracticeRoomNotify((void*)owner);
         }

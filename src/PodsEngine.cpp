@@ -214,9 +214,9 @@ void StartScheduleTimer() {
 }
 
 /* Function start: 0x440FC0 */
-int PodsEngine::HandleAction(int* param) {
+int PodsEngine::HandleAction(SpriteAction* param) {
     int result = 0;
-    switch (param[5]) {
+    switch (param->extra1) {
     case 1:
         g_CombatEngine_0046ae78->combatFlags |= 2;
         return 1;

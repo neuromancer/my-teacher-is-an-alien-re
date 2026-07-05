@@ -97,10 +97,10 @@ public:
 
     void UpdateProgress();                         // 0x4195D0
     void RenderBoard();                            // 0x419690
-    int TryPlacePiece(int* msg);                   // 0x4198B0
-    int TryDropOnSource(int* msg);                 // 0x419A10
-    int PickFromGrid(int* msg);                    // 0x419AE0
-    int PickFromSource(int* msg);                  // 0x419BC0
+    int TryPlacePiece(SpriteAction* msg);                   // 0x4198B0
+    int TryDropOnSource(SpriteAction* msg);                 // 0x419A10
+    int PickFromGrid(SpriteAction* msg);                    // 0x419AE0
+    int PickFromSource(SpriteAction* msg);                  // 0x419BC0
 };
 
 #endif // SC_ROACH_H

@@ -5,6 +5,8 @@
 #include "GlyphRect.h"
 #include "Range.h"
 
+class SpriteAction;
+
 class Animation;
 class Sample;
 class SoundList;
@@ -80,7 +82,7 @@ public:
   virtual void ProcessFrame();               // [10] 0x451180 - ProcessTargets
   virtual void RenderBackground();               // [11] 0x450DB0 - Draw
   virtual void PostRender();               // [12] 0x450F70 - UpdateMeter
-  virtual int HandleAction(int* param);  // [13] 0x4511C0
+  virtual int HandleAction(SpriteAction* param);  // [13] 0x4511C0
 };
 
 #endif // ENGINEB_H

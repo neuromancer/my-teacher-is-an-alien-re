@@ -252,7 +252,7 @@ void EngineB::PostRender() {
 }
 
 /* Function start: 0x4511C0 */ /* No assembly extracted */
-int EngineB::HandleAction(int* param) {
+int EngineB::HandleAction(SpriteAction* param) {
     return 0;
 }
 

@@ -165,15 +165,15 @@ int SC_Roach::AddMessage(SC_MessageParser* msg) {
         }
     } else if (action->button1 > 1) {
         if (currentPiece != 0) {
-            int result = TryPlacePiece((int*)action);
+            int result = TryPlacePiece((SpriteAction*)action);
             if (result != 0) {
                 bgSound->Play(7);
             } else {
-                TryDropOnSource((int*)action);
+                TryDropOnSource((SpriteAction*)action);
             }
         } else {
-            if (PickFromGrid((int*)action) == 0) {
-                PickFromSource((int*)action);
+            if (PickFromGrid((SpriteAction*)action) == 0) {
+                PickFromSource((SpriteAction*)action);
             }
         }
     } else if (action->button2 > 1) {
@@ -324,16 +324,16 @@ void SC_Roach::RenderBoard()
 }
 
 /* Function start: 0x4198B0 */
-int SC_Roach::TryPlacePiece(int* msg)
+int SC_Roach::TryPlacePiece(SpriteAction* msg)
 {
     int* cellPtr = (int*)grid + 4;
     int found = -1;
     int idx = 0;
-    int mouseX = msg[7] + 10;
+    int mouseX = msg->mousePos.x + 10;
 
     do {
         if (cellPtr[0] <= mouseX && cellPtr[2] >= mouseX) {
-            int mouseY = msg[8] + 10;
+            int mouseY = msg->mousePos.y + 10;
             if (cellPtr[1] <= mouseY && cellPtr[3] >= mouseY) {
                 found = idx;
                 goto found_cell;
@@ -391,16 +391,16 @@ found_cell:
 }
 
 /* Function start: 0x419A10 */
-int SC_Roach::TryDropOnSource(int* msg)
+int SC_Roach::TryDropOnSource(SpriteAction* msg)
 {
     NavCrystal* crystal = currentPiece;
     int id = crystal->crystalId;
     CrystalSource* src = &sources[id];
-    int mouseX = msg[7];
+    int mouseX = msg->mousePos.x;
     int hitTest = (src->hitboxLeft <= mouseX &&
         src->hitboxRight >= mouseX &&
-        src->hitboxTop <= msg[8] &&
-        src->hitboxBottom >= msg[8]);
+        src->hitboxTop <= msg->mousePos.y &&
+        src->hitboxBottom >= msg->mousePos.y);
     if (hitTest != 0) {
         crystal->rotation = 0;
         Sprite* spr = crystal->sprite;
@@ -419,16 +419,16 @@ int SC_Roach::TryDropOnSource(int* msg)
 }
 
 /* Function start: 0x419AE0 */
-int SC_Roach::PickFromGrid(int* msg)
+int SC_Roach::PickFromGrid(SpriteAction* msg)
 {
     int idx = 0;
     int* cellPtr = (int*)grid + 4;
-    int mouseX = msg[7];
+    int mouseX = msg->mousePos.x;
 
     int hit;
     do {
         if (cellPtr[0] <= mouseX && cellPtr[2] >= mouseX &&
-            cellPtr[1] <= msg[8] && cellPtr[3] >= msg[8]) {
+            cellPtr[1] <= msg->mousePos.y && cellPtr[3] >= msg->mousePos.y) {
             hit = 1;
         } else {
             hit = 0;
@@ -445,7 +445,7 @@ int SC_Roach::PickFromGrid(int* msg)
 found:
     {
         int xofs = mouseX - ((int*)grid)[idx * 8 + 4];
-        int yofs = msg[8] - ((int*)grid)[idx * 8 + 5];
+        int yofs = msg->mousePos.y - ((int*)grid)[idx * 8 + 5];
         int orient;
         if (yofs < xofs) {
             orient = 0;
@@ -482,16 +482,16 @@ found:
 }
 
 /* Function start: 0x419BC0 */
-int SC_Roach::PickFromSource(int* msg)
+int SC_Roach::PickFromSource(SpriteAction* msg)
 {
     int idx = 0;
-    int mouseX = msg[7];
+    int mouseX = msg->mousePos.x;
     CrystalSource* src = sources;
 
     do {
         int hit;
         if (src->pickupLeft <= mouseX && src->pickupRight >= mouseX &&
-            src->pickupTop <= msg[8] && src->pickupBottom >= msg[8]) {
+            src->pickupTop <= msg->mousePos.y && src->pickupBottom >= msg->mousePos.y) {
             hit = 1;
         } else {
             hit = 0;

@@ -3,6 +3,8 @@
 
 #include "SC_CombatBase.h"
 
+class SpriteAction;
+
 // EngineA (EngineNavigateDucts) - Duct navigation engine
 // Constructor: 0x43A4C0, Destructor: 0x43A540
 // Scalar deleting destructor: 0x43A520
@@ -17,7 +19,7 @@ public:
     EngineA();
     virtual ~EngineA();
 
-    virtual int HandleAction(int* param);  // vtable[13] 0x43A590
+    virtual int HandleAction(SpriteAction* param);  // vtable[13] 0x43A590
 };
 
 #endif // ENGINEA_H
