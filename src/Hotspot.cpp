@@ -349,7 +349,7 @@ int T_Hotspot::LBLParse(char* param_1)
 {
     int iVar5;
     HotspotAction* action;
-    int* list;
+    Queue* list;
     SpriteAction* msg;
     char value[32];
     char token[32];
@@ -402,29 +402,29 @@ int T_Hotspot::LBLParse(char* param_1)
         }
 
         // Sorted insert into action list
-        list = (int*)currentAction->messagesQueue;
-        list[2] = list[0];
-        if (list[3] == 1 || list[3] == 2) {
-            if (list[0] == 0) {
-                ((LinkedList*)list)->InsertNode(msg);
+        list = currentAction->messagesQueue;
+        list->current = list->head;
+        if (list->type == 1 || list->type == 2) {
+            if (list->head == 0) {
+                list->InsertNode(msg);
             } else {
-                while (list[2] != 0) {
-                    int nodeData = *(int*)(list[2] + 8);
-                    if (*(int*)nodeData < *(int*)msg) {
-                        ((LinkedList*)list)->InsertNode(msg);
+                while (list->current != 0) {
+                    SpriteAction* nodeData = (SpriteAction*)list->current->data;
+                    if (nodeData->addressType < msg->addressType) {
+                        list->InsertNode(msg);
                         goto done;
                     }
-                    if (list[1] == list[2]) {
-                        ((LinkedList*)list)->PushNode(msg);
+                    if (list->tail == list->current) {
+                        list->PushNode(msg);
                         goto done;
                     }
-                    if (list[2] != 0) {
-                        list[2] = *(int*)(list[2] + 4);
+                    if (list->current != 0) {
+                        list->current = list->current->next;
                     }
                 }
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent((void*)msg);
+            list->InsertAtCurrent(msg);
         }
     }
     else if (strcmp(token, "PLAYSOUND") == 0) {
@@ -448,28 +448,28 @@ int T_Hotspot::LBLParse(char* param_1)
             ShowError("queue fault 0101");
         }
 
-        list = (int*)currentAction->messagesQueue;
-        list[2] = list[0];
-        if (list[3] == 1 || list[3] == 2) {
-            if (list[0] == 0) {
-                ((LinkedList*)list)->InsertNode(msg);
+        list = currentAction->messagesQueue;
+        list->current = list->head;
+        if (list->type == 1 || list->type == 2) {
+            if (list->head == 0) {
+                list->InsertNode(msg);
             } else {
-                while (list[2] != 0) {
-                    if (*(int*)(*(int*)(list[2] + 8)) < *(int*)msg) {
-                        ((LinkedList*)list)->InsertNode(msg);
+                while (list->current != 0) {
+                    if (((SpriteAction*)list->current->data)->addressType < msg->addressType) {
+                        list->InsertNode(msg);
                         goto done;
                     }
-                    if (list[1] == list[2]) {
-                        ((LinkedList*)list)->PushNode(msg);
+                    if (list->tail == list->current) {
+                        list->PushNode(msg);
                         goto done;
                     }
-                    if (list[2] != 0) {
-                        list[2] = *(int*)(list[2] + 4);
+                    if (list->current != 0) {
+                        list->current = list->current->next;
                     }
                 }
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent((void*)msg);
+            list->InsertAtCurrent(msg);
         }
     }
     else if (strcmp(token, "SWITCHROOM") == 0) {
@@ -493,28 +493,28 @@ int T_Hotspot::LBLParse(char* param_1)
             ShowError("queue fault 0101");
         }
 
-        list = (int*)currentAction->messagesQueue;
-        list[2] = list[0];
-        if (list[3] == 1 || list[3] == 2) {
-            if (list[0] == 0) {
-                ((Queue*)list)->InsertAtCurrent((void*)msg);
+        list = currentAction->messagesQueue;
+        list->current = list->head;
+        if (list->type == 1 || list->type == 2) {
+            if (list->head == 0) {
+                list->InsertAtCurrent(msg);
             } else {
-                while (list[2] != 0) {
-                    if (*(int*)(*(int*)(list[2] + 8)) < *(int*)msg) {
-                        ((LinkedList*)list)->InsertNode(msg);
+                while (list->current != 0) {
+                    if (((SpriteAction*)list->current->data)->addressType < msg->addressType) {
+                        list->InsertNode(msg);
                         goto done;
                     }
-                    if (list[1] == list[2]) {
-                        ((LinkedList*)list)->PushNode(msg);
+                    if (list->tail == list->current) {
+                        list->PushNode(msg);
                         goto done;
                     }
-                    if (list[2] != 0) {
-                        list[2] = *(int*)(list[2] + 4);
+                    if (list->current != 0) {
+                        list->current = list->current->next;
                     }
                 }
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent((void*)msg);
+            list->InsertAtCurrent(msg);
         }
     }
     else if (strcmp(token, "DIALOG") == 0) {
@@ -543,28 +543,28 @@ int T_Hotspot::LBLParse(char* param_1)
             ShowError("queue fault 0101");
         }
 
-        list = (int*)currentAction->messagesQueue;
-        list[2] = list[0];
-        if (list[3] == 1 || list[3] == 2) {
-            if (list[0] == 0) {
-                ((Queue*)list)->InsertAtCurrent((void*)msg);
+        list = currentAction->messagesQueue;
+        list->current = list->head;
+        if (list->type == 1 || list->type == 2) {
+            if (list->head == 0) {
+                list->InsertAtCurrent(msg);
             } else {
-                while (list[2] != 0) {
-                    if (*(int*)(*(int*)(list[2] + 8)) < *(int*)msg) {
-                        ((LinkedList*)list)->InsertNode(msg);
+                while (list->current != 0) {
+                    if (((SpriteAction*)list->current->data)->addressType < msg->addressType) {
+                        list->InsertNode(msg);
                         goto done;
                     }
-                    if (list[1] == list[2]) {
-                        ((LinkedList*)list)->PushNode(msg);
+                    if (list->tail == list->current) {
+                        list->PushNode(msg);
                         goto done;
                     }
-                    if (list[2] != 0) {
-                        list[2] = *(int*)(list[2] + 4);
+                    if (list->current != 0) {
+                        list->current = list->current->next;
                     }
                 }
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent((void*)msg);
+            list->InsertAtCurrent(msg);
         }
     }
     else if (strcmp(token, "RECT") == 0) {

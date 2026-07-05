@@ -327,25 +327,25 @@ int SelectHotspot::LBLParse(char* line) {
         list->current = list->head;
         if (list->type == 1 || list->type == 2) {
             if (list->head == 0) {
-                ((Queue*)list)->InsertAtCurrent((void*)msgObj);
+                ((Queue*)list)->InsertAtCurrent(msgObj);
             } else {
                 do {
-                    int cur = (int)list->current;
-                    if (*(int*)(*(int*)(cur + 8)) < *(int*)msgObj) {
-                        ((Queue*)list)->InsertAtCurrent((void*)msgObj);
+                    ListNode* cur = list->current;
+                    if (((SpriteAction*)cur->data)->addressType < msgObj->addressType) {
+                        ((Queue*)list)->InsertAtCurrent(msgObj);
                         break;
                     }
-                    if ((int)list->tail == cur) {
-                        ((Queue*)list)->Push((void*)msgObj);
+                    if (list->tail == cur) {
+                        ((Queue*)list)->Push(msgObj);
                         break;
                     }
                     if (cur != 0) {
-                        list->current = (ListNode*)*(int*)(cur + 4);
+                        list->current = cur->next;
                     }
                 } while (list->current != 0);
             }
         } else {
-            ((Queue*)list)->InsertAtCurrent((void*)msgObj);
+            ((Queue*)list)->InsertAtCurrent(msgObj);
         }
     } else if (strcmp(keyword, "END") == 0) {
         return 1;
@@ -733,34 +733,34 @@ int SC_SelectHotSpot::LBLParse(char* line) {
         hs->parent = this;
         Parser::ProcessFile((Parser*)SC_SelectHotSpot::currentHotspot, this, 0);
 
-        int hsAddr = (int)SC_SelectHotSpot::currentHotspot;
+        SelectHotspot* newHs = (SelectHotspot*)SC_SelectHotSpot::currentHotspot;
         LinkedList* hsList = SC_SelectHotSpot::hotspotList;
 
-        if (hsAddr == 0) {
+        if (newHs == 0) {
             ShowError("queue fault 0101");
         }
         hsList->current = hsList->head;
         if (hsList->type == 1 || hsList->type == 2) {
             if (hsList->head == 0) {
-                hsList->InsertNode((void*)hsAddr);
+                hsList->InsertNode(newHs);
             } else {
                 do {
-                    int cur = (int)hsList->current;
-                    if (*(unsigned int*)(*(int*)(cur + 8) + 0xa8) < *(unsigned int*)(hsAddr + 0xa8)) {
-                        hsList->InsertNode((void*)hsAddr);
+                    ListNode* cur = hsList->current;
+                    if ((unsigned int)((SelectHotspot*)cur->data)->sortKey < (unsigned int)newHs->sortKey) {
+                        hsList->InsertNode(newHs);
                         break;
                     }
-                    if ((int)hsList->tail == cur) {
-                        hsList->PushNode((void*)hsAddr);
+                    if (hsList->tail == cur) {
+                        hsList->PushNode(newHs);
                         break;
                     }
                     if (cur != 0) {
-                        hsList->current = (ListNode*)*(int*)(cur + 4);
+                        hsList->current = cur->next;
                     }
                 } while (hsList->current != 0);
             }
         } else {
-            hsList->InsertNode((void*)hsAddr);
+            hsList->InsertNode(newHs);
         }
         SC_SelectHotSpot::currentHotspot = 0;
     } else if (strcmp(keyword, "AMBIENT") == 0) {

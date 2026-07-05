@@ -33,7 +33,12 @@ Parser::~Parser() {
   }
   g_ParserCount--;
   if (g_ParserCount == 0 && g_FilePosCache != 0) {
-    delete g_FilePosCache;
+    // Original compiles this `delete` with an EH-tracked temp: the pointer is
+    // spilled to a stack slot and ~TimedEventPool runs via the shared unwind
+    // funclet (mov ecx,[ebp-0x10] / jmp 0x4128F0) before FreeMemory.
+    TimedEventPool* volatile pool = g_FilePosCache;
+    pool->~TimedEventPool();
+    FreeMemory((void*)pool);
     g_FilePosCache = 0;
   }
 }
@@ -153,13 +158,13 @@ int Parser::GetTokenType(char* line) {
 
     openTag = FindAfterSubstring(line, "<<");
     if (openTag == 0) {
-        return 0;
+        goto invalid;
     }
 
     closeTag = strstr(line, ">>");
     len = (int)closeTag - (int)openTag;
     if (closeTag == 0 || len <= 0) {
-        return 0;
+        goto invalid;
     }
 
     strncpy(g_Buffer_0046aa00, openTag, len);
@@ -181,7 +186,8 @@ int Parser::GetTokenType(char* line) {
     if (strncmp(local_40, "**", 2) == 0) return 1;
 
     ShowError("Parser::GetTokenType - Invaild TOKEN \n'%s'", line);
-    return 1;
+invalid:
+    return 0;
 }
 
 /* Function start: 0x413BD0 */
@@ -419,9 +425,9 @@ void Parser::PushConditionalState(int value) {
         if (cnt >= 0) {
             do {
                 *p = *freeList;
+                cnt--;
                 *freeList = (int)p;
                 p = (int*)((char*)p - 12);
-                cnt--;
             } while (cnt >= 0);
         }
     }
@@ -608,11 +614,15 @@ void Parser::HandleToken(int tokenType, char* line) {
 
     case 7:
         {
-            int mouseState = 0;
-            int scanResult = 0;
+            // Original quirk (same as SET_GAMESTATE): 'mouseState' is never
+            // initialized; the not-found arm reads it as the scan result.
+            int mouseState;
+            int scanResult;
             pcVar7 = FindAfterSubstring(line, "SET_MOUSE_");
             if (pcVar7 != 0) {
                 scanResult = sscanf(pcVar7, " %d", &mouseState);
+            } else {
+                scanResult = mouseState;
             }
             if (scanResult != 1) {
                 ShowError("Parser::HandleToken - Invalid SET_MOUSE statement '%s'", line);
@@ -627,7 +637,7 @@ void Parser::HandleToken(int tokenType, char* line) {
         local_14 = strstr(line, "[");
         pcVar6 = FindAfterSubstring(line, "]");
         iVar12 = (int)pcVar6 - (int)local_14;
-        if (local_14 == 0 || pcVar6 == 0 || iVar12 < 1) {
+        if (local_14 == 0 || pcVar6 == 0 || iVar12 <= 0) {
             ShowError("Parser::HandleToken - Invalid GOTO statement. needs [LABEL] '%s'", line);
         }
         strncpy(local_58, local_14, iVar12);
@@ -646,47 +656,53 @@ void Parser::HandleToken(int tokenType, char* line) {
             ((int*)&filePos)[1] = 0;
             fgetpos(pFile, &filePos);
 
-            int* pool = (int*)field_0x3c;
-            int headVal = *pool;
             local_18 = ((int*)&filePos)[0];
             local_14 = (char*)((int*)&filePos)[1];
+            int* pool = (int*)field_0x3c;
+            int headVal = *pool;
 
             if (pool[3] == 0) {
                 int* newBlock = (int*)operator new(pool[5] * 16 + 4);
                 *newBlock = pool[4];
                 pool[4] = (int)newBlock;
                 int cnt = pool[5];
-                int* p = newBlock + cnt * 4 - 3;
-                while (cnt-- > 0) {
-                    *p = pool[3];
-                    pool[3] = (int)p;
-                    p -= 4;
+                int stride = cnt * 16;
+                cnt--;
+                int* p = (int*)((char*)newBlock + stride - 12);
+                if (cnt >= 0) {
+                    do {
+                        *p = pool[3];
+                        cnt--;
+                        pool[3] = (int)p;
+                        p = (int*)((char*)p - 16);
+                    } while (cnt >= 0);
                 }
             }
             int* node = (int*)pool[3];
             pool[3] = *node;
+            int* fp = &node[2];
             node[1] = 0;
             *node = headVal;
             pool[2]++;
-            node[2] = 0;
-            node[3] = 0;
+            fp[0] = 0;
+            fp[1] = 0;
             {
                 int dummy = 0;
                 do { int tmp = dummy; dummy--; if (tmp == 0) break; } while (1);
             }
-            node[2] = local_18;
-            node[3] = (int)local_14;
-            if (*pool == 0) {
-                pool[1] = (int)node;
-            } else {
+            fp[0] = local_18;
+            fp[1] = (int)local_14;
+            if (*pool != 0) {
                 *(int*)(*pool + 4) = (int)node;
+            } else {
+                pool[1] = (int)node;
             }
             *pool = (int)node;
 
             local_14 = strstr(line, "[");
             local_74 = FindAfterSubstring(line, "]");
             iVar12 = (int)local_74 - (int)local_14;
-            if (local_14 == 0 || local_74 == 0 || iVar12 < 1) {
+            if (local_14 == 0 || local_74 == 0 || iVar12 <= 0) {
                 ShowError("Parser::HandleToken - Invalid GOSUB statement. needs [LABEL] '%s'", line);
             }
             strncpy((char*)local_58, local_14, iVar12);
@@ -717,14 +733,15 @@ void Parser::HandleToken(int tokenType, char* line) {
         {
             int* pool = (int*)field_0x3c;
             int* node = (int*)*pool;
-            local_74 = (char*)node[3];
-            int savedPos = node[2];
+            local_14 = (char*)node[3];
+            int* fp = &node[2];
+            local_18 = fp[0];
             int nextNode = *node;
             *pool = nextNode;
-            if (nextNode == 0) {
-                pool[1] = 0;
-            } else {
+            if (nextNode != 0) {
                 *(int*)(nextNode + 4) = 0;
+            } else {
+                pool[1] = 0;
             }
             {
                 int dummy = 0;
@@ -735,8 +752,8 @@ void Parser::HandleToken(int tokenType, char* line) {
             pool[2]--;
             {
                 fpos_t restorePos;
-                ((int*)&restorePos)[0] = savedPos;
-                ((int*)&restorePos)[1] = (int)local_74;
+                ((int*)&restorePos)[0] = local_18;
+                ((int*)&restorePos)[1] = (int)local_14;
                 fsetpos(pFile, &restorePos);
             }
             g_VarSubstFlag_00469160 = 0;
@@ -753,8 +770,10 @@ void Parser::HandleToken(int tokenType, char* line) {
         break;
 
     case 0xD:
+        // Original quirk: local_1c is never initialized; the failure paths
+        // below hand the stale value to sprintf (unreached in practice
+        // because ShowError fires first on iVar12 != 2).
         iVar12 = 0;
-        local_1c = 0;
         local_14 = FindAfterSubstring(line, "V_>>");
         if (local_14 == 0) {
             pcVar6 = 0;
@@ -799,25 +818,27 @@ void Parser::HandleToken(int tokenType, char* line) {
 /* Function start: 0x414040 */
 void Parser::ParseGosubParams(char* line) {
     int done;
+    char* pos;
     char* start;
     int i;
 
     done = 0;
     i = 0;
+    pos = line;
 
     do {
-        start = line + 1;
-        line = strchr(start, ',');
-        if (line == 0) {
-            line = strchr(start, ')');
+        start = pos + 1;
+        pos = strchr(start, ',');
+        if (pos == 0) {
+            pos = strchr(start, ')');
             done = 1;
-            if (line == 0) {
+            if (pos == 0) {
                 ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot fill variable list '%s'", line);
             }
         }
         {
-            int len = line - start;
-            if (start == 0 || line == 0 || len <= 0) {
+            int len = pos - start;
+            if (start == 0 || pos == 0 || len <= 0) {
                 ShowError("Parser::HandleToken - Invalid GOSUB statement. cannot fill variable list '%s'", line);
             }
             strncpy(&g_VarSubstBuffer_00469168[i], start, len);

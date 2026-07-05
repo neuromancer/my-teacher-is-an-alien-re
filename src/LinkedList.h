@@ -14,7 +14,7 @@ struct ListNode {
 
     ListNode() : prev(0), next(0), data(0) {}
     ListNode(void* d) { data = d; prev = 0; next = 0; }
-    ~ListNode() { next = prev = (ListNode*)(data = 0); }
+    ~ListNode() { data = 0; next = prev = 0; }
 
     ListNode* Init(void* nodeData);   // 0x40C5B0
 };
@@ -101,26 +101,25 @@ struct LinkedList {
             head = node->next;
         }
         // Unlink from tail
-        if (tail == node) {
-            tail = node->prev;
+        if (tail == current) {
+            tail = current->prev;
         }
         // Update next node's prev pointer
+        node = current;
         if (node->prev != 0) {
             node->prev->next = node->next;
         }
         // Update prev node's next pointer
-        if (current->next != 0) {
-            current->next->prev = current->prev;
+        node = current;
+        if (node->next != 0) {
+            node->next->prev = node->prev;
         }
         // Get data
         node = current;
-        data = 0;
-        if (node != 0) {
-            data = node->data;
-        }
+        data = (node != 0) ? node->data : 0;
         // Free node
-        if (node != 0) {
-            delete node;
+        if (current != 0) {
+            delete current;
             current = 0;
         }
         current = head;

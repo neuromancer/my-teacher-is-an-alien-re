@@ -16,6 +16,7 @@ class ScoreDisplay;
 class EngineInfoParser;
 class Weapon;
 class TimedEventPool;
+class SpriteAction;
 
 // Combat globals — declared in globals.h
 
@@ -103,8 +104,10 @@ public:
 
     void StopSoundsAndReset();              // 0x42BF00
     int ProcessEvents();                    // 0x42C9D0
-};
 
-class SpriteAction;
-void __stdcall EnqueueHotspotAction(SpriteAction* param);
+    // 0x42C150 — __thiscall member: both original call sites (0x440F30,
+    // 0x4510E0) load ECX = g_CombatEngine_0046ae78 before the call; the body
+    // never reads `this` (works purely on g_HotspotPool_0046ae74).
+    void EnqueueHotspotAction(SpriteAction* param);
+};
 #endif // SC_COMBATBASE_H

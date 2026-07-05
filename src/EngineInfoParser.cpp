@@ -77,11 +77,11 @@ int EngineInfoParser::LBLParse(char* line) {
 /* Function start: 0x434A00 */
 void EngineInfoParser::ParseOffset(char *line, int arg2) {
   if ((char)arg2 == '1') {
-    sscanf(line, "%d %d", (int*)&g_CombatEngine_0046ae78->field_0xD0,
-           &g_CombatEngine_0046ae78->reserved_0xD8);
+    sscanf(line, "%d %d", &g_CombatEngine_0046ae78->effectPair1.y,
+           &g_CombatEngine_0046ae78->effectPair2.y);
   } else {
-    sscanf(line, "%d %d", &g_CombatEngine_0046ae78->hotspotY,
-           (int*)&g_CombatEngine_0046ae78->field_0xC8);
+    sscanf(line, "%d %d", &g_CombatEngine_0046ae78->hotspotPos.y,
+           &g_CombatEngine_0046ae78->bonusOverlay.y);
   }
 }
 

@@ -149,10 +149,7 @@ int Handler31::CheckDuplicateQuestion(int param) {
         if (node != 0) {
             do {
                 node = list->current;
-                nodeData = 0;
-                if (node != 0) {
-                    nodeData = (SC_Question*)node->data;
-                }
+                nodeData = node != 0 ? (SC_Question*)node->data : 0;
                 if (nodeData->questionId == question->questionId) {
                     if (question != 0) {
                         delete question;
@@ -367,10 +364,7 @@ void Handler31::Update(int param1, int param2) {
                 int drawY = 0xA;
                 do {
                     node = questionQueue->current;
-                    nodeData = 0;
-                    if (node != 0) {
-                        nodeData = (SC_Question*)node->data;
-                    }
+                    nodeData = node != 0 ? (SC_Question*)node->data : 0;
                     // Original bug at 0x417500: null current question calls Update with ECX=0.
                     nodeData->Update(0x12, yPos);
 
@@ -574,10 +568,7 @@ SC_Question* Handler31::SelectQuestion(int idx) {
                         node->next->prev = node->prev;
                     }
                     node = list->current;
-                    void* data = 0;
-                    if (node != 0) {
-                        data = node->data;
-                    }
+                    void* data = node != 0 ? node->data : 0;
                     if (node != 0) {
                         node->data = 0;
                         node->prev = 0;
@@ -589,7 +580,7 @@ SC_Question* Handler31::SelectQuestion(int idx) {
                     return (SC_Question*)data;
                 }
                 if (list->tail == node) {
-                    return 0;
+                    break;
                 }
                 if (node != 0) {
                     list->current = node->next;
@@ -620,17 +611,15 @@ SC_Question* Handler31::RemoveQuestion(int id) {
         ShowError("queue fault 0103");
     }
 
-    list->current = list->head;
-    if (list->head == 0) {
+    node = list->head;
+    list->current = node;
+    if (node == 0) {
         goto not_found;
     }
 
     do {
         node = list->current;
-        nodeData = 0;
-        if (node != 0) {
-            nodeData = node->data;
-        }
+        nodeData = node != 0 ? node->data : 0;
 
         if (((SC_Question*)nodeData)->questionId == temp->questionId) {
             if (temp != 0) {
@@ -657,10 +646,7 @@ SC_Question* Handler31::RemoveQuestion(int id) {
                 node->next->prev = node->prev;
             }
             node = list->current;
-            data = 0;
-            if (node != 0) {
-                data = node->data;
-            }
+            data = node != 0 ? node->data : 0;
             if (node != 0) {
                 node->data = 0;
                 node->prev = 0;

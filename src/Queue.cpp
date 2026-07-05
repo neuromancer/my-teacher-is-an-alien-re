@@ -81,7 +81,7 @@ void Queue::Add(void* data)
     }
     do {
         ListNode* cur = current;
-        if (*(int*)(cur->data) < *(int*)data) {
+        if (((SpriteAction*)cur->data)->addressType < ((SpriteAction*)data)->addressType) {
             // InsertNode inline
             if (data == 0) ShowError("queue fault 0102");
             ListNode* node = new ListNode(data);
@@ -242,7 +242,7 @@ SpriteAction TimedEventPool::Pop()
     int counter = 0;
     do {
         src->~SpriteAction();
-        src = (SpriteAction*)((char*)src + 0x38);
+        src = src + 1;
         int tmp = counter;
         counter--;
         if (tmp == 0) break;

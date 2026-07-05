@@ -49,7 +49,7 @@ T_MenuHotspot::~T_MenuHotspot()
         cursor = 0;
     }
     if (messageQueue != 0) {
-        LinkedList* list = (LinkedList*)messageQueue;
+        LinkedList* list = messageQueue;
         if (list->head != 0) {
             list->current = list->head;
             while (list->head != 0) {
@@ -59,7 +59,7 @@ T_MenuHotspot::~T_MenuHotspot()
                 }
             }
         }
-        operator delete((void*)messageQueue);
+        operator delete(messageQueue);
         messageQueue = 0;
     }
 }
@@ -201,12 +201,12 @@ int T_MenuHotspot::LBLParse(char* line) {
         soundEntries[local_18 * 3] = local_20;
     } else if (strcmp(local_50, "MESSAGE") == 0) {
         if (messageQueue == 0) {
-            messageQueue = (int)new Queue();
+            messageQueue = new Queue();
         }
         action = new SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         ParseSpriteAction(action, this);
         {
-            LinkedList* q = (LinkedList*)messageQueue;
+            LinkedList* q = messageQueue;
             q->ResetForSortedAdd(action);
             if (q->type == 1 || q->type == 2) {
                 if (q->head == 0) {
@@ -214,7 +214,7 @@ int T_MenuHotspot::LBLParse(char* line) {
                 } else {
                     do {
                         ListNode* cur = q->current;
-                        if (*(int*)(cur->data) < *(int*)action) {
+                        if (((SpriteAction*)cur->data)->addressType < action->addressType) {
                             q->InsertNode(action);
                             break;
                         }
@@ -238,7 +238,7 @@ int T_MenuHotspot::LBLParse(char* line) {
             ShowError("Error in ThotsMen.cpp: %s - in parse file is missing parameters", line);
         }
         if (messageQueue == 0) {
-            messageQueue = (int)new Queue();
+            messageQueue = new Queue();
         }
         action = new SpriteAction(
             g_StringTable_0046aa34->FindState((char*)local_70),
@@ -246,7 +246,7 @@ int T_MenuHotspot::LBLParse(char* line) {
             g_StringTable_0046aa34->FindState((char*)local_90),
             local_1c, 4, 0, 0, 0, 0, 0);
         {
-            LinkedList* q = (LinkedList*)messageQueue;
+            LinkedList* q = messageQueue;
             q->ResetForSortedAdd(action);
             if (q->type == 1 || q->type == 2) {
                 if (q->head == 0) {
@@ -254,7 +254,7 @@ int T_MenuHotspot::LBLParse(char* line) {
                 } else {
                     do {
                         ListNode* cur = q->current;
-                        if (*(int*)(cur->data) < *(int*)action) {
+                        if (((SpriteAction*)cur->data)->addressType < action->addressType) {
                             q->InsertNode(action);
                             break;
                         }
@@ -286,12 +286,12 @@ void T_MenuButton::Cleanup() {}
 void T_MenuHotspot::ProcessSpriteActions() {
     if (messageQueue == 0) return;
 
-    ((LinkedList*)messageQueue)->current = ((LinkedList*)messageQueue)->head;
+    messageQueue->current = messageQueue->head;
 
-    if (((LinkedList*)messageQueue)->head == 0) return;
+    if (messageQueue->head == 0) return;
 
     do {
-        ListNode* cur = ((LinkedList*)messageQueue)->current;
+        ListNode* cur = messageQueue->current;
         SpriteAction* data;
         if (cur != 0) {
             data = (SpriteAction*)cur->data;
@@ -299,14 +299,14 @@ void T_MenuHotspot::ProcessSpriteActions() {
             data = 0;
         }
         EnqueueSpriteAction(data);
-        ListNode* curNode = ((LinkedList*)messageQueue)->current;
-        if (((LinkedList*)messageQueue)->tail == curNode) {
+        ListNode* curNode = messageQueue->current;
+        if (messageQueue->tail == curNode) {
             return;
         }
         if (curNode != 0) {
-            ((LinkedList*)messageQueue)->current = curNode->next;
+            messageQueue->current = curNode->next;
         }
-    } while (((LinkedList*)messageQueue)->head != 0);
+    } while (messageQueue->head != 0);
 }
 
 /* Function start: 0x420EF0 */

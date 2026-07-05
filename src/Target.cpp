@@ -297,8 +297,8 @@ int Target::Update()
     g_ScoreDisplay_0046ae6c->missCount++;
     *(int*)g_ScoreDisplay_0046ae6c += hitMissPoints.start;
     g_ScoreDisplay_0046ae6c->AdjustScore(scoreWeight.start);
-    g_CombatEngine_0046ae78->hotspotX += combatBonus.start;
-    *(int*)&g_CombatEngine_0046ae78->field_0xCC += combatBonus2.val;
+    g_CombatEngine_0046ae78->hotspotPos.x += combatBonus.start;
+    g_CombatEngine_0046ae78->effectPair1.x += combatBonus2.val;
     break;
     }
 

@@ -10,7 +10,7 @@ Weapon::~Weapon() {}
 void Weapon::UpdateProjectiles() {
     RockThrower* rt = (RockThrower*)this;
     InputState* pMouse;
-    int mouseBtn;
+    unsigned int mouseBtn;
 
     if (g_InputManager_0046aa08->mouseValid == 0) {
         goto updateAll;
@@ -25,7 +25,7 @@ void Weapon::UpdateProjectiles() {
         mouseBtn = 0;
     }
 
-    rt->m_holdState = (mouseBtn < 1) | rt->m_holdState;
+    rt->m_holdState = (mouseBtn == 0) | rt->m_holdState;
 
     if (!(rt->m_hitCount & 1)) {
         pMouse = g_InputManager_0046aa08->pMouse;
@@ -50,8 +50,10 @@ void Weapon::UpdateProjectiles() {
     rt->m_holdState = 0;
     OnHit();
 
-    if (rt->m_itemCount > 0) {
-        int i = 0;
+    {
+    int i = 0;
+    int count = rt->m_itemCount;
+    if (count > 0) {
         Projectile** base = rt->m_items;
         Projectile** arr = base;
         do {
@@ -61,7 +63,8 @@ void Weapon::UpdateProjectiles() {
             }
             arr++;
             i++;
-        } while (i < rt->m_itemCount);
+        } while (i < count);
+    }
     }
 
 updateAll:

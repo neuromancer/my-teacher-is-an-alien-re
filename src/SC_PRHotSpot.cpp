@@ -155,17 +155,17 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
                     ((Queue*)list)->InsertAtCurrent(action);
                 } else {
                     do {
-                        int cur = (int)list->current;
-                        if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
+                        ListNode* cur = list->current;
+                        if (((SpriteAction*)cur->data)->addressType < action->addressType) {
                             ((Queue*)list)->InsertAtCurrent(action);
                             break;
                         }
-                        if ((int)list->tail == cur) {
+                        if (list->tail == cur) {
                             ((Queue*)list)->Push(action);
                             break;
                         }
                         if (cur != 0) {
-                            list->current = (ListNode*)*(int*)(cur + 4);
+                            list->current = cur->next;
                         }
                     } while (list->current != 0);
                 }
@@ -201,17 +201,17 @@ int SC_PRHotSpot::LBLParse(char* param_1) {
                     ((Queue*)list)->InsertAtCurrent(action);
                 } else {
                     do {
-                        int cur = (int)list->current;
-                        if (*(int*)(*(int*)(cur + 8)) < *(int*)action) {
+                        ListNode* cur = list->current;
+                        if (((SpriteAction*)cur->data)->addressType < action->addressType) {
                             ((Queue*)list)->InsertAtCurrent(action);
                             break;
                         }
-                        if ((int)list->tail == cur) {
+                        if (list->tail == cur) {
                             list->PushNode(action);
                             break;
                         }
                         if (cur != 0) {
-                            list->current = (ListNode*)*(int*)(cur + 4);
+                            list->current = cur->next;
                         }
                     } while (list->current != 0);
                 }

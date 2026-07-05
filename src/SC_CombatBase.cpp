@@ -31,19 +31,6 @@
 /* Function start: 0x42BCD0 */
 SC_CombatBase::SC_CombatBase()
 {
-    int* p;
-    p = &hotspotX;
-    p[0] = 0;
-    p[1] = 0;
-    p = &combatBonus;
-    p[0] = 0;
-    p[1] = 0;
-    p = (int*)&field_0xCC;
-    p[0] = 0;
-    p[1] = 0;
-    p = (int*)&field_0xD4;
-    p[0] = 0;
-    p[1] = 0;
     memset((void*)&targetList, 0, 0x18 * 4);
     Initialize();
 }
@@ -138,7 +125,7 @@ void SC_CombatBase::RenderBackground()
 }
 
 /* Function start: 0x42C150 */
-void __stdcall EnqueueHotspotAction(SpriteAction* param)
+void SC_CombatBase::EnqueueHotspotAction(SpriteAction* param)
 {
     int* pool;
     int* tailPtr;
@@ -188,7 +175,7 @@ void __stdcall EnqueueHotspotAction(SpriteAction* param)
             if (dataPtr != 0) {
                 new (dataPtr) SpriteAction(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
-            dataPtr = (SpriteAction*)((char*)dataPtr + 0x38);
+            dataPtr = dataPtr + 1;
         } while (i-- != 0);
     }
 
@@ -365,8 +352,7 @@ int SC_CombatBase::ProcessEvents()
 
     if (g_HotspotPool_0046ae74->m_count != 0) {
         do {
-            SpriteAction tempBuf = ((TimedEventPool*)g_HotspotPool_0046ae74)->PopSafe();
-            localEvent.CopyFrom(&tempBuf);
+            localEvent.CopyFrom((SpriteAction*)&((TimedEventPool*)g_HotspotPool_0046ae74)->PopSafe());
             result |= HandleAction((int*)&localEvent);
         } while (g_HotspotPool_0046ae74->m_count != 0);
     }

@@ -373,12 +373,12 @@ not_found:
 found:
         if (puVar2 != 0) {
             piVar1 = (int*)puVar2[3];
-            entryList = (int)piVar1;
+            entryList = piVar1;
             puVar2 = (int*)*piVar1;
-            currentNode = (int)puVar2;
+            currentNode = puVar2;
             if (puVar2 != 0) {
-                currentNode = *puVar2;
-                currentEntry = puVar2[2];
+                currentNode = (int*)*puVar2;
+                currentEntry = (SpriteDataEntry*)puVar2[2];
                 return 1;
             }
         }
@@ -615,30 +615,30 @@ void CombatSprite::ParseSpriteData(char* line) {
     }
 }
 
-/* Function start: 0x409730 */ /* ~82% match */
+/* Function start: 0x409730 */
 int CombatSprite::ProcessFrame(int frame) {
-    int* currentData;
+    SpriteDataEntry* currentData;
     int* nextNode;
     Target* target;
     int count;
 
     count = -1;
-    currentData = (int*)currentEntry;
-    if (currentData != 0 && (count = 0, *currentData <= frame)) {
+    currentData = currentEntry;
+    if (currentData != 0 && (count = 0, currentData->index <= frame)) {
 loop:
-        target = g_TargetList_0046ae58->targets[*(int*)(currentEntry + 4)];
+        target = g_TargetList_0046ae58->targets[currentEntry->spriteIdx];
         if (target->active != 0) goto done;
         count++;
         target->Spawn();
-        nextNode = (int*)currentNode;
+        nextNode = currentNode;
         if (nextNode == 0) {
             currentEntry = 0;
             goto done;
         }
-        currentNode = *nextNode;
-        currentData = (int*)nextNode[2];
-        currentEntry = (int)currentData;
-        if (*currentData <= frame) {
+        currentNode = (int*)*nextNode;
+        currentData = (SpriteDataEntry*)nextNode[2];
+        currentEntry = currentData;
+        if (currentData->index <= frame) {
             goto loop;
         }
     }

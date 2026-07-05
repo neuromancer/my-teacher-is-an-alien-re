@@ -281,7 +281,9 @@ int GameState::LBLParse(char* line)
             char* buckets = (char*)pool[0];
             entry->next = *(GSHashEntry**)(buckets + ofs);
             buckets = (char*)pool[0];
-            *(int*)(buckets + ofs) = (int)entry;
+            // The no-op cast on entry is load-bearing: without it MSVC changes
+            // register allocation in GetState below (94.52% -> 93.15%).
+            *(GSHashEntry**)(buckets + ofs) = (GSHashEntry*)entry;
         }
 
         entry->stateIndex = idxCopy;

@@ -18,7 +18,7 @@ MMPlayer::MMPlayer()
     ptr[3] = 0;
     m_drawResult = 1;
     m_queue = new ZBQueue(2);
-    m_frameTime = g_GameEngine_0046a6ec->m_frameTime;
+    ptr[0] = g_GameEngine_0046a6ec->m_frameTime;
 }
 
 /* Function start: 0x443990 */

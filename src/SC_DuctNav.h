@@ -14,6 +14,7 @@ class Sprite;
 class Palette;
 class T_MenuButton;
 class TextInput;
+struct SaveFilePool;
 
 class SC_DuctNav : public Handler {
 public:
@@ -34,7 +35,7 @@ public:
     Sprite* choiceFocusSprite;     // 0x23C
     Palette* fontPalette;          // 0x240
     Sprite* menuSprite;            // 0x244
-    void* saveFileList;            // 0x248 (linked list pool for save file entries)
+    SaveFilePool* saveFileList;    // 0x248 (linked list pool for save file entries)
     TextInput* field_0x24C;        // 0x24C
     void* fileArchive;             // 0x250 (FileArchive* - 0x48 byte struct)
     int field_0x254;               // 0x254

@@ -109,7 +109,7 @@ void GameLoopHelper::AddAnimation(char* name, int handle) {
     if (p->tail == 0) {
         p->head = node;
     } else {
-        *(int*)(int)p->tail = (int)node;
+        *p->tail = (int)node;
     }
     p->tail = node;
 }
@@ -122,7 +122,7 @@ void GameLoopHelper::RemoveAnimation(int handle) {
     int* node;
 
     memset(searchKey, 0, 0x44);
-    *(int*)(searchKey + 0x40) = handle;
+    ((AnimData*)searchKey)->handle = handle;
     searchPtr = searchKey;
 
     p = pool;
@@ -157,16 +157,16 @@ found:
 /* Function start: 0x41A960 */
 void GameLoopHelper::PostProcess() {
     int idx;
-    char* data;
+    AnimData* data;
 
     WriteToLog("REPORT of in use animations");
     idx = 1;
     int* volatile node = pool->head;
     if (node != 0) {
         do {
-            data = (char*)node[2];
+            data = (AnimData*)node[2];
             node = (int*)node[0];
-            WriteToLog("  %2.2d. Name=%-32s. smk addr=%lu", idx, data, *(unsigned int*)(data + 0x40));
+            WriteToLog("  %2.2d. Name=%-32s. smk addr=%lu", idx, data, data->handle);
             idx++;
         } while (node != 0);
     }

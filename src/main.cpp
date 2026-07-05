@@ -130,7 +130,7 @@ void RunGame() {
     ParseFile(g_Mouse_0046aa18, "mis\\mouse1.mis", "[MICE]");
 
     // Linked list allocation
-    g_MsgList_0046a6dc = new MsgList();
+    g_MsgList_0046a6dc = new LinkedList();
 
     g_StateString_0046aa2c = (char *)operator new(0x40);
     *g_StateString_0046aa2c = 0;

@@ -25,7 +25,7 @@ StringTable::StringTable(char* f, int loadNow) {
     }
 }
 
-/* Function start: 0x44C010 */ /* ~81% match */
+/* Function start: 0x44C010 */ /* ~99% match */
 StringTable::~StringTable() {
     Close();
 
@@ -112,18 +112,16 @@ void StringTable::Unload() {
     }
 }
 
-/* Function start: 0x44C100 */ /* ~98% match */
+/* Function start: 0x44C100 */ /* ~99% match */
 void StringTable::Load() {
     char buffer[300];
     fpos_t filePos;
-    fpos_t filePos2;
     unsigned int lineCount;
     unsigned int stringId;
 
     int openResult = (int)Open();
     if (openResult != 0) {
         filePos = 0;
-        filePos2 = 0;
         lineCount = 0;
 
         // First pass: count lines
@@ -194,36 +192,43 @@ void StringTable::Load() {
                 if (result == 0) break;
 
                 int scanResult = sscanf(buffer, "%ld", &stringId);
-                unsigned int id = stringId;
                 if (scanResult == 1) {
+                    unsigned int id = stringId;
                     HashTable* ht = hashTable;
                     HashNode** bucketsPtr = ht->buckets;
-                    unsigned int bucketIdx = (stringId >> 4) % (unsigned int)ht->numBuckets;
+                    unsigned int volatile bucketIdx = (id >> 4) % (unsigned int)ht->numBuckets;
 
-                    HashNode* foundNode = 0;
-                    if (bucketsPtr != 0) {
-                        HashNode* node = bucketsPtr[bucketIdx];
-                        while (node != 0) {
-                            if (node->key == stringId) {
-                                foundNode = node;
-                                break;
-                            }
-                            node = node->next;
-                        }
+                    HashNode* foundNode;
+                    if (bucketsPtr == 0) {
+                        goto no_node;
                     }
+                    foundNode = bucketsPtr[bucketIdx];
+                scan_test:
+                    if (foundNode == 0) {
+                        goto no_node;
+                    }
+                    if (foundNode->key == stringId) {
+                        goto have_node;
+                    }
+                    foundNode = foundNode->next;
+                    goto scan_test;
 
+                no_node:
+                    foundNode = 0;
+
+                have_node:
                     if (foundNode == 0) {
                         if (bucketsPtr == 0) {
                             ht->AllocateBuckets(ht->numBuckets, 1);
                         }
                         foundNode = ht->AllocateNode();
-                        foundNode->bucketIndex = bucketIdx;
+                        unsigned int bi = bucketIdx;
+                        foundNode->bucketIndex = bi;
                         foundNode->key = id;
-                        foundNode->next = ht->buckets[bucketIdx];
-                        ht->buckets[bucketIdx] = foundNode;
+                        foundNode->next = ht->buckets[bi];
+                        ht->buckets[bi] = foundNode;
                     }
-                    foundNode->filePosLow = (int)filePos;
-                    foundNode->filePosHigh = (int)filePos2;
+                    *(fpos_t*)&foundNode->filePosLow = filePos;
                 }
             } while (1);
         }
@@ -231,10 +236,9 @@ void StringTable::Load() {
     }
 }
 
-/* Function start: 0x44C350 */ /* ~90% match */
+/* Function start: 0x44C350 */ /* ~97% match */
 int StringTable::GetString(unsigned int id, char* outBuffer)
 {
-    char buffer[300];
     unsigned int parsedId;
     fpos_t filePos;
     int found;
@@ -247,7 +251,7 @@ int StringTable::GetString(unsigned int id, char* outBuffer)
     filePos = 0;
 
     if (StringTable::hashTable != 0) {
-        unsigned int bucketIdx = (id >> 4) % (unsigned int)StringTable::hashTable->numBuckets;
+        unsigned int volatile bucketIdx = (id >> 4) % (unsigned int)StringTable::hashTable->numBuckets;
         if (StringTable::hashTable->buckets == 0) {
             goto no_node;
         }
@@ -275,6 +279,7 @@ int StringTable::GetString(unsigned int id, char* outBuffer)
     }
 
     if (Open() != 0) {
+        char buffer[300];
         fsetpos(StringTable::fp, &filePos);
 read_loop:
         {
@@ -345,9 +350,10 @@ void StringTable::TestStrings(void* textMgr, int maxWidth)
 
             {
                 char text[256];
-                unsigned int volatile stringId = cur->key;
+                unsigned int k = cur->key;
+                unsigned int volatile stringId = k;
                 iter = nextIter;
-                GetString(stringId, text);
+                GetString(k, text);
                 int width = ((AnimatedAsset*)textMgr)->GetTextWidth(text);
 
                 if (maxWidth < width) {

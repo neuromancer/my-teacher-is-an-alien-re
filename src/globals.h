@@ -6059,9 +6059,10 @@ extern MemoryCache* g_FileCache_0046b78c;                  // file cache object
 class SoundTracker;
 class GameLoopHelper;
 class MsgList;
+struct LinkedList;
 extern SoundTracker* g_SoundTracker_0046928c;              // sound tracker
 extern GameLoopHelper* g_GameLoopHelper_0046a6f0;          // game loop helper
-extern MsgList* g_MsgList_0046a6dc;                        // message list
+extern LinkedList* g_MsgList_0046a6dc;                     // message list (inventory T_Object list)
 extern int g_StartBlock_00472e2c;                          // start block
 
 // String table

@@ -1,8 +1,8 @@
 #include "EngineSubsystems.h"
 #include "Memory.h"
 #include "globals.h"
-#include "Sample.h"
 #include "CursorState.h"
+#include "Sample.h"
 #include "ScoreDisplay.h"
 #include "SC_CombatBase.h"
 #include <stdio.h>
@@ -67,10 +67,9 @@ TargetList::~TargetList() {
 /* Function start: 0x443540 */
 int TargetList::LBLParse(char* line) {
   char type[32];
-  int id;
+  int id = 0;
 
-  id = 0;
-  type[0] = (char)id;
+  type[0] = 0;
   sscanf(line, " %s ", type);
 
   if (type[0] == 'F') {

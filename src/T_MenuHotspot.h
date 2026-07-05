@@ -6,6 +6,8 @@
 #include "GlyphRect.h"
 #include "Memory.h"
 
+struct Queue;
+
 // T_MenuButton - Simple menu button widget (extends Parser)
 // Full game: Size 0xA8, Constructor 0x421A50, Vtable 0x4613D0
 // Standalone destructor COMDAT at 0x43B720 (cleans sprite only)
@@ -63,7 +65,7 @@ public:
     GlyphRect bounds;               // 0x9C
     int soundEntries[60];           // 0xAC-0x19B — sound data (20 entries * 3 ints each, stride 0xC)
     Sprite* cursor;                 // 0x19C
-    int messageQueue;               // 0x1A0 — Queue* for SpriteAction messages
+    Queue* messageQueue;            // 0x1A0 — Queue* for SpriteAction messages
     int hotspotParam;               // 0x1A4
 };
 

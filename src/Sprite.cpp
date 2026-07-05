@@ -184,9 +184,9 @@ int Sprite::CheckConditions()
     int i = 0;
     if (0 < num_logic_conditions) {
         do {
-            int* cond = (int*)((char*)logic_conditions + offset);
-            if (cond[1] == 8) {
-                state_idx = cond[0];
+            LogicCondition* cond = (LogicCondition*)((char*)logic_conditions + offset);
+            if (cond->type == 8) {
+                state_idx = cond->state_index;
                 GameState* gs = g_GameState_0046aa30;
                 if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
@@ -195,9 +195,9 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-            cond = (int*)((char*)logic_conditions + offset);
-            if (cond[1] == 9) {
-                state_idx = cond[0];
+            cond = (LogicCondition*)((char*)logic_conditions + offset);
+            if (cond->type == 9) {
+                state_idx = cond->state_index;
                 GameState* gs = g_GameState_0046aa30;
                 if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
@@ -206,37 +206,37 @@ int Sprite::CheckConditions()
                     return 0;
                 }
             }
-            cond = (int*)((char*)logic_conditions + offset);
-            if (cond[1] == 0xC) {
-                state_idx = cond[0];
+            cond = (LogicCondition*)((char*)logic_conditions + offset);
+            if (cond->type == 0xC) {
+                state_idx = cond->state_index;
                 GameState* gs = g_GameState_0046aa30;
                 if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
-                if (gs->stateValues[state_idx] != *(int*)((char*)logic_conditions + offset + 8)) {
+                if (gs->stateValues[state_idx] != ((LogicCondition*)((char*)logic_conditions + offset))->field_8) {
                     return 0;
                 }
             }
-            cond = (int*)((char*)logic_conditions + offset);
-            if (cond[1] == 0xD) {
-                state_idx = cond[0];
+            cond = (LogicCondition*)((char*)logic_conditions + offset);
+            if (cond->type == 0xD) {
+                state_idx = cond->state_index;
                 GameState* gs = g_GameState_0046aa30;
                 if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
-                if (gs->stateValues[state_idx] == *(int*)((char*)logic_conditions + offset + 8)) {
+                if (gs->stateValues[state_idx] == ((LogicCondition*)((char*)logic_conditions + offset))->field_8) {
                     return 0;
                 }
             }
-            cond = (int*)((char*)logic_conditions + offset);
-            if (cond[1] == 0x1C) {
-                state_idx = cond[0];
+            cond = (LogicCondition*)((char*)logic_conditions + offset);
+            if (cond->type == 0x1C) {
+                state_idx = cond->state_index;
                 GameState* gs = g_GameState_0046aa30;
                 if (state_idx < 0 || gs->maxStates - 1 < state_idx) {
                     ShowError("Invalid gamestate %d", state_idx);
                 }
                 if (gs->stateValues[state_idx] != handle) {
-                    int idx2 = *(int*)((char*)logic_conditions + offset);
+                    int idx2 = ((LogicCondition*)((char*)logic_conditions + offset))->state_index;
                     if (idx2 < 0 || g_GameState_0046aa30->maxStates - 1 < idx2) {
                         ShowError("Invalid gamestate %d", idx2);
                     }

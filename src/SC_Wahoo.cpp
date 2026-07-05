@@ -386,7 +386,7 @@ void SC_Wahoo::Update(int param1, int param2) {
     }
 
     spr = bgSprite;
-    if ((*(char*)((int)&gameFlags) & 1) != 0) {
+    if ((gameFlags & 1) != 0) {
         if (spr->Do(spr->loc.x, spr->loc.y, 1.0) != 0) {
             timer->Start(2000);
         }
@@ -480,7 +480,7 @@ label_done:
 void SC_Wahoo::ProcessState() {
     SpriteAction* sa;
 
-    if (savedCommand == 0x2B && (*(char*)(&gameFlags) & 1) != 0) {
+    if (savedCommand == 0x2B && (gameFlags & 1) != 0) {
         sa = spriteAction;
         if (sa != 0) {
             delete sa;

@@ -15,6 +15,8 @@
 #include "MsgList.h"
 #include "string.h"
 #include "MouseControl.h"
+// The no-op cast is load-bearing: without it MSVC swaps the counter/curNode
+// register assignment in SCI_Inventory::Update (94.74% -> 93.23%).
 #define g_InventoryList ((LinkedList*)g_MsgList_0046a6dc)
 #include "ZBufferManager.h"
 
@@ -769,7 +771,7 @@ void SCI_Inventory::Serialize(void* param) {
     volatile int self = (int)this;
     int strLen = strlen("INVENTORY_INFO") + 1;
     FileArchive* ar = (FileArchive*)param;
-    int* esi_ptr;
+    LinkedList* esi_ptr;
     int handle;
 
     fp = (int)ar->fp;
@@ -853,10 +855,10 @@ void SCI_Inventory::Serialize(void* param) {
 
     /* Clean up global queue */
     if (g_MsgList_0046a6dc != 0) {
-        esi_ptr = (int*)g_MsgList_0046a6dc;
-        if (esi_ptr[0] != 0) {
-            esi_ptr[2] = esi_ptr[0];
-            while (esi_ptr[0] != 0) {
+        esi_ptr = g_MsgList_0046a6dc;
+        if (esi_ptr->head != 0) {
+            esi_ptr->current = esi_ptr->head;
+            while (esi_ptr->head != 0) {
                 void* data = ((MessageList*)esi_ptr)->PopCurrent();
                 if (data != 0) {
                     delete (T_Object*)data;
@@ -868,8 +870,8 @@ void SCI_Inventory::Serialize(void* param) {
     }
 
     /* Allocate new global queue */
-    esi_ptr = (int*)(new LinkedList());
-    g_MsgList_0046a6dc = (MsgList*)esi_ptr;
+    esi_ptr = new LinkedList();
+    g_MsgList_0046a6dc = esi_ptr;
 
     /* Read items loop */
     for (;;) {
@@ -968,52 +970,52 @@ int SCI_Inventory::LBLParse(char* line) {
         void* obj;
         sscanf(line, " %s %d", token, &index);
         obj = new T_Object(index);
-        int* queue = (int*)g_MsgList_0046a6dc;
+        LinkedList* queue = g_MsgList_0046a6dc;
         if (obj == 0) {
             ShowError("queue fault 0101");
         }
-        queue[2] = queue[0];
-        if (queue[3] == 1 || queue[3] == 2) {
-            if (queue[0] == 0) {
-                ((LinkedList*)queue)->InsertNode(obj);
+        queue->current = queue->head;
+        if (queue->type == 1 || queue->type == 2) {
+            if (queue->head == 0) {
+                queue->InsertNode(obj);
             } else {
                 do {
-                    int cur = queue[2];
-                    if ((unsigned int)((T_Object*)((QueueNode*)cur)->data)->itemId < (unsigned int)((T_Object*)obj)->itemId) {
-                        ((LinkedList*)queue)->InsertNode(obj);
+                    ListNode* cur = queue->current;
+                    if ((unsigned int)((T_Object*)cur->data)->itemId < (unsigned int)((T_Object*)obj)->itemId) {
+                        queue->InsertNode(obj);
                         break;
                     }
-                    if (queue[1] == cur) {
+                    if (queue->tail == cur) {
                         if (obj == 0) {
                             ShowError("queue fault 0112");
                         }
                         mem = new ListNode(obj);
                         obj = mem;
-                        if (queue[2] == 0) {
-                            queue[2] = queue[1];
+                        if (queue->current == 0) {
+                            queue->current = queue->tail;
                         }
-                        if (queue[0] == 0) {
-                            queue[0] = (int)obj;
-                            queue[1] = (int)obj;
-                            queue[2] = (int)obj;
+                        if (queue->head == 0) {
+                            queue->head = (ListNode*)obj;
+                            queue->tail = (ListNode*)obj;
+                            queue->current = (ListNode*)obj;
                         } else {
-                            if (queue[1] == 0 || *(int*)(queue[1] + 4) != 0) {
+                            if (queue->tail == 0 || queue->tail->next != 0) {
                                 ShowError("queue fault 0113");
                             }
-                            ((int*)obj)[1] = 0;
-                            ((int*)obj)[0] = queue[1];
-                            *(int*)(queue[1] + 4) = (int)obj;
-                            queue[1] = (int)obj;
+                            ((ListNode*)obj)->next = 0;
+                            ((ListNode*)obj)->prev = queue->tail;
+                            queue->tail->next = (ListNode*)obj;
+                            queue->tail = (ListNode*)obj;
                         }
                         break;
                     }
                     if (cur != 0) {
-                        queue[2] = *(int*)(cur + 4);
+                        queue->current = cur->next;
                     }
-                } while (queue[2] != 0);
+                } while (queue->current != 0);
             }
         } else {
-            ((LinkedList*)queue)->InsertNode(obj);
+            queue->InsertNode(obj);
         }
     }
     else if (strcmp(token, "PALETTE") == 0) {
@@ -1116,16 +1118,16 @@ next_panel:
 /* Function start: 0x43F420 */
 void SCI_Inventory::ProcessInventory() {
     if (g_MsgList_0046a6dc == 0) return;
-    if (((LinkedList*)g_MsgList_0046a6dc)->head == 0) return;
-    ((LinkedList*)g_MsgList_0046a6dc)->current = ((LinkedList*)g_MsgList_0046a6dc)->head;
+    if (g_MsgList_0046a6dc->head == 0) return;
+    g_MsgList_0046a6dc->current = g_MsgList_0046a6dc->head;
     while (1) {
-        QueueNode* node = (QueueNode*)((LinkedList*)g_MsgList_0046a6dc)->current;
+        QueueNode* node = g_MsgList_0046a6dc->current;
         if (node != 0 && node->data != 0) {
             ((T_Object*)(((node < (QueueNode*)1) - 1) & (int)node->data))->StopSound();
         }
-        if (((LinkedList*)g_MsgList_0046a6dc)->tail == ((LinkedList*)g_MsgList_0046a6dc)->current) break;
-        if (((LinkedList*)g_MsgList_0046a6dc)->current != 0) {
-            ((LinkedList*)g_MsgList_0046a6dc)->current = ((LinkedList*)g_MsgList_0046a6dc)->current->next;
+        if (g_MsgList_0046a6dc->tail == g_MsgList_0046a6dc->current) break;
+        if (g_MsgList_0046a6dc->current != 0) {
+            g_MsgList_0046a6dc->current = g_MsgList_0046a6dc->current->next;
         }
     }
 }
@@ -1138,32 +1140,32 @@ void* SCI_Inventory::FindItem(int itemID) {
         return 0;
     }
 
-    ((LinkedList*)g_MsgList_0046a6dc)->current = ((LinkedList*)g_MsgList_0046a6dc)->head;
-    while (((LinkedList*)g_MsgList_0046a6dc)->head != 0) {
-        ListNode* node = ((LinkedList*)g_MsgList_0046a6dc)->current;
+    g_MsgList_0046a6dc->current = g_MsgList_0046a6dc->head;
+    while (g_MsgList_0046a6dc->head != 0) {
+        ListNode* node = g_MsgList_0046a6dc->current;
         if (node != 0) {
             if (((T_Object*)node->data)->itemId == itemID) {
 found:
-                if (((LinkedList*)g_MsgList_0046a6dc)->current == 0) {
+                if (g_MsgList_0046a6dc->current == 0) {
                     return 0;
                 }
-                return ((LinkedList*)g_MsgList_0046a6dc)->current->data;
+                return g_MsgList_0046a6dc->current->data;
             }
         } else {
             if (itemID == *(int*)0x94) {
                 goto found;
             }
         }
-        if (((LinkedList*)g_MsgList_0046a6dc)->tail == node) {
+        if (g_MsgList_0046a6dc->tail == node) {
             break;
         }
         if (node != 0) {
-            ((LinkedList*)g_MsgList_0046a6dc)->current = node->next;
+            g_MsgList_0046a6dc->current = node->next;
         }
     }
 
     item = new T_Object(itemID);
-    list = (LinkedList*)g_MsgList_0046a6dc;
+    list = g_MsgList_0046a6dc;
     if (item == 0) {
         ShowError("queue fault 0101");
     }

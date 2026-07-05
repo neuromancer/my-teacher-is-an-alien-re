@@ -54,13 +54,10 @@ void* EventList::RemoveCurrent()
     }
 
     node = current;
-    result = 0;
-    if (node != 0) {
-        result = node->data;
-    }
+    result = (node != 0) ? node->data : 0;
 
-    if (node != 0) {
-        delete node;
+    if (current != 0) {
+        delete current;
         current = 0;
     }
 

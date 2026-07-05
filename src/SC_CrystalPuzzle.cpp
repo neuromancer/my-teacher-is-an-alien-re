@@ -542,11 +542,11 @@ void SC_CrystalPuzzle::Update(int p1, int p2) {
 
     if (sound1 != 0) {
         Sample* snd = sound1;
-        int m_sample = (int)snd->m_sample;
-        if (m_sample != 0) {
-            int fileSize = ((AILSampleData*)m_sample)->len;
+        HSAMPLE hsamp = snd->m_sample;
+        if (hsamp != 0) {
+            int fileSize = ((AILSampleData*)hsamp)->len;
             if (snd->m_size == fileSize) {
-                if (AIL_sample_status((void*)m_sample) == 4) {
+                if (AIL_sample_status(hsamp) == 4) {
                     goto sound_done;
                 }
             }

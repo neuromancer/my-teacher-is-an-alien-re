@@ -210,7 +210,7 @@ void StartScheduleTimer() {
     SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     action.instruction = 0x37;
     action.extra1 = 1;
-    EnqueueHotspotAction(&action);
+    g_CombatEngine_0046ae78->EnqueueHotspotAction(&action);
 }
 
 /* Function start: 0x440FC0 */

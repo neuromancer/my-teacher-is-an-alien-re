@@ -24,6 +24,39 @@
 static char* FormatSoundPath(char* path);
 void StartScheduleTimer2();
 
+// RatConfig — 8-byte target-config object allocated in EngineB::OnProcessEnd
+// (0x451230). Evidence for a real inline constructor: the EH state 0 opened by
+// `new` spans the gamestate check and the switch (state -1 is only set after
+// the stores), each switch arm ends with `mov eax,edi` (constructor returning
+// this), and the init zeroes only bytes 1..7 (`lea ecx,[edi+1]` +
+// dword/word/byte stores) — an original memset(this+1, 0, 7) quirk.
+struct RatConfig {
+    int base;    // 0x0 — [0]=base
+    int points;  // 0x4 — [1]=points
+    RatConfig() {
+        memset((char*)&base + 1, 0, 7);
+        int pidx = g_PeriodStateIdx_0046cb90;
+        GameState* gs = g_GameState_0046aa30;
+        if (pidx < 0 || gs->maxStates - 1 < pidx) {
+            ShowError("Invalid gamestate %d", pidx);
+        }
+        switch (gs->stateValues[pidx]) {
+        case 0:
+            base = 1;
+            points = 3;
+            break;
+        case 1:
+            base = 1;
+            points = 2;
+            break;
+        case 2:
+            base = 1;
+            points = 1;
+            break;
+        }
+    }
+};
+
 #include "Target.h"
 #include "InputManager.h"
 
@@ -97,7 +130,6 @@ void EngineB::RenderBackground() {
     Sample* snd;
     int weaponHit;
     int mouseX;
-    int divisor;
 
     if (g_BgSprite_0046ae50 == 0) {
         return;
@@ -141,21 +173,20 @@ void EngineB::RenderBackground() {
     }
 
     if (g_CombatWeapon_0046ae60->m_clicked != 0) {
-        mouseX = 0;
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseX = g_InputManager_0046aa08->pMouse->x;
-        }
-        divisor = g_WeaponParser_0046ae4c->dimensions.x / 3;
-        g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor + 5, 0);
+        InputState* m = g_InputManager_0046aa08->pMouse;
+        mouseX = (m != 0) ? m->x : 0;
+        g_BgSprite_0046ae50->ResetAnimation(
+            mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 3) + 5, 0);
     }
 
-    if (g_BgSprite_0046ae50->Do(g_BgSprite_0046ae50->loc.x, g_BgSprite_0046ae50->loc.y, 1.0)) {
-        mouseX = 0;
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseX = g_InputManager_0046aa08->pMouse->x;
+    {
+        Sprite* spr = g_BgSprite_0046ae50;
+        if (spr->Do(spr->loc.x, spr->loc.y, 1.0)) {
+            InputState* m = g_InputManager_0046aa08->pMouse;
+            mouseX = (m != 0) ? m->x : 0;
+            g_BgSprite_0046ae50->ResetAnimation(
+                mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5), 0);
         }
-        divisor = g_WeaponParser_0046ae4c->dimensions.x / 5;
-        g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor, 0);
     }
 }
 
@@ -227,54 +258,24 @@ int EngineB::HandleAction(int* param) {
 
 /* Function start: 0x451230 */
 void EngineB::OnProcessEnd() {
-    int* config;
-    int stateVal;
     GameState* gs;
     int idx;
     int i;
     int mouseX;
-    int divisor;
     SoundList* sList;
-    Animation* anim;
 
-    config = (int*)new IntPair();
-    if (config != 0) {
-        gs = g_GameState_0046aa30;
-        if (g_PeriodStateIdx_0046cb90 < 0 || gs->maxStates - 1 < g_PeriodStateIdx_0046cb90) {
-            ShowError("Invalid gamestate %d", g_PeriodStateIdx_0046cb90);
-        }
-        stateVal = gs->stateValues[g_PeriodStateIdx_0046cb90];
-        switch (stateVal) {
-        case 0:
-            config[0] = 1;
-            config[1] = 3;
-            break;
-        case 1:
-            config[0] = 1;
-            config[1] = 2;
-            break;
-        case 2:
-            config[0] = 1;
-            config[1] = 1;
-            break;
-        }
-    } else {
-        config = 0;
-    }
-    EngineB::m_targetConfig = config;
+    EngineB::m_targetConfig = (int*)new RatConfig();
 
     if (g_InputManager_0046aa08 != 0) {
         ((InputManager*)g_InputManager_0046aa08)->Refresh(1);
     }
 
     if (g_BgSprite_0046ae50 != 0) {
-        mouseX = 0;
         // Original bug at 0x451230: DAT_0046aa08 is dereferenced after only the earlier Refresh guard.
-        if (g_InputManager_0046aa08->pMouse != 0) {
-            mouseX = g_InputManager_0046aa08->pMouse->x;
-        }
-        divisor = g_WeaponParser_0046ae4c->dimensions.x / 5;
-        g_BgSprite_0046ae50->ResetAnimation(mouseX / divisor, 0);
+        InputState* m = g_InputManager_0046aa08->pMouse;
+        mouseX = (m != 0) ? m->x : 0;
+        g_BgSprite_0046ae50->ResetAnimation(
+            mouseX / (g_WeaponParser_0046ae4c->dimensions.x / 5), 0);
     }
 
     EngineB::m_weaponParser = g_CombatWeapon_0046ae60;
@@ -285,23 +286,22 @@ void EngineB::OnProcessEnd() {
 
     EngineB::m_localSoundList = new SoundList(10);
 
-    anim = new Animation(FormatStringVA("combats\\nmeter.smk"));
-    EngineB::m_meterAnimation = anim;
-    anim->DoFrame();
+    EngineB::m_meterAnimation = new Animation(FormatStringVA("combats\\nmeter.smk"));
+    EngineB::m_meterAnimation->DoFrame();
 
     EngineB::m_meterBuffer = EngineB::m_meterAnimation->targetBuffer;
-    EngineB::m_meterEmptyRect.right = 0x10D;
+    int width = 0x10D;
+    EngineB::m_meterEmptyRect.right = width;
     EngineB::m_meterEmptyRect.left = 0;
     EngineB::m_meterEmptyRect.top = 0;
     EngineB::m_meterEmptyRect.bottom = 0x13;
-
-    gs = g_GameState_0046aa30;
-    idx = gs->FindState("MAX_NOISE_ALLOWED_RATS");
-
-    EngineB::m_meterFullRect.right = 0x10D;
+    EngineB::m_meterFullRect.right = width;
     EngineB::m_meterFullRect.left = 0;
     EngineB::m_meterFullRect.top = 0x14;
     EngineB::m_meterFullRect.bottom = 0x27;
+
+    gs = g_GameState_0046aa30;
+    idx = gs->FindState("MAX_NOISE_ALLOWED_RATS");
 
     if (idx < 0 || gs->maxStates - 1 < idx) {
         ShowError("Invalid gamestate %d", idx);
@@ -341,5 +341,5 @@ void StartScheduleTimer2() {
     SpriteAction action(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     action.instruction = 0x37;
     action.extra1 = 1;
-    EnqueueHotspotAction(&action);
+    g_CombatEngine_0046ae78->EnqueueHotspotAction(&action);
 }

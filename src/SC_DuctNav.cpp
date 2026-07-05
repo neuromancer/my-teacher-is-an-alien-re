@@ -30,6 +30,15 @@
 #include "TextInput.h"
 #include "FileArchive.h"
 
+// One node of the save-file list: links first, then the embedded find record.
+// (The tuned list walkers below intentionally keep int*-based shapes — the
+// register/spill layout matches the original; see the Update/ReadSaveFiles notes.)
+struct SaveFileNode {
+    SaveFileNode* next;      // 0x00
+    SaveFileNode* prev;      // 0x04
+    struct _finddata_t data; // 0x08 (name at +0x1C)
+};
+
 struct SaveFilePool {
     int* head;     // 0x00
     int* tail;     // 0x04
@@ -110,10 +119,10 @@ void SC_DuctNav::Init(SC_MessageParser* msg) {
     scrollOffset = 0;
 
     // Copy first save name to saveFilename
-    int* list = (int*)saveFileList;
-    if (list[2] != 0) {
-        int* node = (int*)list[0];
-        strcpy(saveFilename, (char*)(node + 7));
+    SaveFilePool* list = saveFileList;
+    if (list->count != 0) {
+        SaveFileNode* node = (SaveFileNode*)list->head;
+        strcpy(saveFilename, node->data.name);
     }
 
     // Set palette
@@ -208,15 +217,15 @@ void SC_DuctNav::Update(int p1, int p2) {
         menuSprite->Do(menuSprite->loc.x, menuSprite->loc.y, 1.0);
     }
 
-    int* list = (int*)saveFileList;
+    SaveFilePool* list = saveFileList;
     int idx = scrollOffset;
-    int listCount = list[2];
+    int listCount = list->count;
     if (listCount > idx) {
         if (idx >= 0) {
             if (idx >= listCount) {
                 node = 0;
             } else {
-                walk = (int*)*list;
+                walk = list->head;
                 while (idx-- != 0) {
                     walk = (int*)*walk;
                 }
@@ -240,14 +249,14 @@ void SC_DuctNav::Update(int p1, int p2) {
     }
 
     if (selectedRow != -1) {
-        int* list2 = (int*)saveFileList;
+        SaveFilePool* list2 = saveFileList;
         int absIdx = scrollOffset + selectedRow;
-        int count = list2[2];
+        int count = list2->count;
         if (absIdx < count && absIdx >= 0) {
             if (count <= absIdx) {
                 node = 0;
             } else {
-                walk = (int*)*list2;
+                walk = list2->head;
                 int rem = absIdx - 1;
                 if (absIdx != 0) {
                     do {
@@ -256,7 +265,7 @@ void SC_DuctNav::Update(int p1, int p2) {
                 }
                 node = walk;
             }
-            strcpy(saveFilename, (char*)(node + 7));
+            strcpy(saveFilename, ((SaveFileNode*)node)->data.name);
         } else {
             saveFilename[0] = 0;
         }
@@ -509,10 +518,10 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
     {
         int numFiles;
         int maxScroll;
-        int* list;
+        SaveFilePool* list;
 
-        list = (int*)saveFileList;
-        numFiles = list[2];
+        list = saveFileList;
+        numFiles = list->count;
         maxScroll = numFiles - 9;
         if (maxScroll < 0) {
             maxScroll = 0;
@@ -648,9 +657,9 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
                 if (selectedRow > -1) {
                     int nodeIdx;
                     nodeIdx = scrollOffset + selectedRow;
-                    list = (int*)saveFileList;
-                    if (list[2] > nodeIdx) {
-                        node = (int*)list[0];
+                    list = saveFileList;
+                    if (list->count > nodeIdx) {
+                        node = list->head;
                         while (nodeIdx-- != 0) {
                             node = (int*)node[0];
                         }
@@ -658,7 +667,7 @@ int SC_DuctNav::Exit(SC_MessageParser* msg)
                         node = 0;
                     }
                     if (node != 0) {
-                        strcpy(namePtr, (char*)(node) + 0x1c);
+                        strcpy(namePtr, ((SaveFileNode*)node)->data.name);
                     }
                 }
             }
@@ -698,32 +707,32 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
     struct _finddata_t nodeData;
 
     {
-        int* pool = (int*)saveFileList;
+        SaveFilePool* pool = saveFileList;
         if (pool != 0) {
-            node = (int*)pool[0];
+            node = pool->head;
             while (node != 0) {
                 { int n = 0; while (n-- != 0); }
                 node = (int*)node[0];
             }
-            pool[2] = 0;
-            pool[3] = 0;
-            pool[1] = 0;
-            pool[0] = 0;
+            pool->count = 0;
+            pool->freeList = 0;
+            pool->tail = 0;
+            pool->head = 0;
             {
-                int* block = (int*)pool[4];
+                int* block = pool->blocks;
                 while (block != 0) {
                     int* nextBlock = (int*)block[0];
                     operator delete(block);
                     block = nextBlock;
                 }
             }
-            pool[4] = 0;
+            pool->blocks = 0;
             operator delete(pool);
             saveFileList = 0;
         }
     }
 
-    saveFileList = (int*)new SaveFilePool();
+    saveFileList = new SaveFilePool();
 
     handle = _findfirst(pattern, &findData);
     if (handle == -1) {
@@ -734,13 +743,13 @@ void SC_DuctNav::ReadSaveFiles(char* pattern)
         _splitpath(findData.name, 0, 0, g_Buffer_0046aa00, 0);
         strcpy(findData.name, g_Buffer_0046aa00);
 
-        next = ((SaveFilePool*)saveFileList)->head;
+        next = saveFileList->head;
         while (next != 0) {
             node = next;
             next = (int*)node[0];
             memcpy(&nodeData, (char*)(node) + 8, 0x118);
             if (nodeData.time_write < findData.time_write) {
-                SaveFilePool* pool = (SaveFilePool*)saveFileList;
+                SaveFilePool* pool = saveFileList;
                 int* newNode;
                 if (node == 0) {
                     newNode = pool->AllocNode(0, (int)pool->head);

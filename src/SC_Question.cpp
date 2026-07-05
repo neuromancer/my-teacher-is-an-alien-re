@@ -23,6 +23,7 @@
 SC_Question::SC_Question(int id, SCI_Dialog* dialog)
 {
     int gsIndex;
+    GameState* gs;
     char questFile[32];
 
     memset(&messageQueue, 0, 0x2A * sizeof(int));
@@ -32,17 +33,18 @@ SC_Question::SC_Question(int id, SCI_Dialog* dialog)
     dialogPtr = dialog;
 
     if (g_Strings_0046a6e0->GetString( id, label) == 0) {
-        ShowMessage("SC_Question::SC_Question missing label %d", id);
+        ShowMessage("SC_Question::SC_Question missing label %d", questionId);
         sprintf(label, "Missing Label %d", questionId);
     }
 
-    gsIndex = (g_GameState_0046aa30)->FindState(g_QuestLevelKey_00468108);
-    if (gsIndex < 0 || g_GameState_0046aa30->maxStates - 1 < gsIndex) {
+    gs = g_GameState_0046aa30;
+    gsIndex = gs->FindState(g_QuestLevelKey_00468108);
+    if (gsIndex < 0 || gs->maxStates - 1 < gsIndex) {
         ShowError("Invalid gamestate %d", gsIndex);
     }
 
     sprintf(questFile, "mis\\quest%2.2d.mis",
-        g_GameState_0046aa30->stateValues[gsIndex]);
+        gs->stateValues[gsIndex]);
 
     ParseFile(this, questFile, "[QUESTION%d]", questionId);
 
@@ -205,7 +207,6 @@ void SC_Question::InitState()
 void SC_Question::Finalize()
 {
     Queue* queue;
-    QueueNode* current;
     void* msgData;
     int queueType;
 
@@ -235,32 +236,28 @@ void SC_Question::Finalize()
             ShowError("bad queue type %lu", queueType);
         }
 
-        current = (QueueNode*)queue->current;
-        if (current != 0) {
-            if (queue->head == current) {
-                queue->head = current->next;
+        if (queue->current != 0) {
+            if (queue->head == queue->current) {
+                queue->head = queue->current->next;
             }
-            if (queue->tail == current) {
-                queue->tail = current->prev;
+            if (queue->tail == queue->current) {
+                queue->tail = queue->current->prev;
             }
-            if (current->next != 0) {
-                current->next->prev = current->prev;
+            if (queue->current->prev != 0) {
+                queue->current->prev->next = queue->current->next;
             }
-            if (current->prev != 0) {
-                current->prev->next = current->next;
+            if (queue->current->next != 0) {
+                queue->current->next->prev = queue->current->prev;
             }
 
-            if (current != 0) {
-                msgData = current->data;
+            if (queue->current != 0) {
+                msgData = queue->current->data;
             } else {
                 msgData = 0;
             }
 
-            if (current != 0) {
-                current->data = 0;
-                current->prev = 0;
-                current->next = 0;
-                operator delete(current);
+            if (queue->current != 0) {
+                delete queue->current;
                 queue->current = 0;
             }
             queue->current = queue->head;

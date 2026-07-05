@@ -106,8 +106,9 @@ int MouseControl::LBLParse(char* line)
         m_hotspots[index].y = y;
     } else if (strcmp(cmd, "LABEL") == 0) {
         sscanf(line, " %s %d %s", cmd, &index, args);
-        if (m_labels[index] != 0) {
-            operator delete(m_labels[index]);
+        char* old = m_labels[index];
+        if (old != 0) {
+            operator delete(old);
             m_labels[index] = 0;
         }
         m_labels[index] = (char*)operator new(0x10);
@@ -164,10 +165,13 @@ int MouseControl::FindStateByName(char* name) {
 
     i = 0;
     while (i < m_maxMice) {
-        if (m_labels != 0 && m_labels[i] != 0) {
-            if (strstr(m_labels[i], name) != 0) {
-                if (strlen(m_labels[i]) == strlen(name)) {
-                    return i;
+        if (m_labels != 0) {
+            char* lbl = m_labels[i];
+            if (lbl != 0) {
+                if (strstr(lbl, name) != 0) {
+                    if (strlen(m_labels[i]) == strlen(name)) {
+                        return i;
+                    }
                 }
             }
         }
