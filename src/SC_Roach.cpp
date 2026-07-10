@@ -291,18 +291,18 @@ void SC_Roach::RenderBoard()
 
     // Draw crystals placed on grid
     int cellCount = 0x24;
-    int* cellPtr = (int*)grid;
+    GridCell* cellPtr = grid;
     do {
         int col = 4;
-        int* cell = cellPtr;
+        int* cell = cellPtr->values;
         do {
             int id = *cell;
             if (id > -1 && id < 8 && drawn[id] == 0) {
                 drawn[id] = 1;
                 NavCrystal* crys = crystals[id];
                 if (crys != 0) {
-                    int py = cellPtr[5];
-                    int px = cellPtr[4];
+                    int py = cellPtr->top;
+                    int px = cellPtr->left;
                     if (crys->sprite != 0) {
                         crys->sprite->Do(
                             px - crys->dimArray2[crys->rotation].x,
@@ -314,7 +314,7 @@ void SC_Roach::RenderBoard()
             cell++;
             col--;
         } while (col != 0);
-        cellPtr += 8;
+        cellPtr++;
         cellCount--;
     } while (cellCount != 0);
 
@@ -326,20 +326,20 @@ void SC_Roach::RenderBoard()
 /* Function start: 0x4198B0 */
 int SC_Roach::TryPlacePiece(SpriteAction* msg)
 {
-    int* cellPtr = (int*)grid + 4;
+    GridCell* cellPtr = grid;
     int found = -1;
     int idx = 0;
     int mouseX = msg->mousePos.x + 10;
 
     do {
-        if (cellPtr[0] <= mouseX && cellPtr[2] >= mouseX) {
+        if (cellPtr->left <= mouseX && cellPtr->right >= mouseX) {
             int mouseY = msg->mousePos.y + 10;
-            if (cellPtr[1] <= mouseY && cellPtr[3] >= mouseY) {
+            if (cellPtr->top <= mouseY && cellPtr->bottom >= mouseY) {
                 found = idx;
                 goto found_cell;
             }
         }
-        cellPtr += 8;
+        cellPtr++;
         idx++;
     } while (idx < 0x24);
 
@@ -373,7 +373,7 @@ found_cell:
     do {
         int patternIdx = row % 4 + (row / 4) * 6 + found;
         int zero = 0;
-        int* dest = (int*)grid + patternIdx * 8;
+        int* dest = grid[patternIdx].values;
         int count = 4;
         do {
             NavCrystal* crys = currentPiece;
@@ -422,6 +422,8 @@ int SC_Roach::TryDropOnSource(SpriteAction* msg)
 int SC_Roach::PickFromGrid(SpriteAction* msg)
 {
     int idx = 0;
+    // Raw +4-int anchor is load-bearing: the GridCell*/field form flips
+    // regalloc here (100% -> 93.51%) though it matched in TryPlacePiece.
     int* cellPtr = (int*)grid + 4;
     int mouseX = msg->mousePos.x;
 
@@ -444,8 +446,8 @@ int SC_Roach::PickFromGrid(SpriteAction* msg)
 
 found:
     {
-        int xofs = mouseX - ((int*)grid)[idx * 8 + 4];
-        int yofs = msg->mousePos.y - ((int*)grid)[idx * 8 + 5];
+        int xofs = mouseX - grid[idx].left;
+        int yofs = msg->mousePos.y - grid[idx].top;
         int orient;
         if (yofs < xofs) {
             orient = 0;
@@ -453,7 +455,7 @@ found:
             orient = 3;
         }
 
-        int crystalId = ((int*)grid)[orient + idx * 8];
+        int crystalId = grid[idx].values[orient];
         if (crystalId < 0) {
             return 0;
         }
@@ -462,9 +464,9 @@ found:
     }
 
     int count = 0x24;
-    int* gridPtr = (int*)grid;
+    GridCell* gridPtr = grid;
     do {
-        int* cell = gridPtr;
+        int* cell = gridPtr->values;
         int i = 4;
         do {
             if (currentPiece->crystalId == *cell) {
@@ -473,7 +475,7 @@ found:
             cell++;
             i--;
         } while (i != 0);
-        gridPtr += 8;
+        gridPtr++;
         count--;
     } while (count != 0);
 
@@ -520,23 +522,23 @@ void SC_Roach::OnProcessEnd()
     int row = 0;
     SlimeDim cellSize(0x2a, 0x2a);
     SlimeDim start(0xce, 0x40);
-    int* gridPtr = (int*)grid + 4;
+    GridCell* gridPtr = grid;
 
     do {
         int col = 0;
-        int* cell = gridPtr;
+        GridCell* cell = gridPtr;
         do {
             {
                 SlimeDim sd(col * cellSize.x + start.x, row * cellSize.y + start.y);
-                cell[0] = sd.x;
-                cell[1] = sd.y;
-                cell[2] = cellSize.x + sd.x;
-                cell[3] = cellSize.y + sd.y;
+                cell->left = sd.x;
+                cell->top = sd.y;
+                cell->right = cellSize.x + sd.x;
+                cell->bottom = cellSize.y + sd.y;
             }
-            cell += 8;
+            cell++;
             col++;
         } while (col < 6);
-        gridPtr += 0x30;
+        gridPtr += 6;
         row++;
     } while (row < 6);
 
@@ -607,8 +609,8 @@ void SC_Roach::ProcessLose() {
     }
 
     if (savedCommand == 0x2B) {
-        ((int*)pendingAction)[2] = 0x2B;
-        ((int*)pendingAction)[3] = savedMsgData;
+        pendingAction->fromType = 0x2B;
+        pendingAction->fromValue = savedMsgData;
     }
 
     SC_Combat::ProcessLose();
@@ -703,37 +705,37 @@ int SC_Roach::LBLParse(char* line)
         char p0[8], p1[8], p2[8], p3[8], p4[8], p5[8];
         sscanf(line, " %s %d %s %s %s %s %s %s", label, &idx, p0, p1, p2, p3, p4, p5);
 
-        int* dest = (int*)grid + idx * 48;
+        int* dest = grid[idx * 6].values;
         if (p0[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p0[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p0[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p0[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)grid + idx * 48 + 8;
+        dest = grid[idx * 6 + 1].values;
         if (p1[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p1[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p1[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p1[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)grid + idx * 48 + 16;
+        dest = grid[idx * 6 + 2].values;
         if (p2[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p2[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p2[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p2[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)grid + idx * 48 + 24;
+        dest = grid[idx * 6 + 3].values;
         if (p3[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p3[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p3[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p3[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)grid + idx * 48 + 32;
+        dest = grid[idx * 6 + 4].values;
         if (p4[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p4[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p4[2] == '1') dest[2] = -1; else dest[2] = -2;
         if (p4[3] == '1') dest[3] = -1; else dest[3] = -2;
 
-        dest = (int*)grid + idx * 48 + 40;
+        dest = grid[idx * 6 + 5].values;
         if (p5[0] == '1') dest[0] = -1; else dest[0] = -2;
         if (p5[1] == '1') dest[1] = -1; else dest[1] = -2;
         if (p5[2] == '1') dest[2] = -1; else dest[2] = -2;

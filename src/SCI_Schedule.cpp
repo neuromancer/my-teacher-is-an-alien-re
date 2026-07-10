@@ -129,7 +129,7 @@ void SCI_Schedule::Init(SC_MessageParser* msg)
 
     iVar8 = (int)palette;
     if (iVar8 != 0) {
-        int* piVar7 = (int*)((int)g_ZBufferManager_0046aa24 + 0xa8);
+        int* piVar7 = (int*)&g_ZBufferManager_0046aa24->m_palette;
         if (*piVar7 != 0) {
             WriteToLog("ddouble palette");
         }

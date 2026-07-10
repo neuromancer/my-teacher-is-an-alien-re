@@ -469,7 +469,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
     } else {
         if (strcmp(local_3c, "SOUND") == 0) {
             sscanf(param_1, " %s %d %s %d ", local_3c, &local_18, local_bc, &local_1c);
-            if (local_18 >= 0 && local_18 <= *(int*)slimeTable - 1) {
+            if (local_18 >= 0 && local_18 <= slimeTable->numEntries - 1) {
                 slimeTable->LoadEntry(local_18, local_bc, local_1c);
                 goto lbl_done;
             }

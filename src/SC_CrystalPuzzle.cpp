@@ -531,7 +531,7 @@ skip_floor2:
 
 /* Function start: 0x44FE20 */
 int SC_CrystalPuzzle::Exit(SC_MessageParser* msg) {
-    return handlerId == ((int*)msg)[0];
+    return handlerId == ((SpriteAction*)msg)->addressType;
 }
 
 /* Function start: 0x44FE40 */

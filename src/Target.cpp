@@ -262,7 +262,7 @@ int Target::Update()
     switch (pendingAction) {
     case 1:
     if (handle == animRange.y) {
-        *(int*)g_ScoreDisplay_0046ae6c -= hitMissPoints.end;
+        g_ScoreDisplay_0046ae6c->score -= hitMissPoints.end;
         Target::Deactivate();
         return 1;
     }
@@ -295,7 +295,7 @@ int Target::Update()
         hitSound->Play(100, 1);
     }
     g_ScoreDisplay_0046ae6c->missCount++;
-    *(int*)g_ScoreDisplay_0046ae6c += hitMissPoints.start;
+    g_ScoreDisplay_0046ae6c->score += hitMissPoints.start;
     g_ScoreDisplay_0046ae6c->AdjustScore(scoreWeight.start);
     g_CombatEngine_0046ae78->hotspotPos.x += combatBonus.start;
     g_CombatEngine_0046ae78->effectPair1.x += combatBonus2.val;

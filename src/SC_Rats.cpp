@@ -219,8 +219,8 @@ void SC_Rats::ProcessState() {
         }
     } else {
         if (g_RatsState_00473e18 == 4) {
-            int* spriteData = (int*)actionData;
-            spriteData[8] = 2 - spriteData[8];
+            SpriteAction* spriteData = actionData;
+            spriteData->mousePos.y = 2 - spriteData->mousePos.y;
             GameState* gs = g_GameState_0046aa30;
             idx = ((GameState*)gs)->FindLabel("NUM_ACTIONS");
             if (idx < 0 || gs->maxStates - 1 < idx) {

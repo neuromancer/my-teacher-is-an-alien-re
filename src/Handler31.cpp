@@ -360,7 +360,9 @@ void Handler31::Update(int param1, int param2) {
             }
 
             list->current = head;
-            if (questionQueue->head != 0) {
+            // No-op (Queue*) cast is load-bearing: without it MSVC flips regalloc
+            // in Handler31::Init above (100% -> 96.48%).
+            if (((Queue*)questionQueue)->head != 0) {
                 int drawY = 0xA;
                 do {
                     node = questionQueue->current;
@@ -387,7 +389,7 @@ void Handler31::Update(int param1, int param2) {
                     if (node != 0) {
                         q->current = node->next;
                     }
-                } while (questionQueue->head != 0);
+                } while (((Queue*)questionQueue)->head != 0);
             }
         } else {
             ((SCI_Dialog*)this)->ResetSpriteStates();
@@ -545,7 +547,7 @@ SC_Question* Handler31::SelectQuestion(int idx) {
     if (list != 0) {
         list->current = list->head;
         ListNode* node;
-        if (*(int*)questionQueue != 0) {
+        if (((Queue*)questionQueue)->head != 0) {
             do {
                 list = questionQueue;
                 node = list->current;
@@ -586,7 +588,7 @@ SC_Question* Handler31::SelectQuestion(int idx) {
                     list->current = node->next;
                 }
                 count++;
-            } while (*(int*)questionQueue != 0);
+            } while (((Queue*)questionQueue)->head != 0);
         }
     }
     return 0;

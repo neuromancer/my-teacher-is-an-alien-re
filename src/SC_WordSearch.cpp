@@ -232,7 +232,7 @@ void SC_WordSearch::ShutDown(SC_MessageParser* msg) {
 void SC_WordSearch::Update(int param1, int param2) {
     Sprite* spr;
     void* pvVar10;
-    int* piVar1;
+    InputState* piVar1;
     int iVar5, iVar9;
     int iVar8;
 
@@ -255,13 +255,13 @@ void SC_WordSearch::Update(int param1, int param2) {
         pvVar10 = scoreSprite;
         ((Sprite*)pvVar10)->Do(((Sprite*)pvVar10)->loc.x, ((Sprite*)pvVar10)->loc.y, 1.0);
         (g_Mouse_0046aa18)->DrawCursor();
-        piVar1 = (int*)g_InputManager_0046aa08->pMouse;
+        piVar1 = g_InputManager_0046aa08->pMouse;
         iVar9 = 0;
         if (piVar1 != 0) {
-            iVar9 = piVar1[1];
+            iVar9 = piVar1->y;
         }
         if (piVar1 != 0) {
-            iVar5 = *piVar1;
+            iVar5 = piVar1->x;
         } else {
             iVar5 = 0;
         }
@@ -294,12 +294,12 @@ void SC_WordSearch::Update(int param1, int param2) {
     do {
         if (*pcVar12 != '\0') {
             iVar9 = 0;
-            piVar1 = (int*)g_InputManager_0046aa08->pMouse;
+            piVar1 = g_InputManager_0046aa08->pMouse;
             if (piVar1 != 0) {
-                iVar9 = piVar1[1];
+                iVar9 = piVar1->y;
             }
             if (piVar1 != 0) {
-                iVar5 = *piVar1;
+                iVar5 = piVar1->x;
             } else {
                 iVar5 = 0;
             }
@@ -317,8 +317,8 @@ void SC_WordSearch::Update(int param1, int param2) {
         local_4 = local_4 - 1;
     } while (local_4 != 0);
 
-    int* puVar2 = (int*)g_InputManager_0046aa08->pMouse;
-    if (puVar2 == 0 || (uVar4 = *puVar2, (int)uVar4 < 0x22)) {
+    InputState* puVar2 = g_InputManager_0046aa08->pMouse;
+    if (puVar2 == 0 || (uVar4 = puVar2->x, (int)uVar4 < 0x22)) {
         spr = g_Mouse_0046aa18->m_sprite;
         if (spr != 0) {
             spr->ResetAnimation(10, 0);
@@ -334,7 +334,7 @@ void SC_WordSearch::Update(int param1, int param2) {
         {
         unsigned int uVar7;
         if (puVar2 != 0) {
-            uVar7 = puVar2[1];
+            uVar7 = puVar2->y;
         } else {
             uVar7 = 0;
         }
@@ -347,7 +347,7 @@ void SC_WordSearch::Update(int param1, int param2) {
 
             uVar7 = 0;
             if (puVar2 != 0) {
-                uVar7 = puVar2[1];
+                uVar7 = puVar2->y;
             }
             uVar6 = ((puVar2 == 0) - 1) & uVar4;
 
@@ -358,7 +358,7 @@ void SC_WordSearch::Update(int param1, int param2) {
 
                 uVar7 = 0;
                 if (puVar2 != 0) {
-                    uVar7 = puVar2[1];
+                    uVar7 = puVar2->y;
                 }
                 uVar4 = ((puVar2 == 0) - 1) & uVar4;
 
@@ -755,14 +755,14 @@ void SC_WordSearch::Render() {
     int local_4 = 0;
     int mouseY;
     int mouseX;
-    int* mouse = (int*)g_InputManager_0046aa08->pMouse;
+    InputState* mouse = g_InputManager_0046aa08->pMouse;
     if (mouse != 0) {
-        mouseY = mouse[1];
+        mouseY = mouse->y;
     } else {
         mouseY = 0;
     }
     if (mouse != 0) {
-        mouseX = mouse[0];
+        mouseX = mouse->x;
     } else {
         mouseX = 0;
     }
@@ -784,14 +784,14 @@ void SC_WordSearch::Render() {
         do {
             int mx;
             int my;
-            mouse = (int*)g_InputManager_0046aa08->pMouse;
+            mouse = g_InputManager_0046aa08->pMouse;
             if (mouse != 0) {
-                my = mouse[1];
+                my = mouse->y;
             } else {
                 my = 0;
             }
             if (mouse != 0) {
-                mx = mouse[0];
+                mx = mouse->x;
             } else {
                 mx = 0;
             }

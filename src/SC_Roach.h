@@ -48,8 +48,11 @@ struct CrystalSource {
 };
 
 struct GridCell {
-    int values[4];    // +0x00..+0x0C — pattern values per cell row
-    int pad[4];       // +0x10..+0x1C
+    int values[4];    // +0x00..+0x0C — crystal id per orientation
+    int left;         // +0x10 — hitbox (left/top also used as draw anchor)
+    int top;          // +0x14
+    int right;        // +0x18
+    int bottom;       // +0x1C
     GridCell();
     ~GridCell();
 };

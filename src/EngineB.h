@@ -5,6 +5,8 @@
 #include "GlyphRect.h"
 #include "Range.h"
 
+struct RatConfig;
+
 class SpriteAction;
 
 class Animation;
@@ -46,7 +48,7 @@ struct MeterPos {
 class EngineB : public SC_CombatBase {
 public:
   // EngineB-specific fields (SC_CombatBase ends at 0xF0)
-  int* m_targetConfig;            // 0xF0 - allocated config object [0]=base, [1]=points
+  RatConfig* m_targetConfig;      // 0xF0 - allocated config object
   int m_prevHitCount;             // 0xF4 - tracks score manager hit count
   int prevTargetHit;                 // 0xF8
   int m_prevMissCount;            // 0xFC - tracks score manager miss count

@@ -139,7 +139,7 @@ void EngineB::RenderBackground() {
     if (EngineB::m_prevHitCount != hitCount) {
         EngineB::m_prevHitCount = hitCount;
         g_BgSprite_0046ae50->ResetAnimation(8, 0);
-        EngineB::m_progress.start += EngineB::m_targetConfig[1];
+        EngineB::m_progress.start += EngineB::m_targetConfig->points;
         r = rand() % 3;
         snd = (&m_hitSound1)[r];
         EngineB::m_localSoundList->StopAll();
@@ -264,7 +264,7 @@ void EngineB::OnProcessEnd() {
     int mouseX;
     SoundList* sList;
 
-    EngineB::m_targetConfig = (int*)new RatConfig();
+    EngineB::m_targetConfig = new RatConfig();
 
     if (g_InputManager_0046aa08 != 0) {
         ((InputManager*)g_InputManager_0046aa08)->Refresh(1);
@@ -281,7 +281,7 @@ void EngineB::OnProcessEnd() {
     EngineB::m_weaponParser = g_CombatWeapon_0046ae60;
     for (i = 0; i < g_TargetList_0046ae58->count; i++) {
         Target* target = g_TargetList_0046ae58->targets[i];
-        target->progressRange.end = EngineB::m_targetConfig[0];
+        target->progressRange.end = EngineB::m_targetConfig->base;
     }
 
     EngineB::m_localSoundList = new SoundList(10);
