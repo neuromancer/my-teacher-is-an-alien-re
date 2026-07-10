@@ -32,7 +32,7 @@ public:
 
     virtual int LBLParse(char* param_1);      // 0x438630 (+0x00)
 
-    int ProcessClick(Projectile* proj);         // 0x438F10 (+0x2C)
+    virtual int ProcessClick(Projectile* proj); // 0x438F10 (+0x2C)
     virtual void OnCombatResult();              // 0x438EF0 (+0x30)
 
     void ProcessState();                      // 0x4382F0
