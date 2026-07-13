@@ -168,7 +168,9 @@ SC_FakeRoom::~SC_FakeRoom()
 }
 
 /* Function start: 0x444840 */ /* No assembly extracted */
-void SC_FakeRoom::OnProcessEnd() {}
+void SC_FakeRoom::OnProcessEnd() {
+    SC_Combat::OnProcessEnd();
+}
 
 /* Function start: 0x444320 */
 void SC_FakeRoom::Init(SC_MessageParser* msg) {
