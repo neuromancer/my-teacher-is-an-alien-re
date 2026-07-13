@@ -29,8 +29,15 @@ char* MakeAudioName(char* baseName);
 
 extern __declspec(dllimport) int __stdcall AIL_sample_status(void*);
 
+extern void InitSearchScreenRects();
+extern void InitDefaultSearchCoords();
+
 /* Function start: 0x44EBA0 */
 SC_CrystalPuzzle::SC_CrystalPuzzle() {
+    
+    InitSearchScreenRects();
+    InitDefaultSearchCoords();
+
     memset(&field_A8, 0, 0x46 * 4);
 
     rect1.left = 0;
