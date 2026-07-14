@@ -231,66 +231,6 @@ void ClearGameStateSave() {
     g_FanField4_00472bec = 0;
 }
 
-/* Function start: 0x44E960 */
-void InitSearchScreenRects()
-{
-    int* rects = (int*)g_PuzzleButtonRects_00473d30;
-    rects[1] = 0x147;
-    rects[2] = 0x205;
-    rects[3] = 0x16D;
-    rects[4] = 0x209;
-    rects[5] = 0x147;
-    rects[7] = 0x16D;
-    rects[9] = 0x147;
-    rects[0] = 0x1DE;
-    rects[6] = 0x230;
-    rects[11] = 0x16D;
-    rects[13] = 0x11C;
-    rects[14] = 0x205;
-    rects[16] = 0x209;
-    rects[15] = 0x143;
-    rects[17] = 0x11C;
-    rects[8] = 0x234;
-    rects[10] = 0x25B;
-    rects[19] = 0x143;
-    rects[21] = 0x11C;
-    rects[12] = 0x1DE;
-    rects[18] = 0x230;
-    rects[23] = 0x143;
-    rects[25] = 0xF1;
-    rects[26] = 0x205;
-    rects[28] = 0x209;
-    rects[27] = 0x118;
-    rects[29] = 0xF1;
-    rects[20] = 0x234;
-    rects[22] = 0x25B;
-    rects[31] = 0x118;
-    rects[33] = 0xF1;
-    rects[24] = 0x1DE;
-    rects[35] = 0x118;
-    rects[30] = 0x230;
-    rects[32] = 0x234;
-    rects[34] = 0x25B;
-}
-
-/* Function start: 0x44EAE0 */
-void InitDefaultSearchCoords()
-{
-    int* coords = (int*)g_DoorRects_00473dc8;
-    coords[1] = 0xA1;
-    coords[3] = 0x137;
-    coords[0] = 0x14;
-    coords[2] = 0x46;
-    coords[4] = 0xB2;
-    coords[5] = 0xAC;
-    coords[6] = 0xEF;
-    coords[9] = 0xA1;
-    coords[11] = 0x137;
-    coords[7] = 0x118;
-    coords[8] = 0x15D;
-    coords[10] = 0x18F;
-}
-
 static void AtExitHandler() {}
 
 /* Function start: 0x44EB60 */

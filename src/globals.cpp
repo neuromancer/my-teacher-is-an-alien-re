@@ -737,16 +737,28 @@ POINT g_CursorPos_00473308;                                  // 0x00473308
 // IconBar globals
 IconBarEntry g_IconBarEntries_00473320[6];                   // 0x00473320-0x4733F8
 int g_IconBarRefCount_0046af0c = 0;                          // 0x0046af0c
-GlyphRect g_PuzzleButtonRects_00473d30[9];                   // 0x00473d30
-// g_IconBarState_00473334, g_SchoolMenuField1_00473358, g_SchoolMenuField2_0047337c
+GlyphRect g_PuzzleButtonRects_00473d30[9] = {                // 0x00473d30
+    GlyphRect(0x1DE, 0x147, 0x205, 0x16D),
+    GlyphRect(0x209, 0x147, 0x230, 0x16D),
+    GlyphRect(0x234, 0x147, 0x25B, 0x16D),
+    GlyphRect(0x1DE, 0x11C, 0x205, 0x143),
+    GlyphRect(0x209, 0x11C, 0x230, 0x143),
+    GlyphRect(0x234, 0x11C, 0x25B, 0x143),
+    GlyphRect(0x1DE, 0x0F1, 0x205, 0x118),
+    GlyphRect(0x209, 0x0F1, 0x230, 0x118),
+    GlyphRect(0x234, 0x0F1, 0x25B, 0x118)
+};// g_IconBarState_00473334, g_SchoolMenuField1_00473358, g_SchoolMenuField2_0047337c
 // are now macros in globals.h — they alias IconBarEntry[0/1/2].field_14
 char g_CinematicDebugStr_00473400 = 0;           // 0x00473400
 int g_CacheTotalSize_00473440 = 0;                           // 0x00473440
 int g_CacheSizeLimit_00473444 = 0;                           // 0x00473444
 int g_AnimStates_0046ac30[5] = {0, 3, 1, 5, 2};             // 0x0046ac30
 int g_LastBombDir_0046ac44 = -1;                             // 0x0046ac44
-GlyphRect g_DoorRects_00473dc8[3];                           // 0x00473dc8
-int g_State4Phase_00473df8 = 0;                              // 0x00473df8
+GlyphRect g_DoorRects_00473dc8[3] = {                        // 0x00473dc8
+    GlyphRect(0x14,  0xA1, 0x46,  0x137),
+    GlyphRect(0xB2,  0xAC, 0xEF,  0x118),
+    GlyphRect(0x15D, 0xA1, 0x18F, 0x137)
+};int g_State4Phase_00473df8 = 0;                              // 0x00473df8
 int g_RatsField_00473e00 = 0;                                // 0x00473e00
 int g_State0Phase_00473e14 = 0;                              // 0x00473e14
 int g_RatsState_00473e18 = 0;                                // 0x00473e18
