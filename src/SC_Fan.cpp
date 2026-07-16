@@ -38,9 +38,8 @@ SC_Fan::SC_Fan()
 
 /* Function start: 0x40F190 */
 SC_Fan::~SC_Fan() {
-    Cleanup(0);
+    ShutDown(0);
 }
-
 /* Function start: 0x40F290 */
 void SC_Fan::Init(SC_MessageParser* msg) {
     int savedId;
@@ -85,7 +84,7 @@ void SC_Fan::Init(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x40F420 */
-void SC_Fan::Cleanup(int flag) {
+void SC_Fan::ShutDown(SC_MessageParser* msg) {
     void* ptr;
     int i;
 
@@ -177,7 +176,7 @@ void SC_Fan::Cleanup(int flag) {
 
     bgSoundId = 0;
 
-    if (flag != 0) {
+    if (msg != 0) {
         SendGameMessage(1, handlerId, handlerId, moduleParam, 0x18, 0, 0, 0, 0, 0);
     }
 }
