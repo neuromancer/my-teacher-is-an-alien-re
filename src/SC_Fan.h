@@ -21,7 +21,7 @@ struct FanDim {
 // SC_Fan - Fan puzzle handler (case 62/0x3E)
 // Constructor: 0x40EFF0
 // Destructor: 0x40F190
-// Cleanup: 0x40F420
+// ShutDown: 0x40F420
 // Size: 0x1C8
 // Vtable: 0x461258
 class SC_Fan : public Handler {
@@ -38,7 +38,7 @@ public:
     virtual int HandleInput(Sprite* spr);      // [11] 0x40FC50
     virtual void ProcessHit();                 // [12] 0x40FC30
 
-    void Cleanup(int flag);            // [6] 0x40F420 (vtable ShutDown slot)
+    virtual void ShutDown(SC_MessageParser* msg); // [6] 0x40F420
 
     void ProcessRound();               // 0x40F760
     void DisplaySprites(int frame);    // 0x40FBD0
