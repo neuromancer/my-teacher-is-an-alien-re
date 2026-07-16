@@ -251,9 +251,31 @@ void EngineB::PostRender() {
         m_meterBuffer);
 }
 
-/* Function start: 0x4511C0 */ /* No assembly extracted */
+/* Function start: 0x4511C0 */ 
 int EngineB::HandleAction(SpriteAction* param) {
-    return 0;
+    int result = 0;
+
+    switch (param->extra1) {
+    case 1:
+        combatFlags |= 2;
+        g_RatsState_00473e18 = 3;
+        result = 1;
+        break;
+
+    case 2:
+        combatFlags |= 1;
+        g_RatsState_00473e18 = 2;
+        result = 1;
+        break;
+
+    case 3:
+        combatFlags |= 4;
+        g_RatsState_00473e18 = 4;
+        result = 1;
+        break;
+    }
+
+    return result;
 }
 
 /* Function start: 0x451230 */
