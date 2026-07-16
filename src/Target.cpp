@@ -375,7 +375,7 @@ void Target::OnProcessStart()
     flags = flags & ~2;
     flags = flags | 0x100;
 
-    InitAnimation();
+    OpenAnimation();
 
     TargetList* tl = g_TargetList_0046ae58;
     stopSound     = tl->defaultStopSound;

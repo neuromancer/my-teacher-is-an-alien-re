@@ -129,6 +129,21 @@ void Sprite::InitAnimation()
     ResetAnimation(handle, 0);
 }
 
+/* Function start: 0x44CA50 */
+void Sprite::OpenAnimation()
+{
+    if (animation_data == 0) {
+        animation_data = new Animation();
+        char* path;
+        if ((flags & 0x400) != 0) {
+            path = FormatAssetPath(sprite_filename);
+        } else {
+            path = ResolveAssetPath(sprite_filename);
+        }
+        animation_data->Open(path, 0xFE000, -1);
+    }
+}
+
 /* Function start: 0x44CB10 */
 void Sprite::FreeAnimation()
 {

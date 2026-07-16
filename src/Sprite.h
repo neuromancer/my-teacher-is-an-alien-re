@@ -48,6 +48,7 @@ public:
     void SetSpriteLogic(char* gsName, char* condition, int value); // 0x44D420
     void InitLogic(int param_1);                   // 0x44D5C0
     void InitAnimation();                          // 0x44C880
+    void OpenAnimation();                          // 0x44CA50
     virtual int LBLParse(char* param_1);           // 0x44D700
     virtual void OnProcessEnd();                   // 0x44D6E0
     void FreeAnimation();                          // 0x44CB10
