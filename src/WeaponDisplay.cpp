@@ -4,11 +4,26 @@
 #include "Graphics.h"
 #include "PaletteUtils.h"
 #include "VideoTable.h"
+#include "globals.h"
+#include "MouseControl.h"
+#include "Target.h"
 
 
-/* Function start: 0x427DC0 */ /* No assembly extracted */
+/* Function start: 0x427DC0 */
 void WeaponDisplay::DrawCrosshairs()
 {
+    if (g_Mouse_0046aa18 != 0) {
+        g_Mouse_0046aa18->DrawCursor();
+        return;
+    }
+    SetFillColor(0xfa);
+    SetDrawPosition(m_crosshair.x, m_crosshair.y);
+    DrawCircle(6);
+    if (g_TargetList_0046ae58 != 0 && g_TargetList_0046ae58->field_1B4 != 0) {
+        SetDrawPosition(m_crosshair.x, m_crosshair.y);
+        DrawCircle(4);
+        DrawCircle(8);
+    }
 }
 
 /* Function start: 0x427E50 */
