@@ -1,5 +1,6 @@
 #include "GameConfig.h"
 #include "Memory.h"
+#include "string.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -37,7 +38,7 @@ GameConfig::~GameConfig() {
 
 /* Function start: 0x422800 */
 FILE* GameConfig::Open(char* mode) {
-    fp = fopen(PTR_s_Setup_cfg_00437454, mode);
+    fp = fsopen(PTR_s_Setup_cfg_00437454, mode);
     return fp;
 }
 
@@ -84,4 +85,3 @@ unsigned char GameConfig::CheckWindir() {
     data.rawData[6] = (result != 0) ? 1 : 0;
     return data.rawData[6];
 }
-

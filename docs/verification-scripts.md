@@ -70,6 +70,36 @@ focused on stack-local constants and strings instead of compiler-dependent stack
 frame layout. Set `STACK_LOCAL_VALUES_FLAGS=` to include stack displacement
 diagnostics.
 
+## Suppression policy
+
+Call aliases must only normalize ABI spellings, exact wrapper functions, or
+byte-identical COMDAT bodies. Do not alias routines merely because their current
+call sites appear to have the same effect: call verification compares the
+canonical target name, so such an alias can completely hide a wrong call.
+Check both the full and demo targets before adding or removing a shared alias.
+
+Call-count and global-access allowances must correspond to a currently observed
+analyzer artifact. Remove an allowance when running the same check without it no
+longer changes the report. Call-count allowances should include a `reason` in
+`config/binary-comp.json` because they suppress an otherwise resolved mismatch.
+
+The normal call check canonicalizes the project's allocation wrappers. Use the
+strict-memory mode when auditing whether a call went through the original
+wrapper rather than directly to its underlying allocator:
+
+```sh
+make verify-calls CALLS_FLAGS=--strict-memory
+```
+
+Calls and global-access checks are advisory by default because the reconstruction
+still has known findings. Focused checks that are expected to be clean should be
+made into real gates with `--fail-on-mismatches`:
+
+```sh
+make verify-calls FILTER=ClassName::Method CALLS_FLAGS=--fail-on-mismatches
+make verify-global-access FILTER=ClassName::Method GLOBAL_ACCESS_FLAGS=--fail-on-mismatches
+```
+
 Direct CLI examples:
 
 ```sh

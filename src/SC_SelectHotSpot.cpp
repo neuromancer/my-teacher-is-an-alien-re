@@ -421,7 +421,7 @@ SC_SelectHotSpot::~SC_SelectHotSpot() {
 void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
     SpriteAction* pmsg = (SpriteAction*)msg;
 
-    InitFromMessage(msg);
+    CopyCommandData(msg);
     SetVideoRes(0x280, 0x1e0);
 
     ZBufferManager* zbm = g_ZBufferManager_0046aa24;
@@ -501,7 +501,7 @@ void SC_SelectHotSpot::Init(SC_MessageParser* msg) {
 
     if (SC_SelectHotSpot::palette != 0) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         g_ZBufferManager_0046aa24->m_palette = (Palette*)SC_SelectHotSpot::palette;
     }
@@ -721,7 +721,7 @@ int SC_SelectHotSpot::LBLParse(char* line) {
             SC_SelectHotSpot::palette = 0;
         }
         SC_SelectHotSpot::palette = new Palette();
-        ((Palette*)SC_SelectHotSpot::palette)->Load(nameBuf);
+        ((Palette*)SC_SelectHotSpot::palette)->LoadFile(nameBuf);
     } else if (strcmp(keyword, "HOTSPOT") == 0) {
         int sortKey;
         sscanf(line, "%s %d ", keyword, &sortKey);

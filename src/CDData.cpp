@@ -101,7 +101,7 @@ void __cdecl FileCacheEntryCleanup(void* entries, int count) {
             if (DeleteFileAndDir(entry->name) == -1) {
                 LogCacheStats();
                 LogCacheEntries();
-                WriteToLog("HDCache::Unable to delete '%s' (errno=%d)", entry->name, errno);
+                WriteToMessageLog("HDCache::Unable to delete '%s' (errno=%d)", entry->name, errno);
             }
             FreeMemory(entry);
             *slot = 0;
@@ -389,7 +389,7 @@ char* __cdecl ResolveAssetPath(char* name, ...) {
         int size = GetFileSize(resolved);
         if (size == -1) {
             resolved = (char*)FormatAssetPath(basePath);
-            WriteToLog("HDFile:: - Unable to find file '%s'", resolved);
+            WriteToMessageLog("HDFile:: - Unable to find file '%s'", resolved);
             return basePath;
         }
         FileCacheRegister(basePath, size);

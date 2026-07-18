@@ -90,7 +90,7 @@ StringTable::~StringTable() {
 /* Function start: 0x420b00 */
 FILE* StringTable::Open() {
     Unload();
-    fp = fopen(filename, "r");
+    fp = fsopen(filename, "r");
     return fp;
 }
 

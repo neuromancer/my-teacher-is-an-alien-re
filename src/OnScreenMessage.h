@@ -37,7 +37,8 @@ struct SoundEntry {
 
     ~SoundEntry() {
         if (sample != 0) {
-            delete sample;
+            sample->Unload();
+            operator delete(sample);
             sample = 0;
         }
     }

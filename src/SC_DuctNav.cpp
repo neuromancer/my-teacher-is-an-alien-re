@@ -128,7 +128,7 @@ void SC_DuctNav::Init(SC_MessageParser* msg) {
     // Set palette
     if (fontPalette != 0) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         g_ZBufferManager_0046aa24->m_palette = fontPalette;
     }

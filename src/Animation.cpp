@@ -3,6 +3,7 @@
 #include "Palette.h"
 #include "PaletteUtils.h"
 #include "VBuffer.h"
+#include "VideoTable.h"
 #include "string.h"
 #include <smack.h>
 #include "InputManager.h"
@@ -63,7 +64,7 @@ void Animation::CloseSmackerFile() {
   if (smk != 0) {
     if (g_GameEngine_0046a6ec != 0) {
       if (g_GameEngine_0046a6ec->m_smackHandle == (void*)smk) {
-        WriteToLog("Animation Close - restoring framerate to %dms",
+        WriteToMessageLog("Animation Close - restoring framerate to %dms",
                      g_GameEngine_0046a6ec->m_frameTimeCopy);
         g_GameEngine_0046a6ec->m_smackHandle = 0;
         g_GameEngine_0046a6ec->m_frameTime = g_GameEngine_0046a6ec->m_frameTimeCopy;
@@ -295,8 +296,8 @@ void Animation::MainLoop() {
       DoFrame();
 
       if (flags & 0x100) {
-        SetFontColor(0xfa);
-        SetFontPosition(0x14, 0x14);
+        SetFillColor(0xfa);
+        SetDrawPosition(0x14, 0x14);
         DrawFontText(g_AnimFilename2_00472cb0, strlen(g_AnimFilename2_00472cb0));
       }
 

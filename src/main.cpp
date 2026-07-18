@@ -84,7 +84,7 @@ void RunGame() {
     SetVideoRes(0x280, 0x1e0);
 
     // Play splash cinematic if exists
-    const char *splashPath = CDData_ResolvePath("cine\\splash.smk");
+    const char *splashPath = FormatAssetPath("cine\\splash.smk");
     if (FileExists(splashPath)) {
         Animation anim;
         anim.Play((char *)splashPath, 3);
@@ -490,7 +490,7 @@ void ShowLoadingScreen(void) {
     int x;
     int* screen;
 
-    path = CDData_ResolvePath("elements\\loading.smk");
+    path = FormatAssetPath("elements\\loading.smk");
     if (FileExists(path) != 0) {
         buffer = new VBuffer((char*)path, 0);
         screen = GetScreenWidth();

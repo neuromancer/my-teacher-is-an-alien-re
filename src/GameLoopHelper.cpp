@@ -159,16 +159,16 @@ void GameLoopHelper::PostProcess() {
     int idx;
     AnimData* data;
 
-    WriteToLog("REPORT of in use animations");
+    WriteToMessageLog("REPORT of in use animations");
     idx = 1;
     int* volatile node = pool->head;
     if (node != 0) {
         do {
             data = (AnimData*)node[2];
             node = (int*)node[0];
-            WriteToLog("  %2.2d. Name=%-32s. smk addr=%lu", idx, data, data->handle);
+            WriteToMessageLog("  %2.2d. Name=%-32s. smk addr=%lu", idx, data, data->handle);
             idx++;
         } while (node != 0);
     }
-    WriteToLog("******* END REPORT ********");
+    WriteToMessageLog("******* END REPORT ********");
 }

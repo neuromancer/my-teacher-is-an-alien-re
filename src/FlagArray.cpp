@@ -1,4 +1,5 @@
 #include "FlagArray.h"
+#include "CDData.h"
 #include "FileArchive.h"
 #include "globals.h"
 #include "string.h"
@@ -39,7 +40,7 @@ FlagArray::FlagArray(char* f, int numStates) {
     }
 
     if (fp == 0) {
-        fp_temp = fsopen(fname, "wb");
+        fp_temp = OpenSaveFile(fname, "wb");
         fp = fp_temp;
 
         if (fp_temp != 0) {
@@ -85,7 +86,7 @@ void FlagArray::Open() {
         ShowError("double FlagArray::Open()");
     }
     
-    FILE* fp_temp = fopen(filename, "rb+");
+    FILE* fp_temp = fsopen(filename, "rb+");
     fp = fp_temp;
     
     if (fp_temp == NULL) {

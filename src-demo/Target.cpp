@@ -1,4 +1,5 @@
 #include "Target.h"
+#include "CombatSprite.h"
 #include "globals.h"
 #include "Sprite.h"
 #include "Memory.h"
@@ -98,7 +99,7 @@ void Target::Activate()
                 if (buckets == 0) {
                     hashTable->AllocateBuckets(numBuckets, 1);
                 }
-                node = hashTable->AllocateNode();
+                node = (HashNode*)((SpriteHashTable*)hashTable)->AllocateNode();
                 node->bucketIndex = hash;
                 node->key = (unsigned int)Target::id;
                 node->next = ((HashNode**)hashTable->buckets)[hash];
@@ -576,4 +577,3 @@ void ScoreManager::AdjustScore(int value) {
         ScoreManager::score = 0xc8;
     }
 }
-

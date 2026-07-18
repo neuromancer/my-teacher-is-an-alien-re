@@ -67,14 +67,14 @@ void DumpVBufferHandles()
     int i;
 
     int count = GetVideoBufferCount();
-    WriteToLog("%d Virtual Buffers in use", count);
+    WriteToMessageLog("%d Virtual Buffers in use", count);
 
     i = 0;
     do {
         int handle = g_VBufferHandleTable[i];
         if (handle != -1) {
             char* name = GetVideoBufferNameSlot(i);
-            WriteToLog("\tVB handle=%d addr=%d name=%s", i, handle, name);
+            WriteToMessageLog("\tVB handle=%d addr=%d name=%s", i, handle, name);
         }
         i++;
     } while (i < 0x20);
@@ -151,8 +151,7 @@ VBuffer::VBuffer(char* filename, int param_2)
 /* Function start: 0x411270 */
 void VBuffer::LoadFromFile(char* filename, int param_2)
 {
-    Release();
-    Free();
+    this->~VBuffer();
 
     Animation anim;
     anim.Open(filename, 0xFE000, -1);

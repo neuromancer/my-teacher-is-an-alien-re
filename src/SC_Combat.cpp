@@ -38,7 +38,7 @@ int SC_Combat::LBLParse(char* line) {
     if (strcmp(local_3c, "PALETTE") == 0) {
         sscanf(line, "%s %s", local_3c, local_bc);
         field_0x104 = new Palette();
-        field_0x104->Load(local_bc);
+        field_0x104->LoadFile(local_bc);
     } else if (strcmp(local_3c, "BACKGROUND_SPRITE") == 0) {
         bgSprite = new Sprite((char*)0);
         Parser::ProcessFile(bgSprite, this, (char*)0);
@@ -98,7 +98,7 @@ void SC_Combat::OnProcessEnd() {
     if (field_0x104 != 0) {
         ZBufferManager* mgr = (ZBufferManager*)g_ZBufferManager_0046aa24;
         if (mgr->m_palette != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         mgr->m_palette = field_0x104;
     }

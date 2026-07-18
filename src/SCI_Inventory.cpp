@@ -131,7 +131,7 @@ SCI_Inventory::~SCI_Inventory() {
     {
         Sample* snd = clickSound;
         if (snd != 0) {
-            snd->~Sample();
+            snd->Unload();
             FreeMemory(snd);
             clickSound = 0;
         }
@@ -426,10 +426,10 @@ void SCI_Inventory::Update(int param1, int param2) {
         bgSprite->Do(0, 0, 1.0);
     }
 
-    putBackButton->Update();
-    useButton->Update();
-    scrollDownBtn->Update();
-    scrollUpBtn->Update();
+    putBackButton->SimpleUpdate();
+    useButton->SimpleUpdate();
+    scrollDownBtn->SimpleUpdate();
+    scrollUpBtn->SimpleUpdate();
 
     startIdx = scrollOffset;
     {

@@ -126,7 +126,7 @@ void SC_Wahoo::Init(SC_MessageParser* msg) {
 
     if (palette != 0) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         g_ZBufferManager_0046aa24->m_palette = palette;
     }
@@ -513,7 +513,7 @@ int SC_Wahoo::LBLParse(char* param_1) { // prologue at 0x438630
     if (strcmp(local_38, "PALETTE") == 0) {
         sscanf(param_1, "%s %s", local_38, local_b8);
         palette = new Palette();
-        palette->Load(local_b8);
+        palette->LoadFile(local_b8);
     }
     else if (strcmp(local_38, "DETECTION_MASK") == 0) {
         sscanf(param_1, "%s %s", local_38, local_b8);

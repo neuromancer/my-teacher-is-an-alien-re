@@ -170,7 +170,7 @@ unsigned int Palette::SetAndApply(unsigned int start, unsigned int count)
     int result = CheckSystemMatch(start, count);
     if (result == 0) {
         if (count == 0x100) {
-            FlipScreen();
+            BlankScreen();
         }
         SetPalette(start, count);
         return count;

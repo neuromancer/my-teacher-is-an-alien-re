@@ -88,7 +88,7 @@ void Target::Activate()
                 if (buckets == 0) {
                     hashTable->AllocateBuckets(numBuckets, 1);
                 }
-                node = hashTable->AllocateNode();
+                node = (HashNode*)((HotspotListData*)hashTable)->AllocateNode();
                 node->bucketIndex = hash;
                 node->key = (unsigned int)Target::id;
                 node->next = hashTable->buckets[hash];

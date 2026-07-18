@@ -654,10 +654,10 @@ int SC_WordSearch::LBLParse(char* line) {
         sscanf(line, "%s %s", keyword, buffer);
         Palette* pal = new Palette();
         palette = pal;
-        pal->Load(buffer);
+        pal->LoadFile(buffer);
         if (palette != 0) {
             if (g_ZBufferManager_0046aa24->m_palette != 0) {
-                WriteToLog("ddouble palette");
+                WriteToMessageLog("ddouble palette");
             }
             g_ZBufferManager_0046aa24->m_palette = palette;
         }

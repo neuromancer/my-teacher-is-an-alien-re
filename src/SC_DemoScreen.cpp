@@ -16,7 +16,7 @@ SC_DemoScreen::SC_DemoScreen() {
     moduleParam = 1;
 
     field_A8 = new Palette();
-    field_A8->Load("elements\\Demoscrn.col");
+    field_A8->LoadFile("elements\\Demoscrn.col");
 
     demoSprite = new Sprite("elements\\Demoscrn.smk");
     demoSprite->flags &= ~2;

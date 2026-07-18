@@ -55,7 +55,7 @@ void SC_Fan::Init(SC_MessageParser* msg) {
         ShowLoadingScreen();
     }
 
-    Handler::Init(msg);
+    CopyCommandData(msg);
 
     field_B0 = 0;
     dim_B4.x = 0x140;
@@ -75,7 +75,7 @@ void SC_Fan::Init(SC_MessageParser* msg) {
     if (ptr != 0) {
         target = (int*)&g_ZBufferManager_0046aa24->m_palette;
         if (*target != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         *target = (int)ptr;
     }
@@ -518,7 +518,7 @@ void SC_Fan::State4Handler() {
         i = 0;
         do {
             if (samples[i] != 0) {
-                samples[i]->~Sample();
+                samples[i]->Stop();
             }
             i++;
         } while (i < 0xB);
@@ -722,7 +722,7 @@ int SC_Fan::LBLParse(char* param_1) { // prologue at 0x4104B0
         sscanf(param_1, "%s %s", local_38, local_b8);
         Palette* pal = new Palette();
         palette = pal;
-        pal->Load(local_b8);
+        pal->LoadFile(local_b8);
     }
     else if (strcmp(local_38, "BACKGROUND_SPRITE") == 0) {
         Sprite* spr = new Sprite((char*)0);

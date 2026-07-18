@@ -397,7 +397,7 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
     // Apply palette if set
     if (field_E4 != 0) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         g_ZBufferManager_0046aa24->m_palette = field_E4;
     }

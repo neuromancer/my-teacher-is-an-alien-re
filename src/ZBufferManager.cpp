@@ -577,7 +577,7 @@ struct TextRenderEntry : public SoundCommand {
 
 /* Function start: 0x403840 */
 void TextRenderEntry::Execute(GlyphRect* rect) {
-    SetFontPosition(posX, posY);
+    SetDrawPosition(posX, posY);
     if (g_GlyphFont_0046aa28 != 0) {
         g_GlyphFont_0046aa28->RenderText(text, color);
     }
@@ -595,7 +595,7 @@ void ZBufferManager::ShowText(char* text, int x, int y, int priority, int color)
             entry->color = color;
             QueueCommand((SoundCommand*)entry);
         } else {
-            SetFontPosition(x, y);
+            SetDrawPosition(x, y);
             g_GlyphFont_0046aa28->RenderText(text, color);
         }
     }
@@ -742,7 +742,7 @@ void ZBufferManager::ProcessRenderQueues()
     case 1:
     {
         if (m_palette != 0) {
-            m_palette->SetPalette(0, 0x100);
+            m_palette->SetAndApply(0, 0x100);
             m_palette = 0;
         }
         break;
@@ -750,7 +750,7 @@ void ZBufferManager::ProcessRenderQueues()
     case 2:
     {
         if (m_palette != 0) {
-            m_palette->SetPalette(0, 0x100);
+            m_palette->SetAndApply(0, 0x100);
             m_palette = 0;
         }
 
@@ -808,7 +808,7 @@ void ZBufferManager::ProcessRenderQueues()
     case 3:
     {
         if (m_palette != 0) {
-            m_palette->SetPalette(0, 0x100);
+            m_palette->SetAndApply(0, 0x100);
             m_palette = 0;
         }
 

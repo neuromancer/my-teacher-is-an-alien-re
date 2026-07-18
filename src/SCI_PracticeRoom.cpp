@@ -105,7 +105,7 @@ void SCI_PracticeRoom::Init(SC_MessageParser* msg) {
         if (pal != 0) {
             Palette** pDest = &g_ZBufferManager_0046aa24->m_palette;
             if (*pDest != 0) {
-                WriteToLog("ddouble palette");
+                WriteToMessageLog("ddouble palette");
             }
             *pDest = pal;
         }
@@ -411,7 +411,7 @@ int SCI_PracticeRoom::LBLParse(char* param_1) {
         }
         Palette* newPal = new Palette();
         palette = newPal;
-        newPal->Load(local_bc);
+        newPal->LoadFile(local_bc);
     } else if (strcmp(local_3c, "HOTSPOT") == 0) {
         sscanf(param_1, "%s %d ", local_3c, &local_18);
         if (hotspotList == 0) {

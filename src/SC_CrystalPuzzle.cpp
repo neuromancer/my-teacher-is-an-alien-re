@@ -61,7 +61,7 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     rect5.bottom = 0x192;
 
     palette = new Palette();
-    palette->Load("puz_ForceField\\Puzztest.col");
+    palette->LoadFile("puz_ForceField\\Puzztest.col");
 
     {
     Sprite* s;
@@ -317,7 +317,7 @@ void SC_CrystalPuzzle::Init(SC_MessageParser* msg) {
         if (pal != 0) {
             Palette** pp = &g_ZBufferManager_0046aa24->m_palette;
             if (*pp != 0) {
-                WriteToLog("ddouble palette");
+                WriteToMessageLog("ddouble palette");
             }
             *pp = pal;
         }

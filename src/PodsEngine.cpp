@@ -327,7 +327,7 @@ int PodsEngine::LBLParse(char* line) {
                     table->buckets = (HashNode**)operator new(table->numBuckets * sizeof(HashNode*));
                     memset(table->buckets, 0, table->numBuckets * sizeof(int));
                 }
-                node = table->AllocateNode();
+                node = (HashNode*)((SpriteHashTable*)table)->AllocateNode();
                 node->bucketIndex = bucket;
                 node->key = key;
                 node->next = table->buckets[bucket];
