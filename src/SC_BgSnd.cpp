@@ -60,7 +60,7 @@ void SC_BgSnd::Update(int p1, int p2) {
             if (s->m_size == ((AILSampleData*)hsamp)->len) {
                 if (AIL_sample_status(hsamp) == 4) {
                     if (flags & 1) {
-                        SC_BgSnd::OnProcessEnd();
+                        SC_BgSnd::ProcessVolumeFade();
                     }
                     timer.Reset();
                 }
@@ -122,7 +122,7 @@ int SC_BgSnd::Exit(SC_MessageParser* msg) {
 }
 
 /* Function start: 0x439690 */
-void SC_BgSnd::OnProcessEnd() {
+void SC_BgSnd::ProcessVolumeFade() {
     Sample* s = snd;
     if (s == 0) return;
     HSAMPLE hsamp = s->m_sample;

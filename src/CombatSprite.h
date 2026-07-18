@@ -50,7 +50,7 @@ public:
 class CombatSprite : public Parser {
 public:
     CombatSprite();           // 0x408FB0
-    virtual ~CombatSprite();  // 0x409020
+    ~CombatSprite();          // 0x409020 (non-virtual: vtable 0x461138 has 3 slots)
 
     virtual void OnProcessStart();             // 0x409210
     virtual int LBLParse(char* line);          // 0x40923E

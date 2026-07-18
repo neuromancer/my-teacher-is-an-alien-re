@@ -83,7 +83,7 @@ public:
     int field_174;        // 0x174
 
     Target();                                   // 0x442350
-    virtual ~Target();                          // 0x442A70
+    ~Target();                                  // 0x442A70 (non-virtual: vtable 0x461948 has 3 slots)
     virtual int LBLParse(char* line);           // 0x442BD0
     virtual void OnProcessStart();              // 0x442B20
     virtual void OnProcessEnd();                // 0x442BD0 (alias)
@@ -118,7 +118,7 @@ public:
     int field_1CC;                 // 0x1CC
 
     TargetList();
-    virtual ~TargetList();
+    ~TargetList();                              // 0x443360 (non-virtual: vtable 0x461960 has 3 slots)
     virtual int LBLParse(char* line);
     virtual void OnProcessEnd();
 

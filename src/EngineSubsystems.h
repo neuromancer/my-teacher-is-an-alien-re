@@ -28,7 +28,7 @@ public:
   int field_0xBC;           // 0xBC
 
   EngineInfoParser();                       // 0x434660
-  virtual ~EngineInfoParser();              // 0x434740
+  ~EngineInfoParser();                      // 0x434740 (non-virtual: vtable 0x4616E8 has 3 slots)
   virtual void OnProcessEnd();              // 0x434800
   virtual int LBLParse(char* line);         // 0x434820
 

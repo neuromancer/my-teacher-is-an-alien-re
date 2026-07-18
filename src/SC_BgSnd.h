@@ -21,7 +21,7 @@ public:
     int AddMessage(SC_MessageParser* msg);     // 0x439520
     void ShutDown(SC_MessageParser* msg);       // 0x439490
     int Exit(SC_MessageParser* msg);                // 0x439540
-    void OnProcessEnd();                      // 0x439690
+    void ProcessVolumeFade();                 // 0x439690
     void AddMessage(int soundHandle);         // 0x439740
     void SetVolume(int volume, int duration); // 0x4398C0
 
