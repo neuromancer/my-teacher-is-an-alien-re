@@ -420,7 +420,11 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
     if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
         return;
     }
-    CallBlitter2(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, (VBuffer*)param_7);
+    // Mode 1 is the opaque, horizontally reversed blit path.  Calling the
+    // normal transparent blitter here leaves the background unmirrored while
+    // its inverted overlay sprites are mirrored.
+    BlitTransparentRegion(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom,
+                          param_5, param_6, param_7);
 }
 
 /* Function start: 0x4117F0 */
