@@ -138,10 +138,10 @@ SCI_Inventory::~SCI_Inventory() {
     }
 }
 
-/* Function start: 0x43E920 */ /* No assembly extracted */
+/* Function start: 0x43E920 */
 void SCI_Inventory::Init(SC_MessageParser* msg) {
-    
-    int* palSlot;
+    Palette* pal;
+    Palette** palSlot;
     int* ptr;
 
     IconBar::InitIconBar(msg);
@@ -155,12 +155,14 @@ void SCI_Inventory::Init(SC_MessageParser* msg) {
     } while ((unsigned int)ptr < (unsigned int)&g_InventoryState_004733e8);
     g_InventoryState_004733e8 = 0;
 
-    
-    // Use typed ZBufferManager palette field
-    if (g_ZBufferManager_0046aa24->m_palette != 0) {
+    // Both the incoming palette and the address of the target slot are read
+    // before the guard, so the check and the store share one slot pointer.
+    pal = palette;
+    palSlot = &g_ZBufferManager_0046aa24->m_palette;
+    if (*palSlot != 0) {
         ShowError("double palette");
     }
-    g_ZBufferManager_0046aa24->m_palette = palette;
+    *palSlot = pal;
     selectedSlot = -1;
     DisplayPanels(0);
 }

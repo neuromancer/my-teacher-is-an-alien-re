@@ -167,9 +167,14 @@ SC_FakeRoom::~SC_FakeRoom()
 {
 }
 
-/* Function start: 0x444840 */ /* No assembly extracted */
+/* Function start: 0x444840 */
 void SC_FakeRoom::OnProcessEnd() {
     SC_Combat::OnProcessEnd();
+    hitbox.left = 253;
+    hitbox.top = 109;
+    hitbox.right = 383;
+    hitbox.bottom = 363;
+    SendGameMessage(5, field_0x114, handlerId, moduleParam, 0x1b, 0, 0, 0, 0, 0);
 }
 
 /* Function start: 0x444320 */
