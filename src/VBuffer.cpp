@@ -249,7 +249,6 @@ void* VBuffer::InitWithSize(int param_1, int param_2)
     InvalidateVideoMode();
     data = (void*)GetVideoBufferData(handle);
     RegisterVBufferHandle(handle);
-    DumpVBufferHandles();
     return data;
 }
 

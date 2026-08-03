@@ -317,7 +317,10 @@ void BG_SubNode::AddSpriteList(unsigned int param_1)
     key = pool->allocatedCount;
     local_10 = (key >> 4) % (unsigned int)pool->size;
 
-    if (pool->memory != 0) goto have_mem;
+    if (pool->memory == 0) {
+    } else {
+        goto have_mem;
+    }
     goto not_found2;
 have_mem:
     node = ((NavNode**)pool->memory)[local_10];

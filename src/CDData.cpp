@@ -103,7 +103,7 @@ void __cdecl FileCacheEntryCleanup(void* entries, int count) {
                 LogCacheEntries();
                 WriteToMessageLog("HDCache::Unable to delete '%s' (errno=%d)", entry->name, errno);
             }
-            FreeMemory(entry);
+            FreeMemory(*slot);
             *slot = 0;
         }
         slot++;

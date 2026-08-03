@@ -164,8 +164,7 @@ int InputManager::PollJoystick(InputState* state) {
     iVar1 = MapJoystickValue(joyInfo.wXpos, joyCaps.wXmin, joyCaps.wXmax, bounds.right);
     state->x = iVar1;
 
-    iVar1 = MapJoystickValue(joyInfo.wYpos, joyCaps.wYmin, joyCaps.wYmax, bounds.bottom);
-    state->y = iVar1;
+    state->y = MapJoystickValue(joyInfo.wYpos, joyCaps.wYmin, joyCaps.wYmax, bounds.bottom);
 
     state->buttons = joyInfo.wButtons;
 

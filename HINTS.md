@@ -395,6 +395,52 @@ intrinsic declaration can permit inline lowering, but use either only when `make
 and the reference disassembly prove the desired call shape. It is a targeted diagnostic lever,
 not a blanket fix.
 
+### Translation-unit context is part of the code generator input
+
+Do not reduce this effect to “too many functions makes optimization worse.” MSVC's `/Og`
+optimizations operate over one function at a time, but this exact 10.20.6166 compiler still has
+deterministic process/translation-unit state that can change later functions' block layout. The
+effect is real, starts well before any resource-limit warning, and is not monotonic.
+
+Two local experiments established the boundary:
+
+- A fixed probe function emitted one stable mnemonic stream when placed first. When the exact
+  same definition followed generated ordinary functions, its conditional-jump choices changed
+  with even one preceding function and cycled through several streams from 0 through 4,096
+  predecessors. At 4,096 it happened to return to the zero-predecessor stream. Instruction count
+  stayed constant and the compiler emitted no C4703, C4763, or C4765 warning.
+- Adding one temporary function before the 44 recovered definitions in `VBuffer.cpp` left most
+  functions unchanged but moved `ScaleTCCopy` from 100% to 84.50%, `IntersectClipRect` from
+  90.20% to 92.16%, and `ClipRectAndAdjust` from 98.02% to 100%. A logical five-function split
+  also produced a net regression. Both experiments were reverted.
+
+The current tree also disproves function count as a quality predictor: `VBuffer.cpp` has 44
+reported functions and averages 99.59%, while smaller files can score much lower for unrelated
+codegen reasons. The actionable model is **context sensitivity**, not a universal count limit.
+
+Implications for reconstruction work:
+
+- Original translation-unit boundaries, definition order, declarations, includes, inline
+  candidates, string literals, and pragma state can all be load-bearing.
+- A later function may have a genuine context floor even when its C++ body is right. Compile a
+  minimal probe and an original-context probe before forcing unnatural syntax.
+- Splitting a coherent oversized file is worth testing only when ownership or disassembly gives
+  evidence for a separate original translation unit. Preserve object order in the Makefile and
+  compare every row; a split can improve one residual while destroying an exact sibling.
+- Never retain dummy functions, padding declarations, fake locals, or unrelated includes as
+  optimizer tuning knobs. They are unstable and violate the source-recovery rules.
+- Inspect compiler output for the explicit limits known to this toolchain: C4703/C4707 report a
+  function too large for global optimization, C4763 reports a function too large for the
+  post-optimizer, and C4765 reports recoverable post-optimizer heap exhaustion. Without one of
+  those diagnostics, describe a mismatch as context-sensitive rather than claiming optimization
+  was disabled.
+
+[Microsoft's `/Og` documentation](https://learn.microsoft.com/en-us/cpp/build/reference/og-global-optimizations?view=msvc-170)
+confirms that “global” common-subexpression analysis searches an entire function, not an entire
+source file. That per-function scope and the observed translation-unit sensitivity are
+compatible: the optimization algorithm is local to a function, while old compiler bookkeeping
+and heuristics can still be perturbed by earlier definitions.
+
 ## 9. CRT lowering, copies, and strings
 
 Decompiler-expanded CRT loops may represent compiler intrinsics:

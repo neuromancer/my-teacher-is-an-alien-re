@@ -106,10 +106,10 @@ void GameLoopHelper::AddAnimation(char* name, int handle) {
         if (tmp == 0) break;
     } while (1);
     node[2] = (int)data;
-    if (p->tail == 0) {
-        p->head = node;
-    } else {
+    if (p->tail != 0) {
         *p->tail = (int)node;
+    } else {
+        p->head = node;
     }
     p->tail = node;
 }
