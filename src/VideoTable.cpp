@@ -18,6 +18,48 @@ int __cdecl SetDrawPosition(int param_1, int param_2)
     return 0;
 }
 
+// Forward declaration (also in VideoTable.h; header not included by design).
+int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4);
+
+/* Function start: 0x452556 */
+int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, int param_4)
+{
+    int iVar1;
+    int iVar2;
+
+    // Top edge
+    iVar2 = g_LineWidthV_0046d0c2;
+    iVar1 = param_3 + g_LineWidthV_0046d0c2 + -1;
+    if (param_4 < iVar1) {
+        iVar1 = param_4;
+    }
+    ClipAndVideoFillRect(param_1, param_2, param_3, iVar1);
+
+    // Bottom edge
+    iVar2 = (param_4 - iVar2) + 1;
+    if (iVar2 < param_3) {
+        iVar2 = param_3;
+    }
+    ClipAndVideoFillRect(param_1, param_2, iVar2, param_4);
+
+    // Left edge
+    iVar2 = g_LineWidthH_0046d0be;
+    iVar1 = param_1 + g_LineWidthH_0046d0be + -1;
+    if (param_2 < iVar1) {
+        iVar1 = param_2;
+    }
+    ClipAndVideoFillRect(param_1, iVar1, param_3, param_4);
+
+    // Right edge
+    iVar2 = (param_2 - iVar2) + 1;
+    if (iVar2 < param_1) {
+        iVar2 = param_1;
+    }
+    ClipAndVideoFillRect(iVar2, param_2, param_3, param_4);
+
+    return 0;
+}
+
 /* Function start: 0x453C9B */
 int __cdecl SetDrawColors(unsigned char param_1, unsigned char param_2)
 {
@@ -360,48 +402,6 @@ int __cdecl VideoFillRect(int param_1, int param_2, int param_3, int param_4)
             count--;
         } while (count != 0);
     }
-    return 0;
-}
-
-// Forward declaration (also in VideoTable.h; header not included by design).
-int __cdecl ClipAndVideoFillRect(int param_1, int param_2, int param_3, int param_4);
-
-/* Function start: 0x452556 */
-int __cdecl DrawRectOutline(int param_1, int param_2, int param_3, int param_4)
-{
-    int iVar1;
-    int iVar2;
-
-    // Top edge
-    iVar2 = g_LineWidthV_0046d0c2;
-    iVar1 = param_3 + g_LineWidthV_0046d0c2 + -1;
-    if (param_4 < iVar1) {
-        iVar1 = param_4;
-    }
-    ClipAndVideoFillRect(param_1, param_2, param_3, iVar1);
-
-    // Bottom edge
-    iVar2 = (param_4 - iVar2) + 1;
-    if (iVar2 < param_3) {
-        iVar2 = param_3;
-    }
-    ClipAndVideoFillRect(param_1, param_2, iVar2, param_4);
-
-    // Left edge
-    iVar2 = g_LineWidthH_0046d0be;
-    iVar1 = param_1 + g_LineWidthH_0046d0be + -1;
-    if (param_2 < iVar1) {
-        iVar1 = param_2;
-    }
-    ClipAndVideoFillRect(param_1, iVar1, param_3, param_4);
-
-    // Right edge
-    iVar2 = (param_2 - iVar2) + 1;
-    if (iVar2 < param_1) {
-        iVar2 = param_1;
-    }
-    ClipAndVideoFillRect(iVar2, param_2, param_3, param_4);
-
     return 0;
 }
 

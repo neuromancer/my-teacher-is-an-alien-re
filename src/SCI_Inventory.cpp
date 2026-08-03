@@ -1,6 +1,7 @@
 #include "SCI_Inventory.h"
 #include "T_Object.h"
 #include "FileArchive.h"
+#include "GameState.h"
 #include "globals.h"
 #include <string.h>
 #include <stdio.h>
@@ -767,6 +768,68 @@ int SCI_Inventory::Exit(SC_MessageParser* msg) {
     return 1;
 }
 
+/* Function start: 0x43F420 */
+void SCI_Inventory::ProcessInventory() {
+    if (g_MsgList_0046a6dc == 0) return;
+    if (g_MsgList_0046a6dc->head == 0) return;
+    g_MsgList_0046a6dc->current = g_MsgList_0046a6dc->head;
+    while (1) {
+        QueueNode* node = g_MsgList_0046a6dc->current;
+        if (node != 0 && node->data != 0) {
+            ((T_Object*)(((unsigned int)node < 1 ? 0 : -1) & (int)node->data))->StopSound();
+        }
+        if (g_MsgList_0046a6dc->tail == g_MsgList_0046a6dc->current) break;
+        if (g_MsgList_0046a6dc->current != 0) {
+            g_MsgList_0046a6dc->current = g_MsgList_0046a6dc->current->next;
+        }
+    }
+}
+
+/* Function start: 0x43F840 */
+void SCI_Inventory::DisplayPanels(int param) {
+    int count = 3;
+    InvPanel* panelPtr = &panels[0];
+    do {
+        if (panelPtr->item1 == 0) {
+            goto check_items;
+        } else {
+            InventoryPoolNode* found = FindItemInList(panelPtr->item1);
+            if (found == 0) goto next_panel;
+        }
+check_items:
+        if (panelPtr->item2 != 0) {
+            InventoryPoolNode* found = FindItemInList(panelPtr->item2);
+            if (found == 0) goto next_panel;
+        }
+        if (panelPtr->item3 != 0) {
+            InventoryPoolNode* found = FindItemInList(panelPtr->item3);
+            if (found == 0) goto next_panel;
+        }
+        {
+            GameState* gs = g_GameState_0046aa30;
+            int gsIdx = panelPtr->gameStateIdx;
+            if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
+                ShowError("Invalid gamestate %d", gsIdx);
+            }
+            if (gs->stateValues[gsIdx] != 0) {
+                SendGameMessage(0x1e, panelPtr->item1, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
+                SendGameMessage(0x1e, panelPtr->item2, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
+                SendGameMessage(0x1e, panelPtr->item3, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
+                SendGameMessage(0x1e, panelPtr->resultItem, handlerId, 0, 0x17, 0, 0, 0, 0, 0);
+                if (panelPtr->item1 == param || panelPtr->item2 == param || panelPtr->item3 == param) {
+                    SendGameMessage(4, panelPtr->actionId, handlerId, 0, 2, 0, 0, 0, 0, 0);
+                }
+            }
+        }
+next_panel:
+        panelPtr += 1;
+        count--;
+        if (count == 0) {
+            return;
+        }
+    } while (1);
+}
+
 /* Function start: 0x43F9B0 */
 void SCI_Inventory::Serialize(void* param) {
     volatile int fp;
@@ -942,7 +1005,6 @@ void SCI_Inventory::Serialize(void* param) {
 // Stubs (moved from stubs.cpp)
 Rect::~Rect() {}
 #include "Palette.h"
-#include "GameState.h"
 #include <new.h>
 
 
@@ -1073,66 +1135,6 @@ int SCI_Inventory::LBLParse(char* line) {
 InvPanel::InvPanel() {}
 InvPanel::~InvPanel() {}
 
-/* Function start: 0x43F840 */
-void SCI_Inventory::DisplayPanels(int param) {
-    int count = 3;
-    InvPanel* panelPtr = &panels[0];
-    do {
-        if (panelPtr->item1 == 0) {
-            goto check_items;
-        } else {
-            InventoryPoolNode* found = FindItemInList(panelPtr->item1);
-            if (found == 0) goto next_panel;
-        }
-check_items:
-        if (panelPtr->item2 != 0) {
-            InventoryPoolNode* found = FindItemInList(panelPtr->item2);
-            if (found == 0) goto next_panel;
-        }
-        if (panelPtr->item3 != 0) {
-            InventoryPoolNode* found = FindItemInList(panelPtr->item3);
-            if (found == 0) goto next_panel;
-        }
-        {
-            GameState* gs = g_GameState_0046aa30;
-            int gsIdx = panelPtr->gameStateIdx;
-            if (gsIdx < 0 || gs->maxStates - 1 < gsIdx) {
-                ShowError("Invalid gamestate %d", gsIdx);
-            }
-            if (gs->stateValues[gsIdx] != 0) {
-                SendGameMessage(0x1e, panelPtr->item1, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
-                SendGameMessage(0x1e, panelPtr->item2, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
-                SendGameMessage(0x1e, panelPtr->item3, handlerId, 0, 0x18, 0, 0, 0, 0, 0);
-                SendGameMessage(0x1e, panelPtr->resultItem, handlerId, 0, 0x17, 0, 0, 0, 0, 0);
-                if (panelPtr->item1 == param || panelPtr->item2 == param || panelPtr->item3 == param) {
-                    SendGameMessage(4, panelPtr->actionId, handlerId, 0, 2, 0, 0, 0, 0, 0);
-                }
-            }
-        }
-next_panel:
-        panelPtr += 1;
-        count--;
-        if (count == 0) {
-            return;
-        }
-    } while (1);
-}
-/* Function start: 0x43F420 */
-void SCI_Inventory::ProcessInventory() {
-    if (g_MsgList_0046a6dc == 0) return;
-    if (g_MsgList_0046a6dc->head == 0) return;
-    g_MsgList_0046a6dc->current = g_MsgList_0046a6dc->head;
-    while (1) {
-        QueueNode* node = g_MsgList_0046a6dc->current;
-        if (node != 0 && node->data != 0) {
-            ((T_Object*)(((unsigned int)node < 1 ? 0 : -1) & (int)node->data))->StopSound();
-        }
-        if (g_MsgList_0046a6dc->tail == g_MsgList_0046a6dc->current) break;
-        if (g_MsgList_0046a6dc->current != 0) {
-            g_MsgList_0046a6dc->current = g_MsgList_0046a6dc->current->next;
-        }
-    }
-}
 /* Function start: 0x43F490 */
 void* SCI_Inventory::FindItem(int itemID) {
     LinkedList* list;
