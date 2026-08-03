@@ -240,7 +240,7 @@ char* internal_ReadLine(char* buffer, int size, FILE* stream)
         }
         DecryptLine(buffer);
         result = sscanf(buffer, " %s ", local_buf);
-    } while (result < 1 || local_buf[0] == ';' || local_buf[0] == '\r');
+    } while (result <= 0 || local_buf[0] == ';' || local_buf[0] == '\r');
 
     semi = strchr(buffer, ';');
     if (semi != NULL) {

@@ -17,10 +17,10 @@ void EventList::InsertNode(void* data) {
     } else {
         node->next = current;
         node->prev = current->prev;
-        if (current->prev == 0) {
-            head = node;
-        } else {
+        if (current->prev != 0) {
             current->prev->next = node;
+        } else {
+            head = node;
         }
         current->prev = node;
     }

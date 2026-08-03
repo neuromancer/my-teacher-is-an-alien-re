@@ -500,7 +500,7 @@ int SCI_IconBarModule::AddMessage(SC_MessageParser* msg) {
     }
 
     if (((SpriteAction*)msg)->lastKey != 0) {
-        return 1;
+        goto done;
     }
 
     if (((SpriteAction*)msg)->button1 >= 2) {
@@ -556,6 +556,7 @@ int SCI_IconBarModule::AddMessage(SC_MessageParser* msg) {
         gs->stateValues[idx]++;
     }
 
+done:
     return 1;
 }
 

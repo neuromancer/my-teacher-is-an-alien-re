@@ -1125,7 +1125,7 @@ void SCI_Inventory::ProcessInventory() {
     while (1) {
         QueueNode* node = g_MsgList_0046a6dc->current;
         if (node != 0 && node->data != 0) {
-            ((T_Object*)(((node < (QueueNode*)1) - 1) & (int)node->data))->StopSound();
+            ((T_Object*)(((unsigned int)node < 1 ? 0 : -1) & (int)node->data))->StopSound();
         }
         if (g_MsgList_0046a6dc->tail == g_MsgList_0046a6dc->current) break;
         if (g_MsgList_0046a6dc->current != 0) {

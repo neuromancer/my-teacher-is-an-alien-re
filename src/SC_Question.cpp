@@ -127,14 +127,14 @@ void SC_Question::Update(int x, int y)
         return;
     case 1:
         if (mouseControl != 0) {
-            if ((field_94 & 8) == 0) {
+            if ((field_94 & 8) != 0) {
                 if (mouseControl->Draw() == 0) {
-                    Finalize();
+                    mouseControl->ResetAnimations(1);
                     return;
                 }
             } else {
                 if (mouseControl->Draw() == 0) {
-                    mouseControl->ResetAnimations(1);
+                    Finalize();
                     return;
                 }
             }

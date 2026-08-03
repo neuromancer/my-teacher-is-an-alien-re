@@ -984,10 +984,10 @@ void SC_CrystalPuzzle::ResetPuzzle(int idx, int val) {
     }
 
     if (enabledButtons[idx] != 0) {
-        if (idx <= 5) {
-            sndNum = idx + 0xbb4;
-        } else {
+        if (idx > 5) {
             sndNum = idx + 0x139c;
+        } else {
+            sndNum = idx + 0xbb4;
         }
 
         sprintf(buf, "puz_ForceField\\snd%4.4d", sndNum);

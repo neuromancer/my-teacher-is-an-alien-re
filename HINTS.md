@@ -1,334 +1,489 @@
-# HINTS — getting good assembly-similarity scores (MSVC 4.20 / *My Teacher is an Alien*)
+# HINTS — improving assembly similarity
 
-Practical tips for re-implementing the full game so the C++ source compiles to assembly
-that matches the original `TEACHER.EXE`. Apply them when a function reads cleanly but
-stalls below 95%.
+This is the repository guide for rebuilding *My Teacher Is an Alien* with Microsoft
+Visual C++ 4.20 while matching the original `TEACHER.EXE`. It consolidates the useful
+parts of the former `HINTS.md` and `HINTS.DE.md`, removes advice that only applied to
+their source projects, and records patterns validated in this repository.
 
+The governing rule is simple: preserve the program first, then shape clean C++ so the
+original compiler emits the desired instruction sequence. The disassembly and
+`code-full/strings.txt` are authoritative; decompiler output is evidence, not source code.
+Follow `CLAUDE.md` throughout—especially its restrictions on assembly, dummy variables,
+calling conventions, and invented data structures.
+
+## Quick loop
+
+```sh
+make TEACHER.EXE -j12
+python3 bin/ndiff.py --no-build Name:0xADDR
+binary-comp compare --config config/binary-comp.json --target full \
+  Name code-full/FUN_00ADDR.disassembled.txt --no-build
+make report > /tmp/teacher-report.txt
+make verify
 ```
-make TEACHER.EXE -j12                                       # incremental rebuild + relink
-binary-comp compare --config config/binary-comp.json --target full <Name> code-full/FUN_XXXXXX.disassembled.txt --no-build
-make report                                                 # whole-program similarity table
-python3 bin/ndiff.py --no-build Name:0xADDR ...             # normalized-mnemonic diff (only the divergent blocks)
-python3 bin/triage.py /tmp/report.txt --min 85 --max 95 --no-build --sort pol
+
+`--no-build` is only safe after relinking `TEACHER.EXE`. Address-qualified names are best
+when a recovered name occurs more than once. Exported function filenames are normally
+zero-padded; locate the exact file instead of guessing its width.
+
+## 1. Know what the score measures
+
+`binary-comp` compares normalized mnemonic sequences with Levenshtein distance. It does
+not compare operands, registers, immediates, addresses, symbol names, or operand widths.
+
+- `mov eax,[x]`, `mov ecx,[y]`, and `mov word ptr [z],5` each contribute one `mov`.
+- Alias spellings such as `je`/`jz`, `jne`/`jnz`, `jb`/`jc`, and `jg`/`jnle` normalize to
+  the same mnemonic. Different conditions such as `jl` and `jle` do not.
+- Padding and exported data directives such as `db`, `dw`, `dd`, and `npad` are skipped.
+- Both streams are decoded from PE bytes. The Ghidra export supplies boundaries, not the
+  mnemonic text used for scoring.
+
+This makes the score an excellent code-shape signal and a poor correctness oracle. A
+wrong field offset, constant, global, scale, or call target can still score 100%. Conversely,
+two equivalent C++ expressions may compile to different mnemonics.
+
+Use the native audits for facts the score cannot see:
+
+- `make verify-values` checks immediate and constant values.
+- `make verify-values-stack-locals` includes stack-local references.
+- `make verify-global-access` checks global reads and writes.
+- `make verify-calls` checks call-target multisets.
+- `make verify-globals`, `make verify-globals-code`, and `make verify-vtables` check layout
+  and metadata.
+
+Correctness takes precedence over percentage. Do not keep a score increase that introduces
+an operand, call, layout, or behavioral mismatch.
+
+## 2. Use a measured workflow
+
+### Establish a trustworthy baseline
+
+1. Start from a successfully linked executable and save a full report.
+2. Record the target row by address, not just by possibly duplicated recovered name.
+3. Check the source marker and the exported function boundary before editing.
+4. Inspect the raw disassembly, the rebuilt `out/<TranslationUnit>.asm`, and a normalized
+   diff.
+5. Make one structural hypothesis at a time.
+6. Rebuild and compare that function immediately.
+7. Keep the change only if it preserves behavior and improves the intended row.
+8. Finish with a fresh full report and `make verify`.
+
+Compare exact rows and counts, not only the rounded average. A local win can perturb another
+function in the same translation unit through register allocation, scheduling, inlining, or
+literal placement. The whole report is the regression gate.
+
+The Makefile does not model every header dependency. After changing a shared header, run a
+clean rebuild before trusting compiler or linker results. Otherwise stale objects can retain
+old declarations, mangled names, layouts, or inline bodies.
+
+### Treat function boundaries as data
+
+- Keep one `/* Function start: 0xADDR */` marker immediately before the corresponding
+  function unless the export proves a special case.
+- Keep recovered functions in address order within a source file. MSVC emits functions in
+  source order, so order affects layout and mapping.
+- An extra, missing, or misplaced marker changes comparison boundaries and may make adjacent
+  rows misleading.
+- Some recovered names occur at multiple addresses, and a few functions legitimately have
+  more than one report row. Inspect all rows before declaring a change exact.
+- SEH funclets, secondary entries, jump thunks, and shared tails can look like tiny standalone
+  functions even when no C++ body belongs there.
+
+### Pick targets by diff shape
+
+Instruction-count ratio is a useful first filter:
+
+- A ratio far from 1 usually means a missing body, wrong construct, wrong boundary, or
+  optimization-region mismatch.
+- A ratio near 1 with a few changed instructions is often a branch, epilogue, type, or local
+  lifetime problem.
+- A ratio near 1 with balanced delete/insert blocks may be a block-order transposition or a
+  register-allocation ceiling.
+
+Functions around 88–95% with one clear structural difference often yield more progress than
+spending hours on a 99% function whose only residual is one scheduled `mov`. Look for an
+already-exact sibling method: repeated queue, message, parser, and handler code is a better
+template than decompiler prose.
+
+Common signatures:
+
+| Diff shape | First hypothesis |
+| --- | --- |
+| one conditional jump differs | boundary form, signedness, polarity, or flag reuse |
+| equal-sized delete/insert blocks | branch arms or independent statements are reversed |
+| extra `jmp` or duplicate `ret` | early return versus shared epilogue |
+| extra `test` after a call | cached result or boolean materialization |
+| `movsx` versus `movzx`/`and` | signed or unsigned source type |
+| different `sub esp,N` | local count, width, lifetime, or declaration order |
+| missing/extra `call` | inline form, intrinsic choice, or wrong prototype |
+| low instruction-count ratio | missing control-flow region, wrong marker, or pragma state |
+
+### Probe the compiler when syntax is the unknown
+
+MSVC 4.20 is the only reliable authority on how a spelling lowers. For a stubborn small
+sequence, compile a minimal C++ probe with the exact Makefile flags and the same
+`#pragma optimize` state. Include enough locals and surrounding control flow to reproduce
+register pressure; a parameter-only toy can answer a different question.
+
+Use probes to compare equivalent spellings, then apply only the form that remains natural in
+the recovered function. This repository has a validated example in
+`SCI_Inventory::ProcessInventory`: an integer-cast ternary mask regenerated the original
+branchless `cmp`/`adc` sequence where a pointer comparison did not. Trust emitted assembly,
+not intuition about an old optimizer.
+
+## 3. Control flow is the highest-yield lever
+
+### Branch polarity and fall-through
+
+Equivalent conditions can place different blocks on the fall-through path:
+
+```cpp
+if (ok) {
+    success();
+} else {
+    failure();
+}
 ```
-The fast loop is: edit → `make TEACHER.EXE -j12` (incremental, sub-second) → `binary-comp
-compare … --no-build`. Run `--no-build` so you don't trigger a full `make clean` rebuild.
 
-> **Provenance / how to read this file.** These notes were originally collected on a
-> *different* project — *Arthur's 1st Grade*, a **C** codebase built with **MSVC 6.0**. They
-> were ported here and **validated against this project** (C++, **MSVC 4.20**, the
-> `binary-comp` comparator). Hints that did not survive validation were removed; the ones
-> that changed meaning under MSVC 4.20 / C++ were corrected and are flagged
-> **[MSVC4.20]**. The biggest differences from the source project: this is **C++ not C**
-> (so K&R/`#include`-promotion hints are gone), the build is **`/Og /Oi /Ot /Oy /Ob1 /Gs
-> /Gf /GX`** (not `/O2`) and **uniform** (no per-function `#pragma optimize`), and the
-> comparator disassembles **both** sides from PE bytes with capstone.
+and
 
----
+```cpp
+if (!ok) {
+    failure();
+} else {
+    success();
+}
+```
 
-## 0. The single most important fact: the comparator is *mnemonic-only*
+Match the original block order, not the decompiler's preferred wording. De Morgan forms can
+also help: a positive success condition may reproduce a fall-through that a chain of negative
+failure tests does not.
 
-`binary-comp` scores similarity as a **Levenshtein distance over the normalized mnemonic
-sequence** (`binary_comp/core/disasm.py`, `analyzers/function_compare.py`). It **ignores**
-operands, registers, immediates, addresses, symbol names, and operand sizes. Consequences:
+Validated examples in this tree include:
 
-- `mov eax,[x]` ≡ `mov ecx,[y]` ≡ `mov word ptr [z],5` — all just `mov`. **You do not need
-  the right registers, offsets, or constants** — only the right *instruction in the right
-  place*. A wrong stride/scale that adds **no extra instruction** costs nothing
-  (`lea [b+i*2]` ≡ `lea [b+i]`; `imul eax,0x18` ≡ `imul eax,0x36`).
-- **Branch mnemonics are normalized** to a canonical form, so condition *spelling* never
-  matters: `je↔jz`, `jne↔jnz`, `jb↔jc`, `jae↔jnc`, `jg↔jnle`, `jge↔jnl`, `jl↔jnge`,
-  `jle↔jng`. There is **no branch-naming floor** — a `<100%` score is a genuine
-  mnemonic-sequence difference (different/extra/missing instruction or different
-  control-flow shape) and is worth a structural look.
-- **Both sides are disassembled from the actual PE bytes with capstone.** The Ghidra export
-  (`code-full/FUN_*.disassembled.txt`) is used only to locate the function's block
-  boundaries; the mnemonics compared come from re-disassembling `TEACHER.ORI.EXE` and your
-  `TEACHER.EXE`. So tokenization (incl. `rep` prefixes) is **symmetric** — there is no
-  "Ghidra spells it differently" asymmetry to worry about. **[corrected]** (`sete`/`setz`
-  are **not** normalized — but they tokenize identically on both sides anyway.)
-- Padding/data is skipped: `db`, `dd`, `dw`, `npad`.
-- **The real residual floors** (genuinely hard to close from clean C++) are
-  **register-allocation/spills**, **instruction scheduling (transpositions)**, and the
-  `sub esp,N` frame-size / `add esp,N` arg-cleanup counts. On this project, *most* small
-  sub-95 functions are stuck on exactly these (see §10) — verify before sinking time in.
+- `GetFileSize`: success-first fall-through reached 100%.
+- `SC_Question::Update`, `SC_CrystalPuzzle::ResetPuzzle`, and several list insertion methods:
+  swapping equivalent branch arms reached 100%.
+- `VBuffer::ClipAndBlitRegion`: reversing an otherwise identical conditional arm selected the
+  matching branch mnemonic.
 
-## 0a. Operand-level bugs the score can't see — use the *native* verifiers
+An empty then with work in the `else` is sometimes the clearest representation of a binary
+that jumps positively into the body and otherwise jumps over it. Apply this only when the
+actual labels support it.
 
-The similarity score is behaviour-blind: `<` vs `<=`, `if(x)A else B` vs `if(!x)B else A`,
-`-1` vs `0xffff`, reordered independent stores — all change the score but **not behaviour**.
-Conversely a wrong *operand* (struct field offset, constant, global address) is a real bug
-the mnemonic-only score **cannot see at all**. This project ships native tools to catch
-those — prefer them over eyeballing:
+### Boundaries and flag reuse
 
-- `make verify-values` / `make verify-values-stack-locals` — compares concrete immediate /
-  constant values against the original.
-- `make verify-global-access` — flags reads/writes of the wrong global.
-- `make verify-calls` — checks the call-target multiset per function.
-- `make verify-globals` / `make verify-vtables` — global layout and vtable checks.
+Equivalent integer boundaries can lower differently. For an `int`, `x < 1` and `x <= 0`
+have the same meaning but may select different compare/branch shapes; the latter made
+`internal_ReadLine` exact here. By contrast, changing `x < 0` to `x <= 0` is not equivalent
+and is a correctness bug.
 
-Get a function compiling and *faithful* first (right fields, right calls), then chase %.
+Operand order can change the branch family or allow flags to be reused. `i >= hi` and
+`hi <= i` are mathematically equal, but only one may match the surrounding loads and jump.
+Always verify signedness before rewriting a comparison.
 
----
+Use bitwise `&` in place of `&&` only when both operands are side-effect-free, both must be
+evaluated, and the disassembly proves a non-short-circuit form. It is not a general scoring
+trick.
 
-## 1. Workflow & function structure
+### Shared versus split exits
 
-- One `/* Function start: 0xADDR */` marker immediately before each function (the progress
-  tools key off these).
-- **Sort functions by address within each file** — MSVC emits functions in source order, so
-  ordering also makes block-layout / wrong-class-ownership bugs visible.
-- Callbacks used *before* their address-sorted definition need a **plain forward
-  declaration**; `extern` is for cross-file decls only.
-- `code-full/FUN_*.decompiled.txt` is a *hint*, not ground truth (CLAUDE.md). The
-  disassembly and `code-full/strings.txt` are the only authorities.
+The location and number of epilogues matter:
 
----
+- Multiple direct returns often produce separate `xor`/`mov` result sequences.
+- A loop `break`, `goto done`, or result variable can funnel paths through one epilogue.
+- An early return can be correct when the reference has a distinct exit, but wrong when all
+  paths share cleanup and one `ret`.
 
-## 2. Return types & leaked registers
+`Sound::FindFreeSampleHandle` became exact by breaking out of the loop and using the shared
+post-loop result path. `SCI_IconBarModule::AddMessage` became exact by routing an early-success
+case to the existing final return.
 
-- **16-bit returns:** a function that only sets `AX` (returns a `short`/bool) but is declared
-  `int`/`unsigned int` emits an `and eax,0xffff0000`-style epilogue. Declaring it
-  `short`/`unsigned short` gives a clean `mov ax,..; ret` / `xor ax,ax; ret`.
-- **8-bit returns → `unsigned char`** for a function whose binary returns a byte
-  (`mov al,..` with no mask).
-- **Leaked-register junk** (`in_EAX`, `extraout_ECX/EDX`, `CONCAT22(...)`,
-  `(uint)ptr & 0xffff0000`) is Ghidra modelling a register the function never meaningfully
-  sets. Make the function `void` / `return 0;` where the decl or callback-cast allows;
-  the comparator only sees `xor`/`mov`.
-- **`CONCAT22(hi,lo)` / `CONCAT31(...)` are Ghidra pseudo-ops, NOT C++.** Rewrite as
-  `(hi<<16)|(unsigned short)lo`, or just assign the low word when only it is used.
-- **[MSVC4.20] You cannot "fall off the end" of a non-`void` function to drop an
-  `xor eax,eax`.** MSVC 4.20 treats a missing return as a **hard error C2561** ("function
-  must return a value") — not a warning. So when the original is a bare `RET`/`RET n` with no
-  `xor eax,eax` (i.e. it's effectively `void`) but your function is typed `int`, the *only*
-  way to match is to change the return type to `void`. For a **virtual** that is
-  hierarchy-wide: the base declaration **and every override** must change together (C++ rejects
-  override-by-return-type-only). This IS worth doing for a whole vtable slot: the
-  `Handler::ShutDown(SC_MessageParser*)` family (34 decls, all `return 0;`) was `int` but the
-  original is a bare `RET 0x4`; changing base + all 34 overrides to `void` took ~19 of them to
-  100% (no caller used the result). Caveats: **(a)** MSVC 4.20 also errors **C2562** on
-  `return <void-expr>;`, so a tail `return Base::ShutDown(msg);` must become a plain
-  `Base::ShutDown(msg);` call; **(b)** the Makefile has no header dependencies, so after editing
-  a shared `.h` you must `make clean` — otherwise stale callers keep the old `int` mangling and
-  the link fails with unresolved-external.
+Use a named label only when it expresses an actual join in the binary. Do not add arbitrary
+gotos merely to move instructions.
 
----
+### Conditional values
 
-## 3. Control flow — the highest-yield lever (validated here)
+A ternary, an explicit two-arm assignment, and a conditional overwrite are not interchangeable
+to this compiler:
 
-Confirmed on this project: `GetFileSize` 93→**100**, `Sound::FindFreeSampleHandle` 93→**100**.
+```cpp
+x = 0;
+if (p != 0) {
+    x = p->field;
+}
+```
 
-- **`if`/`else` polarity.** `if (x!=0){A}else{B}` and `if (x==0){B}else{A}` are equal but lay
-  out differently. Match the original's `test/jz` direction so the *then*-branch the original
-  reaches by fall-through stays the fall-through. **`GetFileSize`:** the original `JNZ
-  error; <success fall-through>` needed `if (_stat(...)==0){ return size; } return -1;`
-  (success first) instead of `if (...!=0){ return -1; } return size;`.
-- **Early-return-zero whose success path the binary lays out as fall-through** → flip it:
-  `if(c!=0){ …; return 1; } return 0;` rather than `if(c==0) return 0; …; return 1;`.
-- **Single shared epilogue / loop-with-break.** When several paths converge on one `ret`,
-  structure the C++ so they do. **`FindFreeSampleHandle`:** the original loops with a
-  `break` and then a **shared** post-loop test (`if (count==i) return 0; return arr[i];`),
-  re-reading the count — *not* an early `return arr[i];` inside the loop. Match whichever
-  the disasm shows (separate `xor ax,ax` per fail path = use direct returns; one merged
-  `mov ax,[u]` = funnel through a single return).
-- **Empty-then / else.** When the disasm reaches the body via a *positive* jump and skips via
-  a trailing `jmp` (`cmp; j<cond> body; jmp end; body:…`), the body is the **else** of an
-  empty then: `if (cond_to_skip) { } else { body; }`. (Diff first — applying it to the wrong
-  `if` *lowers* the score.)
-- **Comparison operand order flips `jg`↔`jl` etc.** `if (hi <= i)` loads `hi` first; the
-  binary often loads the variable first — write `if (i >= hi)`. (Mnemonic-only, so this only
-  matters when it changes the *branch kind* via flag reuse, not operand order per se.)
-- **`switch` vs `if`/`else-if`.** Consecutive integer cases compile to a `sub;jz;dec;jz;…`
-  chain — that's a **`switch`**, not a `cmp/je` cascade. A dispatcher whose disasm is `cmp X;
-  ja; jz` (one cmp, two conditional jumps reusing flags) is also a `switch`. Match the case
-  **body order** to the jump-table label→body map (often reverse of source order).
-- **`goto` direction.** `if(X) goto a; goto b;` ≠ `if(!X) goto b; goto a;` — flip to match
-  `jz`/`jnz`.
+This can avoid the extra jump or merge generated by `x = p ? p->field : 0`. It improved
+`EngineC::RenderBackground` from 98.20% to 99.55%. Check both shapes; the better one depends
+on surrounding register pressure.
 
----
+For branchless masks, the source type matters. A form such as an integer comparison followed
+by `? 0 : -1` may lower to `cmp`/`adc`, while a pointer-typed comparison may force another
+shape. Preserve the null-safety and the original behavior when using this idiom.
+
+### Switches and dispatchers
+
+- Consecutive cases may lower to a `sub`/`jz`/`dec` chain or a jump table rather than an
+  `if`/`else-if` cascade.
+- A single `cmp` followed by two conditional jumps that reuse flags can also indicate a
+  small `switch`.
+- Recover case-body order from jump-table destinations and label addresses, not numeric case
+  order. Source order and emitted body order can differ.
+- Default handling, range checks, and shared case tails are part of the shape.
 
 ## 4. Loops
 
-- **`while(1){ if(end) return; if(match) break; advance; }` emits a literal `mov ecx,1;
-  test; je` at the top** the original doesn't. Make the termination the loop *condition*:
-  `while (i<count){ if(match){…;return 1;} advance; } return 0;`.
-- **Decrement *inside* the body ⇒ `while`, not `for`.**
-- **Search loops whose `i==0` access is a constant address get iteration-0 *peeled* by a
-  do/while.** A plain `for (i=0;i<N;i++)` suppresses the peel.
-- **16-bit counters:** `i += 1` keeps the op 16-bit (`add ax,1`); `i = i + 1` can trigger
-  `movsx; add` promotion. *(The bulk `do-while→for` / `+=` rewriters in `bin/` found **no**
-  candidates in this codebase — the sources are already hand-written in these forms; see §11.)*
+Read the control-flow graph before choosing `for`, `while`, or `do while`:
 
----
+- An initial jump to a bottom test suggests `while` or `for`.
+- A body entered before the first test suggests `do while`.
+- A top test with a back edge to the test suggests a pre-tested loop.
+- `while (1)` with an internal `break` can be right when the reference has a literal
+  unconditional back edge; otherwise it can add an unwanted materialized true/test.
 
-## 5. Calls & arguments
+Other useful distinctions:
 
-- **Nested calls beat temps.** `outer(inner(a,b), c)` emits two `add esp,N` cleanups; hoisting
-  to `t = inner(...); outer(t,c)` defers to one big cleanup and breaks similarity. Inline call
-  results into compares too: `if (local < GetFoo())`.
-- **Tail calls.** `void f(){ stuff; g(); }` with `void g()` → MSVC emits `jmp g`, not
-  `call g; ret`. (Don't *add* a wrapper to force this — forbidden.)
-- **[thiscall] Class methods are `__thiscall` (`this` in ECX, callee `RET n`).** Never
-  spell `__thiscall` and never change the convention (CLAUDE.md). A call site that is
-  `PUSH…CALL…ADD ESP n` is `cdecl`; a callee ending `RET n` is `thiscall`/`stdcall`. Ghidra
-  sometimes mislabels these and invents `in_ECX`/extra params — verify real arity at the call
-  site (no `mov ecx,X` / extra `push` ⇒ the arg doesn't exist).
-- **Hallucinated args** (`extraout_ECX`, `extraout_EDX`, `in_stack_*`) — drop them.
-- **By-value struct params.** A call site doing `SUB ESP,N; … REP MOVSD; CALL; ADD ESP,N+args`
-  passes a struct *by value*. A standalone `typedef struct { char data[N]; }` passed by value
-  is **not** a forbidden substructure; `sizeof` must equal the exact bytes copied.
+- Put termination in the loop condition when the reference tests it there. A manual infinite
+  loop can add `mov 1; test; je` on MSVC 4.20.
+- A decrement in the body may match `while` better than a `for` iteration expression.
+- A `do while` can peel iteration zero when the first array address becomes constant; a plain
+  `for` can suppress that peel.
+- `i += 1` may retain a 16-bit operation where `i = i + 1` promotes through `movsx`.
+- `*p++` in a condition can combine the load and pointer advance differently from separate
+  statements.
+- Precomputing a row pointer or pitch matches only if the reference also hoists it; otherwise
+  repeated indexed access may be closer.
+- A `break` followed by a shared return differs from returning inside the loop.
 
----
+The optimizer canonicalizes many loop spellings, so confirm with the emitted assembly rather
+than applying mechanical rewrites. The repository's bulk loop transformer previously found no
+general wins; most existing loops are already hand-shaped.
 
-## 6. Globals & data types
+## 5. Returns, calls, and prototypes
 
-- **Direct pointer cast beats struct-field reassembly.** Read a struct word as
-  `*(unsigned int*)&g`, not `(g.hi<<16)|g.lo` → single `mov eax,[g]`.
-- **Inline field access beats a cached pointer** when the disasm recomputes `&arr[i]` each
-  access: write `arr[i].x` each time rather than `p=&arr[i]; p->x`.
-- **Signed vs unsigned width drives `movsx` vs `movzx`/`and`.** Index/flag global as `short`
-  → `movsx`; as `unsigned short` → `mov; and 0xffff` (or `movzx`). Pick the type matching the
-  disasm's extension instruction. Drop a redundant explicit `& 0xffff` on an
-  already-`unsigned short` value (MSVC widens once; the mask adds a *second* `and`).
-- **`__int64` grouped copy.** **[MSVC4.20: use `__int64`]** (already used in `FilePosCache` /
-  `SoundTracker`). When the disasm reads BOTH source dwords then writes BOTH
-  (`mov edx,[s]; mov eax,[s+4]; mov [d],edx; mov [d+4],eax`), a whole RECT/POINT-pair copy,
-  write `*(__int64*)dst = *(__int64*)src;` — naive `d[0]=s[0]; d[1]=s[1];` interleaves
-  read/write/read/write and mismatches.
-- **Two adjacent 16-bit fields set from one 32-bit value → one dword store:**
-  `*(unsigned int*)&obj->x = p;` (the split `obj->x=(short)p; obj->y=(short)(p>>16);` emits
-  `mov word; shr; mov word`).
-- **Zero a short array as dwords:** `*(int*)(s+2)=0` → one `mov dword[],0`.
-- **Reconstruct the original's collapsed stack locals (NOT a rule violation — they're real).**
-  The decompiler folds `a=node; b=*(a+0xc); node=b;` into `node=*(node+0xc);`. If the disasm
-  shows extra stack slots written/read, re-introduce those locals **in declaration order
-  matching the slot offsets** (1st decl → lowest slot). These are the original's own locals.
+### Return width
 
----
+- A function whose binary only sets `AX` is often `short` or `unsigned short`, not `int`.
+- A function that only sets `AL` is often `unsigned char`.
+- Ghidra artifacts such as `in_EAX`, `extraout_ECX`, `CONCAT22`, or preserved high halves do
+  not prove a wide semantic return.
+- `CONCAT22(hi,lo)` and `CONCAT31(...)` are pseudo-operations, not C++. Reconstruct the value
+  only if callers use it.
 
-## 7. Arithmetic idioms (write the high-level op, let MSVC regenerate the magic)
+MSVC 4.20 rejects falling off the end of a non-`void` function. If the original is a bare
+`ret` and callers do not consume a result, the declaration may genuinely need to be `void`.
+For a virtual, change the base slot and every override consistently; C++ cannot overload on
+return type. After such a header edit, clean-rebuild all callers.
 
-- **Signed division by constant → write `x / K`**, not the expanded magic; MSVC regenerates
-  the `cdq/and/add/sar` or `__int64`-magic sequence. **[MSVC4.20: `__int64`, not `long
-  long`.]** Caveat: the *exact* magic sequence differs between compiler versions — since the
-  comparator is mnemonic-only the *shape* still usually matches, but verify per function
-  rather than assuming.
-- **A Ghidra `(longlong)` cast can be a FALSE artifact** — check the disasm: `__alldiv`/
-  `__aulldiv` call = real 64-bit; `CDQ; IDIV` = plain 32-bit → drop the cast.
-- **Mod-by-2^k → write the high-level `(int)x % N`**, not the decompiler's materialized-boolean
-  expansion (`x & 0x80000007; …`), which emits a wasteful `sete`/`test`. The high-level form
-  regenerates the branchless `and; jns; dec; or; inc; jne`.
-- **`__ftol()` (no args) is the MSVC FPU→long helper, not a float param.** The value is
-  `(int)((double)someInt * doubleConst)`; read the `FILD…FMUL [const]` before `CALL __ftol`
-  and write that — mnemonic-only, so the actual index/constant don't matter.
+### Call expression shape
 
----
+- Nested calls can generate a different stack-cleanup schedule from named temporaries.
+  Compare `outer(inner(a,b),c)` with a cached `inner` result.
+- A final call from a compatible `void` wrapper may become a tail `jmp`.
+- A `thiscall` member receives `this` in `ECX` and normally cleans its explicit arguments.
+  Do not spell or change calling conventions to force a match.
+- Validate suspected arguments at call sites. Decompilers often invent `in_ECX`,
+  `extraout_EDX`, or stack parameters from live registers.
+- A caller that reserves bytes, copies them with `rep movsd`, then calls may be passing a
+  struct by value. Model the real complete value and exact size; do not invent substructures.
 
-## 8. Optimization level & pragmas — mostly N/A on this project
+Forward-declare a same-file callback when address order places its definition later. Use
+`extern` for a declaration whose definition truly lives in another translation unit.
 
-**[MSVC4.20 / this build]** The full game builds with a **single, uniform** flag set
-(`Makefile`): `/Og /Oi /Ot /Oy /Ob1 /Gs /Gf /GX` (global opt, intrinsics, favour speed,
-**frame-pointer omission**, inline marked functions, no stack probes, string pooling, EH).
-There are **no per-function `#pragma optimize` directives anywhere in `src/`**, and the
-build does not mix optimization levels.
+## 6. Stack frames, locals, and types
 
-- MSVC 4.20 *does* accept `#pragma optimize("", off)` / `("y", off)` / `#pragma
-  function(memcpy)` (verified — they compile). But because the codebase is built uniformly,
-  the "flip a wrongly-applied `optimize("",off)`" / "switch `""`→`"y"`" workflow from the
-  source project **has nothing to operate on here** — that is why `tryopt.py` was *not*
-  ported. Do **not** add pragmas speculatively; CLAUDE.md forbids changing compiler flags,
-  and a function that is hard to match is far more often a register-allocation ceiling (§10)
-  than a missing-pragma problem.
-- A function with no EBP frame in the original (esp-relative, register vars) is normal `/Og
-  /Oy` output — do not try to force a frame.
+### Start with the frame delta
 
----
+Compare `sub esp,N` before chasing individual instructions:
 
-## 9. Inlined CRT (strlen / strcmp / memcpy)
+- If the rebuilt frame is larger, look for a single-use local, unnecessary cached pointer,
+  widened temporary, extended lifetime, or inhibited inlining.
+- If it is smaller, the original may have had a meaningful cached value, intermediate result,
+  aggregate, or source-level scope that the decompiler collapsed.
+- Declaration order and nested scopes affect slot reuse. Introduce only locals supported by
+  reads/writes in the original; dummy padding variables are forbidden.
+- Floating-point expressions are especially sensitive to whether an intermediate is named or
+  left in one expression.
 
-Ghidra inlines these; the decompiled loops are valid C++ and compile back to the same thing —
-**keep them verbatim**, just retype `undefined*`/`byte`/`bool`:
+Do not label every frame mismatch impossible. First account for real locals and lifetimes.
+After those are faithful, a one-slot residual may be an allocator ceiling.
 
-- **strlen:** `n=0xffffffff; do { …; n--; c=*p++; } while (c!='\0'); n=~n;`
-- **memcpy:** the `for (i=n>>2) *(int*)d=*(int*)s;` + byte tail = `REP MOVSD` + tail; for a
-  constant size `memcpy(d,s,K)` regenerates `rep movsd; movsw; movsb`. You may use `memcpy`/
-  `strcpy`/`memset` only where the compiler inlines them to match (CLAUDE.md).
-- **strcmp:** the 2-byte-unrolled byte-compare chain — keep verbatim, or call `strcmp`.
+### Signedness and width
 
----
+- Signed and unsigned loads choose among `movsx`, `movzx`, plain `mov`, and explicit `and`.
+- Signed and unsigned division choose `idiv` versus `div` and different setup sequences.
+- A redundant `& 0xffff` on an already-unsigned-short value can add another instruction.
+- Apply casts at the use site when only one operation needs a different interpretation;
+  changing a shared declaration can perturb every consumer.
+- A decompiler's `& 0x1f` on the right operand of a shift is often x86's implicit shift-count
+  masking. Keep it only if the reference has a separate `and`.
 
-## 10. Things that *can't* be matched in clean C++ (skip or accept the score)
+Retyping pointers is especially dangerous: pointer arithmetic scales by the pointed-to type.
+Mnemonic similarity may stay unchanged while every effective address becomes wrong. After a
+type change, run value and global-access verification even if the score is unchanged.
 
-On this project these dominate the small sub-95 long tail — confirm with `ndiff.py` before
-spending time:
+### Locals and memory access
 
-- **Register-allocation ceilings.** The original keeps a value in a different callee-saved
-  register, or one more/fewer of them (`push edi` vs `push esi`, an extra `xor edi,edi`).
-  `ndiff` shows a same-mnemonic `insert`+`delete` pair or a `push`/`pop` count difference.
-  Unforceable from C++.
-- **Instruction scheduling (transpositions).** The same instruction appears on both sides at
-  different positions (`cmp cl,bl` vs `cmp dl,cl`, a hoisted `push 0`, a `mov eax,6` moved a
-  few slots). `ndiff` shows it as a delete here / insert there. Unforceable.
-- **Argument-evaluation-order / `operator new` arg hoist.** The binary materialises an arg at
-  the very top of the function (e.g. `PUSH 0x300` before the field stores in
-  `Palette::Palette`); clean C++ pushes it next to the call. Reproducing it needs artificial
-  ordering — accept the gap.
-- **`sub esp,N` frame size / `add esp,N` cleanup count** off by one slot.
-- **JMP thunks / shared-tail fragments / secondary entry points** (`make progress`
-  auto-completes most — don't write wrappers, forbidden).
-- **CRT routines & SEH-heavy startup** (`strcpy`, `GenerateRandom`, `WinMain`).
-- **The whole graphics subsystem — `Graphics.cpp` / `VideoTable.cpp` / `Blit.cpp` /
-  `ScaleBuffer.cpp` / `PaletteUtils.cpp` (~25 funcs at <55%) — is a hard codegen ceiling.**
-  The originals use one-operand `MUL`/`XLAT`, no CSE (they re-read the DC global and re-`call`
-  the import thunk each time), direct import-thunk calls, and no callee-saved-register use; our
-  `/Og` build caches those in registers and uses two-operand `imul`. No clean-C++ form **and no
-  `#pragma optimize` variant** reproduces it (tested `g`/`""`/`t`/`a`/`s` on `GetColorBitDepth`
-  — all ≤50%). Accept the low scores; don't chase.
-- **SEH-split `LBLParse` entries.** A `LBLParse` reported at `0xNNNN0` with ~0–10% similarity
-  is usually the SEH-prologue funclet split from the real body (which lives at an adjacent
-  address and often already scores high). It is a mapping artifact, not a source bug.
+- Direct field access can be closer than caching `&arr[i]` when the reference recomputes the
+  address for each use.
+- Conversely, restore a cached pointer when the reference keeps it across several accesses.
+- When adjacent fields are deliberately read as one value, a proved direct cast/load can match
+  better than reconstructing the value with shifts and ORs.
+- Decompiler propagation may collapse `a=node; b=a->next; node=b;` into one expression even
+  though the frame proves distinct locals. Restore evidenced locals in declaration order.
+- A serialized cursor that advances through a buffer differs from repeated fixed-offset
+  accesses even when both read the same bytes.
+- Local aggregate initialization, member-by-member stores, a copy, and `memset` can have very
+  different instruction sequences.
 
----
+## 7. Expression and memory idioms
 
-## 11. Tooling (ported from the source project, adapted for `binary-comp` + `src/*.cpp`)
+Write the high-level operation first and let the original compiler regenerate its lowering:
 
-`bin/cmp_lib.py` is the shared helper (paths, `build()`, `sim(name,addr)` via `binary-comp
-compare --no-build`, report parsing). All scripts run from the repo root.
+- Use `x / K` and `x % K`, not decompiler-expanded magic-number arithmetic.
+- A real 64-bit division has helpers such as `__alldiv`/`__aulldiv`; `cdq; idiv` is ordinary
+  signed 32-bit division. MSVC 4.20 uses `__int64`, not modern `long long` assumptions.
+- `__ftol()` consumes the x87 value already on the FPU stack. Recover the expression that
+  precedes the call rather than inventing a parameter.
+- `x &= ~1` can lower differently from `x &= 0xfffffffeU`; match the reference's immediate
+  construction only after preserving the intended type width.
+- `x op= y` can choose a memory read-modify-write form where `x = x op y` chooses separate
+  load and store instructions, or vice versa.
 
-- **`bin/ndiff.py [--no-build] Name:0xADDR …`** — the normalized-mnemonic diff: only the
-  divergent instruction blocks, raw asm both sides. **Working and indispensable here** —
-  reuses `binary-comp`'s own disassembler so the stream is exactly what the score sees.
-- **`bin/triage.py REPORT.txt [--min N --max M] [--no-build] [--sort pol|ratio|size]`** —
-  categorizes sub-95 functions by diff shape: ratio, #replace/insert/delete blocks, changed
-  insns, and **POL** = opposite-polarity branch pairs (a strong "if/else flip will help"
-  signal). Build the report first: `make report > /tmp/report.txt`. **Working.** (Caveat:
-  Ghidra hands out duplicate recovered names and a few names alias the same address — POL on
-  huge `LBLParse` parsers is inflated by SequenceMatcher misalignment; trust it on small,
-  high-ratio rows.)
-- **`bin/trysweep.py REPORT.txt [inc|compound|cmp|swap|all] [File.cpp]`** — keep-if-improves
-  identity-preserving rewrites (`x=x+1`→`x+=1`, `x=x op E`→`x op= E`, `-1<x`→`x>=0`,
-  `CONST<x`→`x>CONST`). Reverts anything that doesn't strictly improve, so it can never lower
-  a score.
-- **`bin/tryforloop.py` / `bin/trymask.py` / `bin/tryspill.py REPORT.txt [File.cpp…]`** —
-  keep-if-improves do-while→for / drop-redundant-`&0xffff` / dead-spill-inline.
-- **⚠ On *this* codebase the bulk transformers found 0 wins / 0 candidates** (a full sweep
-  with all of the above). The source project was raw decompiler output full of `x=x+1`,
-  peeled do-while loops, masked `ushort` calls and dead spills; **this** project's `src/` is
-  hand-written/cleaned, so those artifact-patterns occur almost only in already-≥95%
-  functions. The scripts are kept (harmless, revert-on-no-gain) for any *newly* added
-  raw-decompiled function, but don't expect them to carry the work — the real wins here are
-  **manual structural fixes** (§3) found via `ndiff`/`triage`.
-- **`tryopt.py` was deliberately not ported** — there are no `#pragma optimize` directives to
-  flip (§8).
-- The `binary-comp` map is **`TEACHER.map`** (full) — and it is for the *rebuilt* code only,
-  not the original. `make report` finds all functions (the link line lists every `.obj`
-  explicitly, so there is **no `/OPT:NOREF` dead-strip problem** to fix).
+Useful grouped-memory forms, when proved by adjacent accesses:
 
----
+- `*(__int64*)dst = *(__int64*)src` can reproduce two grouped dword loads followed by two
+  stores. A member-by-member copy may interleave reads and writes instead.
+- Two adjacent 16-bit fields sourced from one 32-bit value may be one dword store.
+- Two adjacent shorts can sometimes be cleared with one dword store.
 
-*Bottom line:* the comparator rewards the **right instruction sequence**, not exact operands.
-The wins that actually land here come from **control-flow shape** (if-polarity, switch-vs-if,
-shared-vs-split epilogues, loop-with-break) and **return-type width** — found one at a time
-with `ndiff`/`triage`. Most small functions that remain below 95% are
-register-allocation/scheduling ceilings (§10); verify before investing. Write the high-level
-op (`x/1000`, `*(__int64*)d=*(__int64*)s`, `memcpy`) and let the compiler regenerate the magic.
+These casts are appropriate only when alignment, object layout, and the original accesses
+support them. The operand verifiers remain the safety net.
+
+## 8. Optimization state and intrinsics
+
+The base build flags in `Makefile` are:
+
+```text
+/Og /Oi /Ot /Oy /Ob1 /QIfdiv /Gs /Gf /GX
+```
+
+They are part of the reconstruction and must not be changed casually. The source is not
+uniformly `/Oy`: several translation units contain repository-owned
+`#pragma optimize("y", off)` regions, sometimes followed by `("y", on)` and sometimes
+continuing to the end of the file. The `y` setting controls frame-pointer omission; it does
+not disable every optimization.
+
+Audit the current state with:
+
+```sh
+rg -n '#pragma optimize' src
+```
+
+Existing regions occur in low-level graphics/video code and selected main, state, mouse,
+blit, scale, and palette routines. Respect the state at the target's exact source position.
+A function with an EBP frame while surrounding code omits one may be explained by this pragma,
+not by its local variables.
+
+Do not add, remove, or widen an optimization region speculatively. First prove a frame or
+instruction-count mismatch, then test the smallest possible change and run the full report;
+pragma state can affect every later function in that translation unit.
+
+With `/Oi`, CRT operations may be intrinsic. `#pragma function(name)` can force a call and an
+intrinsic declaration can permit inline lowering, but use either only when `make verify-calls`
+and the reference disassembly prove the desired call shape. It is a targeted diagnostic lever,
+not a blanket fix.
+
+## 9. CRT lowering, copies, and strings
+
+Decompiler-expanded CRT loops may represent compiler intrinsics:
+
+- `strlen` often appears as a decrementing scan beginning at `0xffffffff`, followed by a
+  complement.
+- `memcpy` can become `rep movsd` plus word/byte tails. A constant-size call and a hand-written
+  loop do not necessarily lower alike.
+- `strcmp` may appear as an unrolled byte-compare chain.
+- `memset` may become stores or a repeat instruction depending on size and alignment.
+
+Either retain the recovered loop or use the high-level CRT call according to the reference.
+Check `make verify-calls`: a mnemonic-perfect inline sequence with the wrong external call
+behavior is not a valid win. String contents and paths must come from `code-full/strings.txt`,
+not from mnemonic similarity.
+
+## 10. Decompiler and export traps
+
+- Jump-table case order is reconstructed from destinations, not from decompiler formatting.
+- SEH setup, cleanup funclets, shared epilogues, and secondary entry points can split one
+  source function across exported blocks.
+- Ghidra may hallucinate calling conventions, parameters, wide returns, or `CONCAT` values
+  from register liveness.
+- A very low `LBLParse` row adjacent to a healthy parser body is often a mapped funclet rather
+  than a missing C++ function.
+- Duplicate recovered names make name-only comparisons ambiguous.
+- A changed function marker can make both the target and its neighbor appear to regress.
+- A source edit can be mnemonic-neutral yet corrupt offsets, constants, or call targets.
+
+When the report and source appear contradictory, inspect addresses, mapping boundaries, raw PE
+disassembly, and native verifier output before rewriting code.
+
+## 11. Recognize diminishing returns
+
+After semantic and structural explanations are exhausted, some residuals are poor targets:
+
+- register allocation chooses another callee-saved register or spills one value;
+- independent instructions are scheduled in a different order;
+- argument evaluation is hoisted or delayed without a clean source-level control;
+- one real stack slot cannot be reconciled without a forbidden dummy;
+- linker thunks, shared tails, or SEH split the reported range;
+- CRT/startup code depends on compiler-library internals;
+- low-level graphics code uses instruction selections that normal C++ does not express.
+
+A normalized diff often shows these as the same mnemonic deleted at one location and inserted
+at another, a lone prologue/epilogue difference, or a register-save imbalance. Do not use
+inline assembly, dead variables, fake branches, unions, invented calling conventions, or
+compiler-flag changes to force the final point.
+
+This is prioritization, not proof that a subsystem can never improve. Revisit a deferred target
+when an exact sibling, a better type recovery, a corrected marker, or new compiler evidence
+appears.
+
+## 12. Repository helper tools
+
+All commands run from the repository root:
+
+- `bin/ndiff.py [--no-build] Name:0xADDR ...` prints only divergent normalized-mnemonic
+  blocks with both raw instruction streams. It uses the comparator's own decoder.
+- `bin/triage.py REPORT [--min N --max M] [--no-build] [--sort pol|ratio|size]` classifies
+  rows by ratio and edit shape. Its `POL` value highlights likely opposite-polarity branches.
+- `bin/trysweep.py REPORT [inc|compound|cmp|swap|all] [File.cpp]` tests reversible,
+  behavior-preserving expression rewrites and keeps only strict improvements.
+- `bin/tryforloop.py`, `bin/trymask.py`, and `bin/tryspill.py` probe loop, redundant-mask,
+  and evidenced-spill forms.
+
+The bulk transformers are most useful on newly recovered decompiler-like source. Earlier full
+sweeps found few or no candidates in the already hand-shaped tree. Review every retained edit
+for semantic equivalence; a script's score gate cannot validate operands or behavior.
+
+`TEACHER.map` describes the rebuilt executable, not the original. The original boundaries and
+addresses come from `code-full/` plus the comparison configuration.
+
+## 13. A compact worksheet
+
+For each candidate, write down:
+
+1. name and original address;
+2. baseline score and instruction-count ratio;
+3. exact marker/export range;
+4. first normalized difference;
+5. call, global, value, and vtable evidence;
+6. one hypothesis: control flow, loop, epilogue, type, local, pragma, or likely ceiling;
+7. target score after the edit;
+8. full-report delta and verifier result.
+
+That small record prevents circular experiments and makes successful shapes reusable across
+sibling functions.
+
+The practical bottom line: match control-flow topology, meaningful types, local lifetimes, and
+compiler context. Use the percentage to find structural differences, the disassembly to explain
+them, and the native verifiers to keep the reconstructed program honest.

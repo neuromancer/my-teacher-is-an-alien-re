@@ -23,10 +23,10 @@ void Queue::Insert(void* data)
     } else {
         node->next = current;
         node->prev = current->prev;
-        if (current->prev == 0) {
-            head = node;
-        } else {
+        if (current->prev != 0) {
             current->prev->next = node;
+        } else {
+            head = node;
         }
         current->prev = node;
     }
@@ -49,10 +49,10 @@ void Queue::Add(void* data)
         } else {
             node->next = current;
             node->prev = current->prev;
-            if (current->prev == 0) {
-                head = node;
-            } else {
+            if (current->prev != 0) {
                 current->prev->next = node;
+            } else {
+                head = node;
             }
             current->prev = node;
         }
@@ -70,10 +70,10 @@ void Queue::Add(void* data)
         } else {
             node->next = current;
             node->prev = current->prev;
-            if (current->prev == 0) {
-                head = node;
-            } else {
+            if (current->prev != 0) {
                 current->prev->next = node;
+            } else {
+                head = node;
             }
             current->prev = node;
         }
@@ -93,10 +93,10 @@ void Queue::Add(void* data)
             } else {
                 node->next = current;
                 node->prev = current->prev;
-                if (current->prev == 0) {
-                    head = node;
-                } else {
+                if (current->prev != 0) {
                     current->prev->next = node;
+                } else {
+                    head = node;
                 }
                 current->prev = node;
             }
@@ -171,10 +171,10 @@ void Queue::InsertAtCurrent(void* data)
     } else {
         node->next = current;
         node->prev = current->prev;
-        if (current->prev == 0) {
-            head = node;
-        } else {
+        if (current->prev != 0) {
             current->prev->next = node;
+        } else {
+            head = node;
         }
         current->prev = node;
     }
@@ -270,10 +270,10 @@ void PriorityQueue::AddAfterCurrent(void* data)
     } else {
         node->next = current;
         node->prev = current->prev;
-        if (current->prev == 0) {
-            head = node;
-        } else {
+        if (current->prev != 0) {
             current->prev->next = node;
+        } else {
+            head = node;
         }
         current->prev = node;
     }

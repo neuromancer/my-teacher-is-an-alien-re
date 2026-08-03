@@ -432,7 +432,7 @@ void VBuffer::ClipAndBlitRegion(int param_1, int param_2, int param_3, int param
     GlyphRect local_2c(clip_x1, clip_y1, clip_x2, clip_y2);
     GlyphRect local_1c(param_1, param_3, param_2, param_4);
 
-    if (param_1 == 0x38) {
+    if (param_1 != 0x38) {
         if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
             return;
         }
