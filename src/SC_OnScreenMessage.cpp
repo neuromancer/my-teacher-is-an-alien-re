@@ -98,6 +98,9 @@ void SC_OnScreenMessage::Init(SC_MessageParser* msg) {
     }
 }
 
+/* Function start: 0x448600 */
+void SC_OnScreenMessage::ShutDown(SC_MessageParser* msg) { return; }
+
 /* Function start: 0x448610 */
 void SC_OnScreenMessage::Update(int param1, int param2) {
     MessageNode* node;
@@ -357,8 +360,6 @@ int SC_OnScreenMessage::AddMessage(SC_MessageParser* msg) {
     ShowError("\"SC_Sound::AddMessage\"");
     return 1;
 }
-/* Function start: 0x448600 */
-void SC_OnScreenMessage::ShutDown(SC_MessageParser* msg) { return; }
 
 /* Function start: 0x448C50 */
 void* MessageList::GetCurrentData() {

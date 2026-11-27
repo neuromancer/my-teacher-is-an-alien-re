@@ -1,4 +1,5 @@
 #include "EngineB.h"
+#include "CDData.h"
 #include "SoundList.h"
 #include "Memory.h"
 #include "Sample.h"
@@ -308,7 +309,7 @@ void EngineB::OnProcessEnd() {
 
     EngineB::m_localSoundList = new SoundList(10);
 
-    EngineB::m_meterAnimation = new Animation(FormatStringVA("combats\\nmeter.smk"));
+    EngineB::m_meterAnimation = new Animation(ResolveAssetPath("combats\\nmeter.smk"));
     EngineB::m_meterAnimation->DoFrame();
 
     EngineB::m_meterBuffer = EngineB::m_meterAnimation->targetBuffer;

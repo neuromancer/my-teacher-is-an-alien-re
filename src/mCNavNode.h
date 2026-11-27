@@ -8,18 +8,17 @@
 class SpriteAction;
 
 // mCNavNode - Navigation node for mCNavigator
-// Full game: Size 0xD0, vtable 0x461B50 (parsing) → 0x461B30 (runtime, 8 entries)
+// Full game: Size 0xD0, vtable 0x461B50
 // Constructor: 0x44AE10
 //
-// Full game vtable layout (0x461B30, set after parsing):
-//   +0x00: LBLParse        (0x44A9C0 / 0x44AF40)
+// Full game vtable layout (0x461B50, 3 entries):
+//   +0x00: LBLParse        (0x44AF40)
 //   +0x04: OnProcessStart  (inherited)
 //   +0x08: OnProcessEnd    (inherited)
-//   +0x0C: virtual3        (0x44A980)
-//   +0x10: virtual4        (0x44AB40)
-//   +0x14: Activate        (0x44A9A0)
-//   +0x18: GetNextNode     (0x44ADA0)
-//   +0x1C: virtual7        (0x449CE0)
+//
+// The node itself declares no navigation virtuals: the per-bearing behaviour
+// lives on NavSubNode (vtable 0x461AC8, 8 entries) and mCNavNode reaches it
+// through the neighborNodes[] wrappers below.
 //
 // Full game field layout (Parser base = 0x90):
 //   0x90-0xA7: neighborNodes[6] (indexed by bearing direction)
@@ -30,12 +29,6 @@ public:
     mCNavNode(char* line);          // 0x44AE10
     ~mCNavNode();                   // 0x44AEC0
 
-    // Virtual methods (8 entries total)
-    virtual void virtual3();        // +0x0C
-    virtual int virtual4();         // +0x10
-    virtual int Activate();         // +0x14
-    virtual int GetNextNode();      // +0x18
-    virtual void virtual7();        // +0x1C
     virtual int LBLParse(char*);    // +0x00 (override)
 
     // Non-virtual wrappers: look up neighbor by bearing and dispatch
@@ -89,6 +82,7 @@ public:
 class mCNavNode_TypeC : public NavSubNode {
 public:
     mCNavNode_TypeC(char* line) {}
+    virtual int LBLParse(char* line);
     virtual void virtual4();
     virtual int Activate();
 };

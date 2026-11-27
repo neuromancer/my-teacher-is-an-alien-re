@@ -93,7 +93,7 @@ void SC_Game::Update(int param1, int param2) {
             if (stateName != 0) {
                 stateName = gameState->GetState(row);
                 sprintf(g_Buffer_0046aa00, "%s", stateName);
-                (g_ZBufferManager_0046aa24)->ShowSubtitle(
+                (g_ZBufferManager_0046aa24)->ShowText(
                     g_Buffer_0046aa00, textX,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
@@ -103,13 +103,13 @@ void SC_Game::Update(int param1, int param2) {
                     ShowError("Invalid gamestate %d", row);
                 }
                 sprintf(g_Buffer_0046aa00, "%d", gs->stateValues[row]);
-                (g_ZBufferManager_0046aa24)->ShowSubtitle(
+                (g_ZBufferManager_0046aa24)->ShowText(
                     g_Buffer_0046aa00, textX + 0x15e,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
             } else {
                 sprintf(g_Buffer_0046aa00, "**NOLABEL**");
-                (g_ZBufferManager_0046aa24)->ShowSubtitle(
+                (g_ZBufferManager_0046aa24)->ShowText(
                     g_Buffer_0046aa00, textX,
                     (row - scrollOffset + 1) * rowHeight + textY,
                     10000, -1);
@@ -338,4 +338,3 @@ int SC_Game::Exit(SC_MessageParser* msg) {
     }
     return 1;
 }
-

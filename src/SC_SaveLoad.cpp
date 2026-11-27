@@ -94,7 +94,7 @@ void SC_SaveLoad::Init(SC_MessageParser* msg) {
     }
     if (palette != 0) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         g_ZBufferManager_0046aa24->m_palette = palette;
     }

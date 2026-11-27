@@ -18,10 +18,10 @@ void MessageList::InsertBeforeCurrent(void* data)
     } else {
         node->next = current;
         node->prev = current->prev;
-        if (current->prev == 0) {
-            head = node;
-        } else {
+        if (current->prev != 0) {
             current->prev->next = node;
+        } else {
+            head = node;
         }
         current->prev = node;
     }
@@ -85,10 +85,10 @@ void MessageList::InsertNode(void* data) {
     } else {
         newNode->next = (MessageNode*)current;
         newNode->prev = ((MessageNode*)current)->prev;
-        if (((MessageNode*)current)->prev == 0) {
-            head = newNode;
-        } else {
+        if (((MessageNode*)current)->prev != 0) {
             ((MessageNode*)current)->prev->next = newNode;
+        } else {
+            head = newNode;
         }
         ((MessageNode*)current)->prev = newNode;
     }

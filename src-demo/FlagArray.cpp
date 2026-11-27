@@ -68,7 +68,7 @@ void FlagArray::Open() {
         ShowError("double FlagArray::Open()");
     }
     
-    FILE* fp_temp = fopen(filename, DAT_004371ac);
+    FILE* fp_temp = fsopen(filename, DAT_004371ac);
     fp = fp_temp;
     
     if (fp_temp == NULL) {

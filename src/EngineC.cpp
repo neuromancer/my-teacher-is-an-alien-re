@@ -108,7 +108,10 @@ void EngineC::RenderBackground() {
 
                 mouse = g_InputManager_0046aa08->pMouse;
                 mouseY = (mouse == 0) ? 0 : mouse->y;
-                mouseX = (mouse == 0) ? 0 : mouse->x;
+                mouseX = 0;
+                if (mouse != 0) {
+                    mouseX = mouse->x;
+                }
                 {
                     Sprite* s = sprite114;
                     s->loc.x = mouseX - 0x48;

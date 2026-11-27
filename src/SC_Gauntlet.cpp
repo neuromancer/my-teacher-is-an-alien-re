@@ -167,9 +167,13 @@ int SC_Gauntlet::AddMessage(SC_MessageParser* msg) {
     return 1;
 }
 
-/* Function start: 0x42EB70 */ /* No assembly extracted */
+/* Function start: 0x42EB70 */
 int SC_Gauntlet::Exit(SC_MessageParser* msg) {
-    return 0;
+    if (handlerId != ((SpriteAction*)msg)->addressType) {
+        return 0;
+    }
+    SC_Combat::Exit(msg);
+    return 1;
 }
 
 /* Function start: 0x42EBA0 */

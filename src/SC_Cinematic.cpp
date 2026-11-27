@@ -5,6 +5,7 @@
 #include "Animation.h"
 #include "GameLoop.h"
 #include "VBuffer.h"
+#include "VideoTable.h"
 #include "GameState.h"
 #include "InputManager.h"
 #include "Memory.h"
@@ -23,6 +24,7 @@
 #include "GameWindow.h"
 #include "CDData.h"
 #include "Palette.h"
+#include "PaletteUtils.h"
 #include "MouseControl.h"
 extern char* MakeAnimName(int id);
 
@@ -285,7 +287,7 @@ void SC_Cinematic::Init(SC_MessageParser* msg) {
             SendGameMessage(5, 0, handlerId, moduleParam, 0x13, startX, startY, 0, 0, 0);
         }
     } else {
-        WriteToLog("missing cinematic %s", moviePath);
+        WriteToMessageLog("missing cinematic %s", moviePath);
         EndCinematic();
     }
 }
@@ -464,8 +466,8 @@ void SC_Cinematic::Update(int param1, int param2) {
     }
 
     if (flags & 0x100) {
-        SetFontColor(0xfa);
-        SetFontPosition(0x14, 0x14);
+        SetFillColor(0xfa);
+        SetDrawPosition(0x14, 0x14);
         int len = strlen(&g_CinematicDebugStr_00473400);
         DrawFontText(&g_CinematicDebugStr_00473400, len);
     }

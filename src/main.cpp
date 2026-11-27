@@ -84,7 +84,7 @@ void RunGame() {
     SetVideoRes(0x280, 0x1e0);
 
     // Play splash cinematic if exists
-    const char *splashPath = CDData_ResolvePath("cine\\splash.smk");
+    const char *splashPath = FormatAssetPath("cine\\splash.smk");
     if (FileExists(splashPath)) {
         Animation anim;
         anim.Play((char *)splashPath, 3);
@@ -449,10 +449,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return 0;
   }
   UpdateWindow(g_GameWindow.hWnd);
-  if (g_DebugFlag_00472ddc == 0) {
-    RunGame();
-  } else {
+  if (g_DebugFlag_00472ddc != 0) {
     PlayIntroCinematic();
+  } else {
+    RunGame();
   }
   g_GameWindow.Shutdown();
   // Original bug at 0x420620: normal exit returns an unwritten stack local.
@@ -490,7 +490,7 @@ void ShowLoadingScreen(void) {
     int x;
     int* screen;
 
-    path = CDData_ResolvePath("elements\\loading.smk");
+    path = FormatAssetPath("elements\\loading.smk");
     if (FileExists(path) != 0) {
         buffer = new VBuffer((char*)path, 0);
         screen = GetScreenWidth();

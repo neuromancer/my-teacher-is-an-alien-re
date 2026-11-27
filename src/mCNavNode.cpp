@@ -78,12 +78,6 @@ int mCNavNode::CallGetNextNode()
     return neighbor->GetNextNode();
 }
 
-// Stub virtual methods
-void mCNavNode::virtual3() {}
-int mCNavNode::virtual4() { return 0; }
-int mCNavNode::Activate() { return 0; }
-int mCNavNode::GetNextNode() { return 0; }
-void mCNavNode::virtual7() {}
 /* Function start: 0x44AF40 */
 int mCNavNode::LBLParse(char* param_1)
 {
@@ -345,6 +339,11 @@ int mCNavNode_TypeC::Activate() {
 /* Function start: 0x44AC50 */
 void mCNavNode_TypeC::virtual4() {
     NavSubNode::virtual4();
+}
+
+/* Function start: 0x44B5A0 */
+int mCNavNode_TypeC::LBLParse(char* line) {
+    return 0;
 }
 
 // mCNavNode_TypeE stubs

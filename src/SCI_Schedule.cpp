@@ -26,7 +26,7 @@ SCI_Schedule::SCI_Schedule()
 
     Palette* pal = new Palette();
     palette = pal;
-    pal->Load("schedual\\schedule.col");
+    pal->LoadFile("schedual\\schedule.col");
 
     Sprite* spr = new Sprite("schedual\\schedule.smk");
     bgSprite = spr;
@@ -131,7 +131,7 @@ void SCI_Schedule::Init(SC_MessageParser* msg)
     if (iVar8 != 0) {
         int* piVar7 = (int*)&g_ZBufferManager_0046aa24->m_palette;
         if (*piVar7 != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         *piVar7 = iVar8;
     }

@@ -62,7 +62,7 @@ SC_FireAlarm::~SC_FireAlarm() {
 void SC_FireAlarm::Init(SC_MessageParser* msg) {
     SpriteAction* action = (SpriteAction*)msg;
 
-    Handler::Init(msg);
+    CopyCommandData(msg);
 
     if (FileExists("CB_FireAlarm") == 0) {
         ShowLoadingScreen();
@@ -650,7 +650,7 @@ int SC_FireAlarm::LBLParse(char* line) {
         sscanf(line, "%s %s", label, buffer);
         Palette* pal = new Palette();
         palette = pal;
-        pal->Load(buffer);
+        pal->LoadFile(buffer);
     } else if (strcmp(label, "BACKGROUND_SPRITE") == 0) {
         bgSprite = new Sprite(0);
         Parser::ProcessFile(bgSprite, this, 0);

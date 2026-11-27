@@ -1,4 +1,5 @@
 #include "GameConfig.h"
+#include "CDData.h"
 #include "Memory.h"
 #include <string.h>
 #include <stdlib.h>
@@ -34,7 +35,7 @@ GameConfig::~GameConfig() {
 
 /* Function start: 0x447EE0 */
 FILE* GameConfig::Open(char* mode) {
-    fp = fopen(g_SetupCfgPath_0046c4ac, mode);
+    fp = OpenSaveFile(g_SetupCfgPath_0046c4ac, mode);
     return fp;
 }
 

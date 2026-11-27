@@ -46,7 +46,7 @@ int Handler31::LBLParse(char* line) { // prologue at 0x418060
             palette = 0;
         }
         palette = new Palette();
-        palette->Load(arg2);
+        palette->LoadFile(arg2);
     } else if (strcmp(token, "QUESTION") == 0) {
         sscanf(line, " %s %d ", token, &id);
         question = new SC_Question(id, (SCI_Dialog*)this);

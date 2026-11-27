@@ -162,7 +162,7 @@ void SC_ExtBridge::Init(SC_MessageParser* msg) {
     if (palette != 0) {
         int* palSlot = (int*)&g_ZBufferManager_0046aa24->m_palette;
         if (*palSlot != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         *palSlot = (int)palette;
     }
@@ -303,7 +303,7 @@ int SC_ExtBridge::LBLParse(char* line)
     if (strcmp(label, "PALETTE") == 0) {
         sscanf(line, "%s %s", label, name);
         palette = new Palette();
-        palette->Load(name);
+        palette->LoadFile(name);
     } else if (strcmp(label, "NAVIGATION") == 0) {
         Parser::ProcessFile((Parser*)g_Navigator_0046ae70, this, (char*)0);
     } else if (strcmp(label, "SET_WORKBUFF") == 0) {

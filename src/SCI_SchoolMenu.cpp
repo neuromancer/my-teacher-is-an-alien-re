@@ -153,7 +153,7 @@ void SCI_SchoolMenu::Init(SC_MessageParser* msg) {
     if (pal != 0) {
         Palette** pDest = &g_ZBufferManager_0046aa24->m_palette;
         if (*pDest != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         *pDest = pal;
     }
@@ -927,7 +927,7 @@ char_click:
         selectedOption = -1;
 
         // Play sound
-        menuSound->~Sample();
+        menuSound->Stop();
         {
             Timer timedEvt;
             timedEvt.Wait(0x96);
@@ -1216,7 +1216,7 @@ int SCI_SchoolMenu::LBLParse(char* line) {
     if (strcmp(label, "PALE") == 0) {
         sscanf(line, "%s %s", label, filename);
         palette = new Palette();
-        palette->Load(filename);
+        palette->LoadFile(filename);
         return 0;
     }
 

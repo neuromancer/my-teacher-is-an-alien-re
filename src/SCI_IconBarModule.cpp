@@ -397,7 +397,7 @@ void SCI_IconBarModule::Init(SC_MessageParser* msg) {
     // Apply palette if set
     if (field_E4 != 0) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         g_ZBufferManager_0046aa24->m_palette = field_E4;
     }
@@ -500,7 +500,7 @@ int SCI_IconBarModule::AddMessage(SC_MessageParser* msg) {
     }
 
     if (((SpriteAction*)msg)->lastKey != 0) {
-        return 1;
+        goto done;
     }
 
     if (((SpriteAction*)msg)->button1 >= 2) {
@@ -556,6 +556,7 @@ int SCI_IconBarModule::AddMessage(SC_MessageParser* msg) {
         gs->stateValues[idx]++;
     }
 
+done:
     return 1;
 }
 

@@ -1,4 +1,5 @@
 #include "EngineSubsystems.h"
+#include "CDData.h"
 #include "globals.h"
 #include "SC_CombatBase.h"
 #include "Target.h"
@@ -100,7 +101,7 @@ void EngineInfoParser::ParseSound(char *line, int index) {
   char buffer[128];
   sscanf(line, "%s", buffer);
   char* path = MakeAudioName(buffer);
-  char* formatted = FormatStringVA(path);
+  char* formatted = ResolveAssetPath(path);
   int sound = (int)g_SoundList_0046ae68->Register(formatted);
 
   switch (index) {

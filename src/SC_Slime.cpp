@@ -83,7 +83,7 @@ void SC_Slime::Init(SC_MessageParser* msg)
 
     if (palette != 0) {
         if (g_ZBufferManager_0046aa24->m_palette != 0) {
-            WriteToLog("ddouble palette");
+            WriteToMessageLog("ddouble palette");
         }
         g_ZBufferManager_0046aa24->m_palette = palette;
     }
@@ -351,7 +351,7 @@ int SC_Slime::LBLParse(char* line) {
     if (strcmp(token, "PALETTE") == 0) {
         sscanf(line, "%s %s", token, buffer);
         palette = new Palette();
-        palette->Load(buffer);
+        palette->LoadFile(buffer);
     } else if (strcmp(token, "BACKGROUND_SPRITE") == 0) {
         bgSprite = new Sprite(0);
         Parser::ProcessFile(bgSprite, this, 0);

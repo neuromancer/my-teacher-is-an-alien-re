@@ -61,7 +61,7 @@ SC_CrystalPuzzle::SC_CrystalPuzzle() {
     rect5.bottom = 0x192;
 
     palette = new Palette();
-    palette->Load("puz_ForceField\\Puzztest.col");
+    palette->LoadFile("puz_ForceField\\Puzztest.col");
 
     {
     Sprite* s;
@@ -317,7 +317,7 @@ void SC_CrystalPuzzle::Init(SC_MessageParser* msg) {
         if (pal != 0) {
             Palette** pp = &g_ZBufferManager_0046aa24->m_palette;
             if (*pp != 0) {
-                WriteToLog("ddouble palette");
+                WriteToMessageLog("ddouble palette");
             }
             *pp = pal;
         }
@@ -984,10 +984,10 @@ void SC_CrystalPuzzle::ResetPuzzle(int idx, int val) {
     }
 
     if (enabledButtons[idx] != 0) {
-        if (idx <= 5) {
-            sndNum = idx + 0xbb4;
-        } else {
+        if (idx > 5) {
             sndNum = idx + 0x139c;
+        } else {
+            sndNum = idx + 0xbb4;
         }
 
         sprintf(buf, "puz_ForceField\\snd%4.4d", sndNum);

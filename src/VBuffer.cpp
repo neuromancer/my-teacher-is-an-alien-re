@@ -67,14 +67,14 @@ void DumpVBufferHandles()
     int i;
 
     int count = GetVideoBufferCount();
-    WriteToLog("%d Virtual Buffers in use", count);
+    WriteToMessageLog("%d Virtual Buffers in use", count);
 
     i = 0;
     do {
         int handle = g_VBufferHandleTable[i];
         if (handle != -1) {
             char* name = GetVideoBufferNameSlot(i);
-            WriteToLog("\tVB handle=%d addr=%d name=%s", i, handle, name);
+            WriteToMessageLog("\tVB handle=%d addr=%d name=%s", i, handle, name);
         }
         i++;
     } while (i < 0x20);
@@ -151,8 +151,7 @@ VBuffer::VBuffer(char* filename, int param_2)
 /* Function start: 0x411270 */
 void VBuffer::LoadFromFile(char* filename, int param_2)
 {
-    Release();
-    Free();
+    this->~VBuffer();
 
     Animation anim;
     anim.Open(filename, 0xFE000, -1);
@@ -250,7 +249,6 @@ void* VBuffer::InitWithSize(int param_1, int param_2)
     InvalidateVideoMode();
     data = (void*)GetVideoBufferData(handle);
     RegisterVBufferHandle(handle);
-    DumpVBufferHandles();
     return data;
 }
 
@@ -420,7 +418,11 @@ void VBuffer::ClipAndPaste(int param_1, int param_2, int param_3, int param_4, i
     if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
         return;
     }
-    CallBlitter2(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom, param_5, param_6, (VBuffer*)param_7);
+    // Mode 1 is the opaque, horizontally reversed blit path.  Calling the
+    // normal transparent blitter here leaves the background unmirrored while
+    // its inverted overlay sprites are mirrored.
+    BlitTransparentRegion(local_1c.left, local_1c.right, local_1c.top, local_1c.bottom,
+                          param_5, param_6, param_7);
 }
 
 /* Function start: 0x4117F0 */
@@ -429,7 +431,7 @@ void VBuffer::ClipAndBlitRegion(int param_1, int param_2, int param_3, int param
     GlyphRect local_2c(clip_x1, clip_y1, clip_x2, clip_y2);
     GlyphRect local_1c(param_1, param_3, param_2, param_4);
 
-    if (param_1 == 0x38) {
+    if (param_1 != 0x38) {
         if (ClipRectBottomUp(&local_2c.left, &local_1c.left, &param_5, &param_6) == 0) {
             return;
         }

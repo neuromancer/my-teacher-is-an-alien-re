@@ -20,6 +20,15 @@ int MapJoystickValue(int value, int min, int max, int range); // 0x421CE0
 Timer g_leftClickTimer;  // 0x43de40
 Timer g_rightClickTimer; // 0x43de58
 
+/* Function start: 0x426570 */
+char* FindAfterSubstring(char* s1, char* s2) {
+    char* p = strstr(s1, s2);
+    if (p != 0) {
+        p += strlen(s2);
+    }
+    return p;
+}
+
 /* Function start: 0x426770 */
 InputManager::InputManager(int param_1) {
     InitDevices(param_1);
@@ -87,6 +96,12 @@ void InitClickTimers()
 {
     g_leftClickTimer.Reset();
     g_rightClickTimer.Reset();
+}
+
+/* Function start: 0x426A90 */
+void InputManager::ResetClickState() {
+    InputManager::pMouse->ext2 = 0;
+    InputManager::pMouse->ext1 = InputManager::pMouse->ext2;
 }
 
 /* Function start: 0x426AF0 */ /* ~90% match */
@@ -164,8 +179,7 @@ int InputManager::PollJoystick(InputState* state) {
     iVar1 = MapJoystickValue(joyInfo.wXpos, joyCaps.wXmin, joyCaps.wXmax, bounds.right);
     state->x = iVar1;
 
-    iVar1 = MapJoystickValue(joyInfo.wYpos, joyCaps.wYmin, joyCaps.wYmax, bounds.bottom);
-    state->y = iVar1;
+    state->y = MapJoystickValue(joyInfo.wYpos, joyCaps.wYmin, joyCaps.wYmax, bounds.bottom);
 
     state->buttons = joyInfo.wButtons;
 
@@ -193,21 +207,6 @@ int MapJoystickValue(int value, int min, int max, int range)
         return range;
     }
     return 0;
-}
-
-/* Function start: 0x426570 */
-char* FindAfterSubstring(char* s1, char* s2) {
-    char* p = strstr(s1, s2);
-    if (p != 0) {
-        p += strlen(s2);
-    }
-    return p;
-}
-
-/* Function start: 0x426A90 */
-void InputManager::ResetClickState() {
-    InputManager::pMouse->ext2 = 0;
-    InputManager::pMouse->ext1 = InputManager::pMouse->ext2;
 }
 
 /* Function start: 0x426CE0 */

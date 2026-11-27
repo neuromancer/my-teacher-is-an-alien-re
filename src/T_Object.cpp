@@ -185,9 +185,7 @@ int T_Object::LBLParse(char* param_1)
         ParseSpriteAction(action, this);
     }
     else if (strcmp(token, "END") == 0) {
-        if (sprite != 0) {
-            sprite->StopAnimationSound();
-        }
+        StopSound();
         return 1;
     }
     else {

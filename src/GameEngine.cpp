@@ -139,7 +139,7 @@ void GameEngine::RunGameLoop() {
                     mouseX = 0;
                 }
                 sprintf(g_Buffer_0046aa00, "FT %d, [%d,%d]", m_timer1->Update(), mouseX, mouseY);
-                (g_ZBufferManager_0046aa24)->ShowSubtitle(g_Buffer_0046aa00, 0x14, 0x1e, 10000, -1);
+                (g_ZBufferManager_0046aa24)->ShowText(g_Buffer_0046aa00, 0x14, 0x1e, 10000, -1);
             }
 
             m_timer1->Reset();
